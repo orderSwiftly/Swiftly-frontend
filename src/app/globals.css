@@ -1,42 +1,47 @@
+@import url('https://fonts.cdnfonts.com/css/mona-sans');
+@import url('https://fonts.googleapis.com/css2?family=Manrope&display=swap');
+
+@import "tailwindcss";
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --bg-clr: #000000;
+  --txt-clr: #FFFFFF;
+  --acc-clr: #6C51F5;
+  --sec-clr: #020023;
+
+  --pry-ff: 'Mona-Sans', sans-serif;
+  --sec-ff: "Manrope", sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+.bg-clr {
+  color: var(--bg-clr);
+  border: 1px solid var(--bg-clr);
 }
 
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
+.acc-clr {
+  color: var(--acc-clr);
+  background-color: var(--acc-clr);
+  border: 1px solid var(--acc-clr);
+  text-shadow:
+    0 0 5px var(--acc-clr),
+    0 0 10px var(--acc-clr),
+    0 0 20px var(--acc-clr),
+    0 0 30px var(--acc-clr),
+    0 0 40px var(--acc-clr);
 }
 
-body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+.txt-clr {
+  color: var(--txt-clr);
+  border: 1px solid var(--txt-clr);
+}
+.sec-clr {
+  color: var(--sec-clr);
 }
 
-* {
-  box-sizing: border-box;
-  padding: 0;
-  margin: 0;
+.pry-ff {
+  font-family: var(--pry-ff);
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
-}
-
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+.sec-ff {
+  font-family: var(--sec-ff);
 }
