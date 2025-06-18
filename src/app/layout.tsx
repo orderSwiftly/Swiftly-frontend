@@ -14,7 +14,8 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Tredia",
-  description: "Developed by Victor Ememe, a platform for buyer-powered product marketing.",
+  description:
+    "Developed by Victor Ememe, a platform for buyer-powered product marketing.",
 };
 
 export default function RootLayout({
@@ -24,6 +25,18 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
+      <head>
+        {/* Mona Sans CDN link */}
+        <link
+          href="https://fonts.cdnfonts.com/css/mona-sans"
+          rel="stylesheet"
+        />
+        {/* Manrope Google Fonts link */}
+        <link
+          href="https://fonts.googleapis.com/css2?family=Manrope&display=swap"
+          rel="stylesheet"
+        />
+      </head>
       <body className={`${geistSans.variable} ${geistMono.variable}`}>
         {children}
       </body>
