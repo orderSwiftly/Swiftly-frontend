@@ -7,7 +7,8 @@ import Link from "next/link";
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "About", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "How It Works", href: "/how-it-works" },
+  { label: "Leaderboard", href: "/leaderboard" },
 ];
 
 export default function Navigation() {
@@ -42,9 +43,9 @@ export default function Navigation() {
         {/* Sign In - Desktop */}
         <Link
           href="/auth/login"
-          className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--txt-clr)] border border-[var(--txt-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold"
+          className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
         >
-          Sign In
+          join the waitlist
         </Link>
 
         {/* Mobile Menu Toggle */}
@@ -59,7 +60,7 @@ export default function Navigation() {
           isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
         }`}
       >
-        <ul className="flex flex-col items-center py-6 space-y-6 text-white uppercase text-sm">
+        <ul className="flex flex-col items-center py-6 space-y-6 text-[var(--txt-clr)] uppercase text-sm">
           {NAV_ITEMS.map((item) => (
             <li key={item.label} onClick={toggleMobileMenu}>
               <Link href={item.href} className="hover:text-[var(--acc-clr)] transition-colors">
@@ -81,9 +82,9 @@ export default function Navigation() {
             <Link
               href="/auth/login"
               onClick={toggleMobileMenu}
-              className="text-[var(--bg-clr)] bg-[var(--txt-clr)] border border-[var(--txt-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold"
+              className="text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
             >
-              Sign In
+              Join the waitlist
             </Link>
           </li>
         </ul>

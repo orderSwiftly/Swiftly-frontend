@@ -40,7 +40,7 @@ export default function AcctModal({ onClose }: { onClose: () => void }) {
 
           <button
             type="submit"
-            className="mt-4 bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110 transition"
+            className="mt-4 bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110 cursor-pointer transition"
           >
             Create Account
           </button>
