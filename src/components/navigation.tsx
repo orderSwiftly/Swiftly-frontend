@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { Search, Menu, X } from "lucide-react";
+import Image from 'next/image';
 import Link from "next/link";
 
 const NAV_ITEMS = [
@@ -19,7 +20,17 @@ export default function Navigation() {
     <nav className="fixed top-0 left-0 z-50 w-full bg-white/5 backdrop-blur-md shadow-sm pry-ff">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <h1 className="text-[var(--txt-clr)] text-xl font-extrabold tracking-wide">Tredia</h1>
+        <Link href='/'>
+        <div className="flex items-center gap-2">
+          <Image
+            src='/tredia-logo.png'
+            alt="Tredia Logo"
+            width={40}
+            height={40}
+            className="w-auto object-cover"
+          />
+        </div>
+        </Link>
 
         {/* Desktop Nav */}
         <ul className="hidden md:flex gap-6 text-[var(--txt-clr)] uppercase text-sm items-center">
