@@ -1,11 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import AcctModal from '@/components/acct-modal'; // 👈 import the modal component
-
-interface props {
-  onClose?: () => void;
-}
+import AcctModal from '@/components/acct-modal';
 
 export default function Introduction() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -33,7 +29,6 @@ export default function Introduction() {
         </button>
       </section>
 
-      {/* Conditionally render the modal */}
       {isOpenModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
           <div className="bg-[var(--bg-clr)] rounded-lg shadow-lg max-w-lg w-full">
