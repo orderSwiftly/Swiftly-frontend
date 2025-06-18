@@ -4,10 +4,10 @@
 @import "tailwindcss";
 
 :root {
-  --bg-clr: #000000;
+  --bg-clr: #00050E;
   --txt-clr: #FFFFFF;
-  --acc-clr: #6C51F5;
-  --sec-clr: #020023;
+  --acc-clr: #2DCAD7;
+  --sec-clr: #6A7984;
 
   --pry-ff: 'Mona-Sans', sans-serif;
   --sec-ff: "Manrope", sans-serif;
@@ -34,6 +34,7 @@
   color: var(--txt-clr);
   border: 1px solid var(--txt-clr);
 }
+
 .sec-clr {
   color: var(--sec-clr);
 }
