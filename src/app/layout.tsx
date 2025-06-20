@@ -14,8 +14,7 @@ const geistMono = Geist_Mono({
 
 export const metadata: Metadata = {
   title: "Tredia",
-  description:
-    "Developed by Victor Ememe, a platform for buyer-powered product marketing.",
+  description: "Trust-first commerce for university trade and beyond",
 };
 
 export default function RootLayout({
