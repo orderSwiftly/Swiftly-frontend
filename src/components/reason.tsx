@@ -1,6 +1,6 @@
 'use client';
 
-import { MessageSquareWarning, PackageX, Undo2, Gamepad } from 'lucide-react';
+import { MessageSquareWarning, PackageX, Undo2, Gamepad2Icon } from 'lucide-react';
 import ReasonCard from './reasonCard';
 import { motion } from 'framer-motion';
 import SetUsApart from './WhatSetsUsApart';
@@ -35,9 +35,9 @@ export default function Reasons() {
         whileInView={{ opacity: 1, y: 0 }}
         transition={{ duration: 0.5 }}
         viewport={{ once: true }}
-        className="flex items-center gap-2 text-sm sec-ff text-black bg-black/10 backdrop-blur-md px-4 py-2 rounded-full shadow-md"
+        className="flex items-center gap-2 text-sm sec-ff text-[var(--txt-clr)] bg-gradient-to-br from-[#01bbbb] to-[#05e2ff] backdrop-blur-sm px-4 py-2 rounded-full shadow-md"
       >
-        <Gamepad size={16} />
+        <Gamepad2Icon size={16} />
         <span className="font-medium">Trusted Marketplace Experience</span>
       </motion.div>
 
