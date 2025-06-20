@@ -66,7 +66,7 @@ export default function WhatSetsUsApart() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.5 }}
           viewport={{ once: true, amount: 0.6 }}
-          className="text-3xl md:text-4xl font-bold pry-ff"
+          className="text-3xl md:text-4xl font-bold text-[var(--bg-clr)] pry-ff"
         >
           What Sets Us Apart
         </motion.h2>

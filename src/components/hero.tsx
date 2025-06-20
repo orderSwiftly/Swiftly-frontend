@@ -7,20 +7,26 @@ const containerVariants = {
   hidden: {},
   show: {
     transition: {
-      staggerChildren: 0.2
-    }
-  }
+      staggerChildren: 0.2,
+    },
+  },
 };
 
 const itemVariants = {
   hidden: { opacity: 0, y: 10 },
-  show: { opacity: 1, y: 0, transition: { duration: 0.4, ease: "easeOut" } }
+  show: {
+    opacity: 1,
+    y: 0,
+    transition: {
+      duration: 0.4,
+      ease: [0.25, 0.1, 0.25, 1] as const, // FIXED: Replaced "easeOut" with bezier easing
+    },
+  },
 };
 
 export default function FirstHero() {
   return (
     <section className="relative w-full max-w-md mx-auto p-6 rounded-2xl bg-white/10 backdrop-blur-md shadow-md text-white space-y-4">
-
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
@@ -61,7 +67,7 @@ export default function FirstHero() {
             seller: "TechGuru",
             rating: "4.8",
             xp: "+17 XP",
-            price: "₦8,999"
+            price: "₦8,999",
           },
           {
             emoji: "⌨️",
@@ -69,7 +75,7 @@ export default function FirstHero() {
             seller: "KeyMaster",
             rating: "4.9",
             xp: "+29 XP",
-            price: "₦11,999"
+            price: "₦11,999",
           },
           {
             emoji: "🖱️",
@@ -77,8 +83,8 @@ export default function FirstHero() {
             seller: "GamerZone",
             rating: "4.7",
             xp: "+22 XP",
-            price: "₦3,599"
-          }
+            price: "₦3,599",
+          },
         ].map((item, index) => (
           <motion.div
             variants={itemVariants}
@@ -93,9 +99,13 @@ export default function FirstHero() {
                 <Star size={14} fill="currentColor" />
                 {item.rating}
               </div>
-              <div className="text-xs mt-1 text-white/60 sec-ff">Review for {item.xp}</div>
+              <div className="text-xs mt-1 text-white/60 sec-ff">
+                Review for {item.xp}
+              </div>
             </div>
-            <div className="text-right font-medium text-white sec-ff">{item.price}</div>
+            <div className="text-right font-medium text-white sec-ff">
+              {item.price}
+            </div>
           </motion.div>
         ))}
       </motion.div>
@@ -114,7 +124,8 @@ export default function FirstHero() {
         <div className="flex flex-col">
           <span className="font-semibold pry-ff">Weekly Best Seller Challenge</span>
           <p className="text-xs text-white/70 leading-snug mt-1 sec-ff">
-            Complete 3 verified sales this week to earn the <span className="text-yellow-400 font-medium">Best Seller</span> badge.
+            Complete 3 verified sales this week to earn the{" "}
+            <span className="text-yellow-400 font-medium">Best Seller</span> badge.
           </p>
         </div>
       </motion.div>
