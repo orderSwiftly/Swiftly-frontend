@@ -22,21 +22,36 @@ export default function FirstHero() {
     <section className="relative w-full max-w-md mx-auto p-6 rounded-2xl bg-white/10 backdrop-blur-md shadow-md text-white space-y-4">
 
       {/* Header */}
-      <div className="flex gap-2 text-lg font-semibold pry-ff items-center">
+      <motion.div
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ duration: 0.5 }}
+        className="flex gap-2 text-lg font-semibold pry-ff items-center"
+      >
         <div className="p-4 rounded-full bg-gradient-to-br from-[#01bbbb] to-[#05e2ff] text-[var(--txt-clr)] flex items-center justify-center">
           <ShoppingCart size={20} />
         </div>
         <span>Secure Cart</span>
-      </div>
+      </motion.div>
 
       {/* Subtext */}
-      <p className="text-sm text-white/80 sec-ff">Escrow protected • +125 XP</p>
+      <motion.p
+        initial={{ opacity: 0, y: 10 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.2, duration: 0.5 }}
+        className="text-sm text-white/80 sec-ff"
+      >
+        Escrow protected • +125 XP
+      </motion.p>
 
       {/* Cart Items */}
       <motion.div
         variants={containerVariants}
         initial="hidden"
-        animate="show"
+        whileInView="show"
+        viewport={{ once: true }}
         className="space-y-4"
       >
         {[
@@ -88,8 +103,9 @@ export default function FirstHero() {
       {/* Weekly Best Seller Challenge */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.8, duration: 0.5 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.4, duration: 0.5 }}
         className="flex items-start gap-3 mt-2 text-[var(--txt-clr)] text-sm capitalize sec-ff bg-white/10 border border-white/10 backdrop-blur-md p-3 rounded-lg"
       >
         <div className="p-2 rounded-full bg-yellow-400/20 text-yellow-400">
@@ -106,8 +122,9 @@ export default function FirstHero() {
       {/* Escrow Protection Summary */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 1, duration: 0.5 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true }}
+        transition={{ delay: 0.6, duration: 0.5 }}
         className="flex items-start gap-3 mt-2 text-[var(--txt-clr)] text-sm capitalize bg-white/10 border border-white/10 backdrop-blur-md p-3 rounded-lg"
       >
         <div className="p-2 rounded-full bg-green-400/20 text-green-400">
