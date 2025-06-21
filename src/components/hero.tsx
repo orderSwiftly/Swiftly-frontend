@@ -26,7 +26,7 @@ const itemVariants = {
 
 export default function FirstHero() {
   return (
-    <section className="relative w-full max-w-md mx-auto p-6 rounded-2xl bg-white/10 backdrop-blur-md shadow-md text-white space-y-4">
+    <section className="relative w-full max-w-lg mx-auto p-6 rounded-2xl bg-white/10 backdrop-blur-md shadow-md text-white space-y-4">
       {/* Header */}
       <motion.div
         initial={{ opacity: 0, y: 10 }}
