@@ -1,6 +1,7 @@
 import FirstPage from "./firstPage";
 import SecondPage from "./second-page";
 import ThirdPage from "./third-page";
+import Footer from "./footer/footer";
 
 export default function LandingPage() {
   return (
@@ -8,6 +9,7 @@ export default function LandingPage() {
       <FirstPage />
       <SecondPage />
       <ThirdPage />
+      <Footer />
     </div>
   );
 }

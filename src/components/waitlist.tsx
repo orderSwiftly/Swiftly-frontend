@@ -7,6 +7,7 @@ import {
   Trophy,
   Shield,
   Star,
+  Users,
 } from 'lucide-react';
 
 export default function Waitlist() {
@@ -86,6 +87,13 @@ export default function Waitlist() {
             </div>
           ))}
         </article>
+        
+        <div
+          className="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-[var(--sec-clr)] sec-ff"
+        >
+          <Users size={16} />
+          <p>The future drops soon. Get front-row access.</p>
+        </div>
       </div>
     </section>
   );
