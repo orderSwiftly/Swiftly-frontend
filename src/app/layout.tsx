@@ -13,9 +13,13 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "Tredia",
+  title: {
+    default: "Tredia - Trust-first gamified marketplace",
+    template: "%s | Tredia",
+  },
   description: "Trust-first commerce for university trade and beyond",
 };
+
 
 export default function RootLayout({
   children,

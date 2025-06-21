@@ -1,3 +1,6 @@
+'use client';
+
+import { motion } from 'framer-motion';
 import FooterColumn from "./footer-column";
 import FooterSocials from "./footer-socials";
 import FooterBottom from "./footer-bottom";
@@ -8,8 +11,14 @@ export default function Footer() {
   return (
     <footer className="bg-[var(--bg-clr)] text-[var(--txt-clr)] py-12 px-6 sm:px-12 mt-4">
       <div className="max-w-7xl mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-10">
-        {/* Left section */}
-        <div className="col-span-1 sm:col-span-2">
+        {/* Left section with animation */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="col-span-1 sm:col-span-2"
+        >
           <div className="flex flex-col items-center sm:items-start w-auto h-auto">
             <Image
               src="/tredia-logo.png"
@@ -40,24 +49,35 @@ export default function Footer() {
           </ul>
 
           <FooterSocials />
-        </div>
+        </motion.div>
 
-        {/* Other sections */}
-        <FooterColumn
-          title="Marketplace"
-          items={["Browse Products", "Verified Sellers", "Weekly Winners", "Review System"]}
-        />
-        <FooterColumn
-          title="Safety"
-          items={["Escrow Protection", "Seller Verification", "Trust System", "Dispute Resolution"]}
-        />
-        <FooterColumn
-          title="Support"
-          items={["Help Center", "Seller Guide", "Buyer Protection", "Contact Us"]}
-        />
+        {/* Footer Columns with animation */}
+        {[ 
+          { title: "Marketplace", items: ["Browse Products", "Verified Sellers", "Weekly Winners", "Review System"] },
+          { title: "Safety", items: ["Escrow Protection", "Seller Verification", "Trust System", "Dispute Resolution"] },
+          { title: "Support", items: ["Help Center", "Seller Guide", "Buyer Protection", "Contact Us"] },
+        ].map((col, idx) => (
+          <motion.div
+            key={col.title}
+            initial={{ opacity: 0, y: 20 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            transition={{ duration: 0.5, delay: 0.1 * idx }}
+            viewport={{ once: true }}
+          >
+            <FooterColumn title={col.title} items={col.items} />
+          </motion.div>
+        ))}
       </div>
 
-      <FooterBottom />
+      {/* Footer bottom with scroll animation */}
+      <motion.div
+        initial={{ opacity: 0 }}
+        whileInView={{ opacity: 1 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+        viewport={{ once: true }}
+      >
+        <FooterBottom />
+      </motion.div>
     </footer>
   );
 }

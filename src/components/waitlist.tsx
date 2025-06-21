@@ -9,6 +9,7 @@ import {
   Star,
   Users,
 } from 'lucide-react';
+import { motion } from 'framer-motion';
 
 export default function Waitlist() {
   const waitlistItems = [
@@ -31,25 +32,55 @@ export default function Waitlist() {
 
   return (
     <section className="w-full py-16 bg-[var(--bg-clr)]">
-      <div className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center gap-6 px-4 sm:px-6">
+      <motion.div
+        initial={{ opacity: 0, y: 40 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, amount: 0.3 }}
+        transition={{ duration: 0.6 }}
+        className="w-full max-w-6xl mx-auto flex flex-col items-center justify-center gap-6 px-4 sm:px-6"
+      >
         {/* Tag */}
-        <div className="flex items-center gap-2 text-xs sm:text-sm sec-ff text-[var(--txt-clr)] bg-gradient-to-br from-[#01bbbb] to-[#05e2ff] backdrop-blur-sm px-4 py-2 rounded-full shadow-md">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.1, duration: 0.5 }}
+          className="flex items-center gap-2 text-xs sm:text-sm sec-ff text-[var(--txt-clr)] bg-gradient-to-br from-[#01bbbb] to-[#05e2ff] backdrop-blur-sm px-4 py-2 rounded-full shadow-md"
+        >
           <Clock size={16} />
           <span>Limited Early Access</span>
-        </div>
+        </motion.div>
 
         {/* Heading */}
-        <h1 className="pry-ff text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[var(--acc-clr)] leading-tight sm:leading-snug">
+        <motion.h1
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.2, duration: 0.5 }}
+          className="pry-ff text-center text-2xl sm:text-3xl md:text-4xl font-semibold text-[var(--acc-clr)] leading-tight sm:leading-snug"
+        >
           Ready to Join the Trusted Marketplace?
-        </h1>
+        </motion.h1>
 
         {/* Paragraph */}
-        <p className="max-w-2xl text-center text-sm sm:text-base md:text-md leading-relaxed text-white sec-ff px-2">
+        <motion.p
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.3, duration: 0.5 }}
+          className="max-w-2xl text-center text-sm sm:text-base md:text-md leading-relaxed text-white sec-ff px-2"
+        >
           Join thousands of verified sellers and buyers experiencing secure, gamified commerce with escrow protection and XP rewards.
-        </p>
+        </motion.p>
 
         {/* Email Waitlist Form */}
-        <article className="flex flex-col gap-4 w-full max-w-lg bg-white/10 backdrop-blur-xl border border-white/20 px-6 py-6 rounded-lg shadow-lg">
+        <motion.article
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.4, duration: 0.5 }}
+          className="flex flex-col gap-4 w-full max-w-lg bg-white/10 backdrop-blur-xl border border-white/20 px-6 py-6 rounded-lg shadow-lg"
+        >
           <div className="flex flex-col sm:flex-row items-center gap-3 w-full">
             {/* Email input */}
             <div className="flex items-center w-full gap-2 bg-white/20 rounded-md px-3 py-2 border sec-ff border-white/30 focus-within:border-[var(--acc-clr)] transition duration-200">
@@ -73,28 +104,43 @@ export default function Waitlist() {
             <Trophy size={15} className="text-yellow-400" />
             <span>Early adopters get verified seller status and exclusive marketplace features.</span>
           </div>
-        </article>
+        </motion.article>
 
         {/* Bonus Highlights */}
-        <article className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-4xl px-2 mt-6">
+        <motion.article
+          initial={{ opacity: 0, y: 30 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 0.5, duration: 0.6 }}
+          className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4 w-full max-w-4xl px-2 mt-6"
+        >
           {waitlistItems.map((item, index) => (
-            <div
+            <motion.div
               key={index}
               className="flex items-start gap-3 bg-white/10 backdrop-blur-md border border-white/20 px-4 py-3 rounded-lg shadow-md"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ delay: 0.6 + index * 0.1, duration: 0.4 }}
             >
               <item.icon size={20} className={`${item.color}`} />
               <span className="text-sm text-[var(--txt-clr)] sec-ff">{item.title}</span>
-            </div>
+            </motion.div>
           ))}
-        </article>
-        
-        <div
-          className="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-[var(--sec-clr)] sec-ff"
+        </motion.article>
+
+        {/* Final Text */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ delay: 1, duration: 0.5 }}
+          className="flex items-center gap-2 md:gap-3 text-xs md:text-sm text-[var(--sec-clr)] sec-ff mt-4"
         >
           <Users size={16} />
           <p>The future drops soon. Get front-row access.</p>
-        </div>
-      </div>
+        </motion.div>
+      </motion.div>
     </section>
   );
 }
