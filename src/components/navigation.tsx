@@ -53,10 +53,10 @@ export default function Navigation() {
 
         {/* Sign In - Desktop */}
         <Link
-          href="/auth/login"
+          href="/signup"
           className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
         >
-          join the waitlist
+          Sign up
         </Link>
 
         {/* Mobile Menu Toggle */}
@@ -91,11 +91,11 @@ export default function Navigation() {
           </li>
           <li>
             <Link
-              href="/auth/login"
+              href="/signup"
               onClick={toggleMobileMenu}
               className="text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
             >
-              Join the waitlist
+              Sign up
             </Link>
           </li>
         </ul>
