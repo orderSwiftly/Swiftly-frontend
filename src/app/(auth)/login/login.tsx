@@ -4,24 +4,53 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
+import PulseLoader  from '@/components/pulse-loader';
+import toast from 'react-hot-toast';
 
 export default function Login() {
   const router = useRouter();
-
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const api_url = process.env.NEXT_PUBLIC_API_URL;
+
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log('Logging in with:', { email, password });
-    router.push('/dashboard');
+    setLoading(true);
+
+    try {
+      const res = await fetch(`${api_url}/api/v1/auth/user/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ email, password }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        throw new Error(data?.message ?? 'Login failed');
+      }
+
+      // Redirect
+      toast.success('Login successful!');
+      router.push('/dashboard');
+    } catch (err) {
+      console.error('Login error:', err);
+      toast.error('Error logging in');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[var(--bg-clr)] px-4">
       <div className="w-full max-w-md bg-white/10 backdrop-blur-md p-8 sm:p-10 rounded-2xl shadow-2xl text-[var(--txt-clr)] space-y-6">
-        
+
         {/* Logo */}
         <div className="flex justify-center">
           <Image
@@ -39,13 +68,11 @@ export default function Login() {
           Welcome Back to Tredia
         </h1>
 
-        {/* Login Form */}
+        {/* Form */}
         <form onSubmit={handleLogin} className="flex flex-col gap-5 sec-ff">
-          {/* Email Input */}
+          {/* Email */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="email" className="text-sm text-white/80">
-              Email
-            </label>
+            <label htmlFor="email" className="text-sm text-white/80">Email</label>
             <input
               id="email"
               type="email"
@@ -57,11 +84,9 @@ export default function Login() {
             />
           </div>
 
-          {/* Password Input */}
+          {/* Password */}
           <div className="flex flex-col gap-1">
-            <label htmlFor="password" className="text-sm text-white/80">
-              Password
-            </label>
+            <label htmlFor="password" className="text-sm text-white/80">Password</label>
             <div className="relative">
               <input
                 id="password"
@@ -85,30 +110,25 @@ export default function Login() {
 
           {/* Forgot password */}
           <div className="text-sm text-right text-white/70">
-            <a
-              href="/forgot-password"
-              className="hover:underline text-[var(--acc-clr)] font-medium"
-            >
+            <a href="/forgot-password" className="hover:underline text-[var(--acc-clr)] font-medium">
               Forgot password?
             </a>
           </div>
 
-          {/* Submit Button */}
+          {/* Submit */}
           <button
             type="submit"
-            className="bg-[var(--acc-clr)] hover:bg-opacity-90 transition text-[var(--txt-clr)] py-3 rounded-md font-medium"
+            className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--bg-clr)] py-3 rounded-lg hover:bg-opacity-90 transition font-semibold cursor-pointer h-[44px]"
+            disabled={loading}
           >
-            Log In
+            {loading ? <PulseLoader /> : 'Log In'}
           </button>
         </form>
 
-        {/* Switch to Sign Up */}
+        {/* Switch to Signup */}
         <p className="text-sm text-center text-white/70 sec-ff">
           Don’t have an account?{' '}
-          <a
-            href="/signup"
-            className="text-[var(--acc-clr)] font-medium hover:underline"
-          >
+          <a href="/signup" className="text-[var(--acc-clr)] font-medium hover:underline">
             Sign up
           </a>
         </p>

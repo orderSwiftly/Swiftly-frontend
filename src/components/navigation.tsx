@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from "react";
-import { Search, Menu, X } from "lucide-react";
+import { Search, Menu, X, ShoppingCart } from "lucide-react";
 import Image from 'next/image';
 import Link from "next/link";
 
@@ -51,13 +51,20 @@ export default function Navigation() {
           </li>
         </ul>
 
-        {/* Sign In - Desktop */}
-        <Link
-          href="/signup"
-          className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
-        >
-          Sign up
-        </Link>
+        <div className="flex items-center gap-4">
+          {/* Cart Icon - Desktop */}
+          <Link href="/cart" className="hidden md:inline-block text-[var(--txt-clr)] hover:text-[var(--acc-clr)] transition">
+            <ShoppingCart className="w-5 h-5" />
+          </Link>
+
+          {/* Sign In - Desktop */}
+          <Link
+            href="/signup"
+            className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
+          >
+            Sign up
+          </Link>
+        </div>
 
         {/* Mobile Menu Toggle */}
         <button onClick={toggleMobileMenu} className="md:hidden cursor-pointer text-[var(--txt-clr)] focus:outline-none">
@@ -89,6 +96,19 @@ export default function Navigation() {
               <Search className="w-4 h-4 text-[var(--txt-clr)]" />
             </div>
           </li>
+
+          {/* Cart Icon - Mobile */}
+          <li>
+            <Link
+              href="/cart"
+              onClick={toggleMobileMenu}
+              className="flex items-center gap-2 text-[var(--txt-clr)] hover:text-[var(--acc-clr)] transition"
+            >
+              <ShoppingCart className="w-4 h-4" />
+              Cart
+            </Link>
+          </li>
+
           <li>
             <Link
               href="/signup"
