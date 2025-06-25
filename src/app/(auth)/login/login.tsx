@@ -21,12 +21,12 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch('/api/v1/auth/user/login', {
+      const res = await fetch('https://tredia-app.onrender.com/api/v1/auth/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include', // ✅ include cookies
+        credentials: 'include', // ✅ REQUIRED for cookies to work
         body: JSON.stringify({ email, password }),
       });
 
