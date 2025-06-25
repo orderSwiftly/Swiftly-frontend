@@ -4,6 +4,8 @@ import { useState, useEffect } from 'react';
 import Image from 'next/image';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 type Product = {
   _id: string;
@@ -94,7 +96,7 @@ export default function ProductList() {
             </div>
 
             {/* Product Details */}
-            <div className="p-4 flex flex-col justify-between h-full">
+            <div className="p-4 flex flex-col justify-between h-full space-y-2 sec-ff">
               <div>
                 <h4 className="text-lg font-semibold text-[var(--txt-clr)] mb-1 pry-ff">
                   {product.title}
@@ -115,16 +117,29 @@ export default function ProductList() {
                     {product.location}
                   </span>
                   <span
-                    className={`px-2 py-1 rounded-md text-[var(--txt-clr)] ${
+                    className={`px-2 py-1 rounded-md text-[var(--txt-clr)] capitalize ${
                       product.productStatus === 'approved'
                         ? 'bg-green-500'
                         : product.productStatus === 'pending'
-                        ? 'bg-yellow-500'
+                        ? 'bg-yellow-600'
                         : 'bg-red-500'
                     }`}
                   >
                     {product.productStatus}
                   </span>
+
+                  <button className="bg-transparent border-none p-0 m-0">
+                    <Link
+                      href={`/dashboard/my-products/${product._id}`}
+                      className="group flex items-center gap-2 sec-ff font-normal text-[var(--acc-clr)]"
+                    >
+                      <span>View Details</span>
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </Link>
+                  </button>
 
                 </div>
               </div>
