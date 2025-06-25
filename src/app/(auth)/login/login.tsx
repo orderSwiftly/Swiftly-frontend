@@ -4,7 +4,7 @@ import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import { Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
-import PulseLoader  from '@/components/pulse-loader';
+import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 
 export default function Login() {
@@ -14,34 +14,35 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const api_url = process.env.NEXT_PUBLIC_API_URL;
+  // const api_url = process.env.NEXT_PUBLIC_API_URL;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch(`${api_url}/api/v1/auth/user/login`, {
+      const res = await fetch('/api/v1/auth/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
         },
-        credentials: 'include',
+        credentials: 'include', // ✅ include cookies
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) {
-        throw new Error(data?.message ?? 'Login failed');
-      }
+      if (!res.ok) throw new Error(data?.message ?? 'Login failed');
 
-      // Redirect
       toast.success('Login successful!');
       router.push('/dashboard');
-    } catch (err) {
+    } catch (err: unknown) {
       console.error('Login error:', err);
-      toast.error('Error logging in');
+      if (err instanceof Error) {
+        toast.error(err.message ?? 'Error logging in');
+      } else {
+        toast.error('Error logging in');
+      }
     } finally {
       setLoading(false);
     }
@@ -50,27 +51,14 @@ export default function Login() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-[var(--bg-clr)] px-4">
       <div className="w-full max-w-md bg-white/10 backdrop-blur-md p-8 sm:p-10 rounded-2xl shadow-2xl text-[var(--txt-clr)] space-y-6">
-
         {/* Logo */}
         <div className="flex justify-center">
-          <Image
-            src="/tredia.png"
-            alt="Tredia Logo"
-            width={80}
-            height={80}
-            className="rounded-full"
-            priority
-          />
+          <Image src="/tredia.png" alt="Tredia Logo" width={80} height={80} className="rounded-full" priority />
         </div>
 
-        {/* Heading */}
-        <h1 className="text-3xl font-bold text-center pry-ff">
-          Welcome Back to Tredia
-        </h1>
+        <h1 className="text-3xl font-bold text-center pry-ff">Welcome Back to Tredia</h1>
 
-        {/* Form */}
         <form onSubmit={handleLogin} className="flex flex-col gap-5 sec-ff">
-          {/* Email */}
           <div className="flex flex-col gap-1">
             <label htmlFor="email" className="text-sm text-white/80">Email</label>
             <input
@@ -84,7 +72,6 @@ export default function Login() {
             />
           </div>
 
-          {/* Password */}
           <div className="flex flex-col gap-1">
             <label htmlFor="password" className="text-sm text-white/80">Password</label>
             <div className="relative">
@@ -101,21 +88,18 @@ export default function Login() {
                 type="button"
                 onClick={() => setShowPass(!showPass)}
                 className="absolute inset-y-0 right-3 flex items-center text-white/70 hover:text-[var(--txt-clr)]"
-                aria-label="Toggle password visibility"
               >
                 {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
               </button>
             </div>
           </div>
 
-          {/* Forgot password */}
           <div className="text-sm text-right text-white/70">
             <a href="/forgot-password" className="hover:underline text-[var(--acc-clr)] font-medium">
               Forgot password?
             </a>
           </div>
 
-          {/* Submit */}
           <button
             type="submit"
             className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--bg-clr)] py-3 rounded-lg hover:bg-opacity-90 transition font-semibold cursor-pointer h-[44px]"
@@ -125,7 +109,6 @@ export default function Login() {
           </button>
         </form>
 
-        {/* Switch to Signup */}
         <p className="text-sm text-center text-white/70 sec-ff">
           Don’t have an account?{' '}
           <a href="/signup" className="text-[var(--acc-clr)] font-medium hover:underline">

@@ -16,14 +16,14 @@ export default function SignupComp() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const api_url = process.env.NEXT_PUBLIC_API_URL;
+  // const api_url = process.env.NEXT_PUBLIC_API_URL;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch(`${api_url}/api/v1/auth/user/signup`, {
+      const res = await fetch('/api/v1/auth/user/signup', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
