@@ -1,15 +1,21 @@
 'use client';
 
-import { useState, useEffect } from "react";
-import Image from "next/image";
-import PulseLoader from "@/components/pulse-loader";
-import toast from "react-hot-toast";
+import { useState, useEffect } from 'react';
+import Image from 'next/image';
+import PulseLoader from '@/components/pulse-loader';
+import toast from 'react-hot-toast';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 type Product = {
   _id: string;
   title: string;
   description: string;
   price: number;
+  productImg: string[];
+  stock: number;
+  location: string;
+  productStatus: string;
 };
 
 export default function ProductList() {
@@ -23,7 +29,7 @@ export default function ProductList() {
       try {
         const res = await fetch(`${api_url}/api/v1/product/my-products`, {
           method: 'GET',
-          credentials: 'include', // ✅ include cookie for protected routes
+          credentials: 'include',
         });
 
         const data = await res.json();
@@ -32,7 +38,7 @@ export default function ProductList() {
           setProducts(data.data.products ?? []);
         } else {
           setError(data.message ?? 'Failed to fetch products');
-            toast.error(data.message ?? 'Failed to fetch products');
+          toast.error(data.message ?? 'Failed to fetch products');
         }
       } catch (err) {
         setError('An error occurred while fetching products');
@@ -49,12 +55,16 @@ export default function ProductList() {
   let content: React.ReactNode;
 
   if (loading) {
-    content = <div className="flex items-center justify-center h-64"><PulseLoader /></div>;
+    content = (
+      <div className="flex items-center justify-center h-64">
+        <PulseLoader />
+      </div>
+    );
   } else if (error) {
-    content = <p className="text-red-500">{error}</p>;
+    content = <p className="text-red-500 text-center">{error}</p>;
   } else if (products.length === 0) {
     content = (
-      <div className="text-center">
+      <div className="text-center py-12">
         <Image
           src="/no-product.jpg"
           alt="No products found"
@@ -62,18 +72,80 @@ export default function ProductList() {
           height={200}
           className="mx-auto mb-4"
         />
-        <h3 className="text-lg font-semibold text-[var(--txt-clr)] sec-ff ">No Products Available</h3>
+        <h3 className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">No Products Available</h3>
         <p className="text-gray-500 sec-ff">You haven’t added any products yet.</p>
       </div>
     );
   } else {
     content = (
-      <ul className="space-y-4">
+      <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {products.map((product) => (
-          <li key={product._id} className="p-4 bg-white rounded-lg shadow">
-            <h4 className="font-semibold text-lg">{product.title}</h4>
-            <p className="text-sm text-gray-600">{product.description}</p>
-            <p className="text-sm text-gray-800 font-bold">₦{product.price}</p>
+          <li
+            key={product._id}
+            className="bg-white dark:bg-[var(--bg-clr)] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 dark:border-gray-700"
+          >
+            {/* Product Image */}
+            <div className="relative w-full h-48 overflow-hidden">
+              <Image
+                src={product.productImg?.[0] || '/fallback.jpg'}
+                alt={product.title}
+                fill
+                sizes="(max-width: 768px) 100vw, 33vw"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
+              />
+            </div>
+
+            {/* Product Details */}
+            <div className="p-4 flex flex-col justify-between h-full space-y-2 sec-ff">
+              <div>
+                <h4 className="text-lg font-semibold text-[var(--txt-clr)] mb-1 pry-ff">
+                  {product.title}
+                </h4>
+                <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 sec-ff mb-2">
+                  {product.description}
+                </p>
+
+                  <p className="text-xl font-bold text-[var(--txt-clr)] mt-auto sec-ff mb-2">
+                    ₦{product.price.toLocaleString()}
+                  </p>
+
+                <div className="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-300 mb-3">
+                  <span className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-md">
+                    Stock: {product.stock}
+                  </span>
+                  <span className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-md">
+                    {product.location}
+                  </span>
+                  <span
+                    className={`px-2 py-1 rounded-md text-[var(--txt-clr)] capitalize ${
+                      product.productStatus === 'approved'
+                        ? 'bg-green-500'
+                        : product.productStatus === 'pending'
+                        ? 'bg-yellow-600'
+                        : 'bg-red-500'
+                    }`}
+                  >
+                    {product.productStatus}
+                  </span>
+
+                  <button className="bg-transparent border-none p-0 m-0">
+                    <Link
+                      href={`/dashboard/my-products/${product._id}`}
+                      className="group flex items-center gap-2 sec-ff font-normal text-[var(--acc-clr)]"
+                    >
+                      <span>View Details</span>
+                      <ArrowRight
+                        size={16}
+                        className="transition-transform duration-300 group-hover:translate-x-1"
+                      />
+                    </Link>
+                  </button>
+
+                </div>
+              </div>
+
+              
+            </div>
           </li>
         ))}
       </ul>
@@ -81,8 +153,10 @@ export default function ProductList() {
   }
 
   return (
-    <main className="p-4">
-      <h2 className="text-xl font-bold mb-4">Your Products</h2>
+    <main className="p-4 md:p-6">
+      <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--txt-clr)] pry-ff">
+        Your Products
+      </h2>
       {content}
     </main>
   );
