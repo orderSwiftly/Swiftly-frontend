@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import { useParams } from 'next/navigation';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
+import PulseLoader from '@/components/pulse-loader';
 
 type Product = {
   _id: string;
@@ -17,8 +18,9 @@ type Product = {
 };
 
 export default function ProductDetails() {
-  const { id } = useParams(); // gets the dynamic route param
+  const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
+  const [mainImage, setMainImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -26,10 +28,13 @@ export default function ProductDetails() {
 
     const fetchProduct = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/product/${id}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/product/get-product/${id}`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
         const data = await res.json();
         if (!res.ok || data.status !== 'success') {
@@ -38,6 +43,7 @@ export default function ProductDetails() {
         }
 
         setProduct(data.data.product);
+        setMainImage(data.data.product.productImg?.[0] ?? '/fallback.jpg');
       } catch (error) {
         toast.error('Error fetching product');
         console.error(error);
@@ -49,27 +55,73 @@ export default function ProductDetails() {
     fetchProduct();
   }, [id]);
 
-  if (loading) return <p className="text-center py-10">Loading...</p>;
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-screen bg-[var(--light-bg)] text-[var(--txt-clr)]">
+        <PulseLoader />
+      </div>
+    );
+  
   if (!product) return <p className="text-center py-10 text-red-500">Product not found.</p>;
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-2xl font-bold mb-4">{product.title}</h1>
+    <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)]">
+      {/* Title */}
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 pry-ff">{product.title}</h1>
 
-      <div className="relative w-full h-64 mb-6">
+      {/* Main Image */}
+      <div className="relative w-full h-[300px] sm:h-[400px] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md mb-4">
         <Image
-          src={product.productImg?.[0] || '/fallback.jpg'}
-          alt={product.title}
+          src={mainImage ?? '/fallback.jpg'}
+          alt="Main product image"
           fill
-          className="object-cover rounded-lg"
+          className="object-cover transition duration-300 ease-in-out"
         />
       </div>
 
-      <p className="mb-4 text-gray-700">{product.description}</p>
-      <p className="font-semibold mb-2">₦{product.price.toLocaleString()}</p>
-      <p className="text-sm text-gray-600">Stock: {product.stock}</p>
-      <p className="text-sm text-gray-600">Location: {product.location}</p>
-      <p className="text-sm capitalize text-gray-600">Status: {product.productStatus}</p>
+      {/* Thumbnails */}
+      {product.productImg.length > 1 && (
+        <div className="flex gap-3 overflow-x-auto mb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
+          {product.productImg.map((img, idx) => (
+            <div
+              key={idx}
+              onClick={() => setMainImage(img)}
+              className={`relative min-w-[80px] h-20 rounded-md overflow-hidden cursor-pointer border transition duration-200 ${
+                mainImage === img ? 'border-[var(--acc-clr)]' : 'border-gray-300'
+              }`}
+            >
+              <Image src={img} alt={`Thumbnail ${idx}`} fill className="object-cover" />
+            </div>
+          ))}
+        </div>
+      )}
+
+      {/* Product Details */}
+      <div className="bg-[var(--light-bg)] dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+        <p className="text-gray-700 dark:text-gray-300 mb-4 sec-ff leading-relaxed">
+          {product.description}
+        </p>
+
+        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300 sec-ff">
+          <p><span className="font-medium">Price:</span> ₦{product.price.toLocaleString()}</p>
+          <p><span className="font-medium">Stock:</span> {product.stock}</p>
+          <p><span className="font-medium">Location:</span> {product.location}</p>
+          <p>
+            <span className="font-medium">Status:</span>{' '}
+            <span
+              className={`capitalize font-semibold ${
+                product.productStatus === 'approved'
+                  ? 'text-green-500'
+                  : product.productStatus === 'pending'
+                  ? 'text-yellow-500'
+                  : 'text-red-500'
+              }`}
+            >
+              {product.productStatus}
+            </span>
+          </p>
+        </div>
+      </div>
     </div>
   );
 }

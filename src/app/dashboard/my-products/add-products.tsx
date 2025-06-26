@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { X } from 'lucide-react';
 import toast from 'react-hot-toast';
+import PulseLoader from '@/components/pulse-loader';
 
 interface Props {
   closeModal: () => void;
@@ -193,7 +194,7 @@ export default function AddProducts({ closeModal }: Props) {
             disabled={loading}
             className="mt-2 bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110 transition cursor-pointer"
           >
-            {loading ? 'Uploading...' : 'Submit Product'}
+            {loading ? <PulseLoader /> : 'Submit Product'}
           </button>
         </form>
       </div>
