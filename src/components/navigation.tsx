@@ -17,19 +17,22 @@ export default function Navigation() {
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   return (
-    <nav className="fixed top-0 left-0 z-50 w-full bg-white/5 backdrop-blur-md shadow-sm pry-ff">
+    <nav
+      className={`fixed top-0 left-0 z-50 w-full 
+        bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-sm pry-ff`}
+    >
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link href='/'>
-        <div className="flex items-center gap-2">
-          <Image
-            src='/tredia-logo.png'
-            alt="Tredia Logo"
-            width={40}
-            height={40}
-            className="w-auto object-cover"
-          />
-        </div>
+          <div className="flex items-center gap-2">
+            <Image
+              src='/tredia-logo.png'
+              alt="Tredia Logo"
+              width={40}
+              height={40}
+              className="w-auto object-cover"
+            />
+          </div>
         </Link>
 
         {/* Desktop Nav */}
@@ -51,13 +54,15 @@ export default function Navigation() {
           </li>
         </ul>
 
+        {/* Desktop Icons */}
         <div className="flex items-center gap-4">
-          {/* Cart Icon - Desktop */}
-          <Link href="/cart" className="hidden md:inline-block text-[var(--txt-clr)] hover:text-[var(--acc-clr)] transition">
+          <Link
+            href="/cart"
+            className="hidden md:inline-block text-[var(--txt-clr)] hover:text-[var(--acc-clr)] transition"
+          >
             <ShoppingCart className="w-5 h-5" />
           </Link>
 
-          {/* Sign In - Desktop */}
           <Link
             href="/signup"
             className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
@@ -67,7 +72,10 @@ export default function Navigation() {
         </div>
 
         {/* Mobile Menu Toggle */}
-        <button onClick={toggleMobileMenu} className="md:hidden cursor-pointer text-[var(--txt-clr)] focus:outline-none">
+        <button
+          onClick={toggleMobileMenu}
+          className="md:hidden cursor-pointer text-[var(--txt-clr)] focus:outline-none"
+        >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
       </div>
@@ -97,7 +105,6 @@ export default function Navigation() {
             </div>
           </li>
 
-          {/* Cart Icon - Mobile */}
           <li>
             <Link
               href="/cart"

@@ -156,12 +156,12 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[var(--light-bg)]">
+    <div className="h-screen w-full bg-[var(--light-bg)]">
 
       {/* Main content with top padding to avoid overlap */}
       <main className="p-4 sm:p-6 pt-24">
         <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--txt-clr)] pry-ff">
-          Explore Products
+            Explore Products
         </h2>
         {content}
       </main>
