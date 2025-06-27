@@ -52,9 +52,30 @@ export default function ExplorePage() {
     fetchProducts();
   }, []);
 
-  const handleAddToCart = (product: Product) => {
-    toast.success(`${product.title} added to cart`);
+  const handleAddToCart = async (product: Product) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/add/${product._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ quantity: 1 }),
+      });
+  
+      const data = await res.json();
+  
+      if (res.ok && data.status === 'success') {
+        toast.success(data.message ?? `${product.title} added to cart`);
+      } else {
+        toast.error(data.message ?? 'Failed to add to cart');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Something went wrong!');
+    }
   };
+  
 
   let content: React.ReactNode;
 
@@ -156,7 +177,7 @@ export default function ExplorePage() {
   }
 
   return (
-    <div className="h-screen w-full bg-[var(--light-bg)]">
+    <div className="w-full min-h-full bg-[var(--light-bg)] pb-12">
 
       {/* Main content with top padding to avoid overlap */}
       <main className="p-4 sm:p-6 pt-24">
