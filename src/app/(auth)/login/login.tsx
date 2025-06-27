@@ -14,14 +14,14 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // const api_url = process.env.NEXT_PUBLIC_API_URL; i added the wrong be url
+  // const api_url = process.env.NEXT_PUBLIC_API_URL;
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
 
     try {
-      const res = await fetch('https://tredia.vercel.app/api/v1/auth/user/login', {
+      const res = await fetch('https://tredia-app.onrender.com/api/v1/auth/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
