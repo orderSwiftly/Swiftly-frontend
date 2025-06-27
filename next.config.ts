@@ -5,7 +5,7 @@ const nextConfig = {
     return [
       {
         source: '/api/:path*',
-        destination: 'https://tredia-app.onrender.com/api/:path*',
+        destination: 'https://tredia.vercel.app/api/:path*',
       },
     ];
   },

@@ -21,7 +21,7 @@ export default function Login() {
     setLoading(true);
 
     try {
-      const res = await fetch('https://tredia-app.onrender.com/api/v1/auth/user/login', {
+      const res = await fetch('https://tredia.vercel.app/api/v1/auth/user/login', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
