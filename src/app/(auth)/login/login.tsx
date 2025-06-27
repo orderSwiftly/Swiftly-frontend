@@ -14,7 +14,7 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // const api_url = process.env.NEXT_PUBLIC_API_URL;
+  // const api_url = process.env.NEXT_PUBLIC_API_URL; i added the wrong be url
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
