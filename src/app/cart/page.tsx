@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
+import AddToCart from './add-to-cart';
 
 type Product = {
   title: string;
@@ -50,6 +51,34 @@ export default function CartPage() {
 
     fetchCart();
   }, []);
+
+  const handleQuantityChange = async (productId: string, newQuantity: number) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/update/${productId}`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        credentials: 'include',
+        body: JSON.stringify({ quantity: newQuantity }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.status !== 'success') {
+        throw new Error(data?.message ?? 'Failed to update cart');
+      }
+
+      setCartItems((prevItems) =>
+        prevItems.map((item) =>
+          item.productId === productId ? { ...item, quantity: newQuantity } : item
+        )
+      );
+    } catch (err) {
+      console.error(err);
+      toast.error('Error updating quantity');
+    }
+  };
 
   const subtotal = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
 
@@ -101,12 +130,18 @@ export default function CartPage() {
               <p className="text-sm text-[var(--txt-clr)] mt-2 font-medium sec-ff">
                 Total: ₦{(item.price * item.quantity).toLocaleString()}
               </p>
+
+              <AddToCart
+                quantity={item.quantity}
+                onIncrement={() => handleQuantityChange(item.productId, item.quantity + 1)}
+                onDecrement={() => handleQuantityChange(item.productId, Math.max(1, item.quantity - 1))}
+              />
             </div>
           </div>
         ))}
       </div>
 
-      <div className="mt-10 text-right text-lg font-bold text-[var(--txt-clr)] sec-ff">
+      <div className="mt-10 text-right text-lg font-bold text-[var(--acc-clr)] sec-ff">
         Subtotal: ₦{subtotal.toLocaleString()}
       </div>
     </div>
