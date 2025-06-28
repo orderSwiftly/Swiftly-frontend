@@ -6,6 +6,7 @@ import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowRight, ShoppingCart } from 'lucide-react';
+import { useRouter } from 'next/navigation';
 
 type Product = {
   _id: string;
@@ -21,6 +22,7 @@ export default function ExplorePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const router = useRouter();
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -63,13 +65,19 @@ export default function ExplorePage() {
         credentials: 'include',
         body: JSON.stringify({ quantity: 1 }),
       });
-  
+
+      if (res.status === 401) {
+        toast.error('Please sign up or log in to add items to cart');
+        router.push('/signup'); // or '/login'
+        return;
+      }
+
       const data = await res.json();
-  
+
       if (!res.ok || data.status !== 'success') {
         throw new Error(data.message ?? 'Failed to add to cart');
       }
-  
+
       toast.success(data.message ?? `${product.title} added to cart`);
     } catch (error: unknown) {
       console.error(error);
