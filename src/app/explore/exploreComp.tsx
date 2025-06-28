@@ -63,19 +63,24 @@ export default function ExplorePage() {
         credentials: 'include',
         body: JSON.stringify({ quantity: 1 }),
       });
-
+  
       const data = await res.json();
-
-      if (res.ok && data.status === 'success') {
-        toast.success(data.message ?? `${product.title} added to cart`);
-      } else {
-        toast.error(data.message ?? 'Failed to add to cart');
+  
+      if (!res.ok || data.status !== 'success') {
+        throw new Error(data.message ?? 'Failed to add to cart');
       }
-    } catch (error) {
+  
+      toast.success(data.message ?? `${product.title} added to cart`);
+    } catch (error: unknown) {
       console.error(error);
-      toast.error('Something went wrong!');
+      const message =
+        typeof error === 'object' && error !== null && 'message' in error
+          ? (error as { message?: string }).message
+          : 'Something went wrong!';
+      toast.error(message ?? 'Something went wrong!');
     }
   };
+  
 
   let content: React.ReactNode;
 
