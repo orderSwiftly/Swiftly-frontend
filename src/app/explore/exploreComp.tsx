@@ -1,4 +1,3 @@
-// app/explore/page.tsx
 'use client';
 
 import { useState, useEffect } from 'react';
@@ -27,19 +26,21 @@ export default function ExplorePage() {
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       try {
-        const res = await fetch(`${api_url}/api/v1/product/my-products`, {
+        const res = await fetch(`${api_url}/api/v1/product/explore`, {
           method: 'GET',
           credentials: 'include',
         });
 
         const data = await res.json();
 
-        if (res.ok && data.status === 'success') {
-          setProducts(data.data.products ?? []);
-        } else {
-          setError(data.message ?? 'Failed to fetch products');
-          toast.error(data.message ?? 'Failed to fetch products');
+        if (!res.ok || data.status !== 'success' || !Array.isArray(data.products)) {
+          const message = data?.message ?? 'Failed to fetch products';
+          setError(message);
+          toast.error(message);
+          return;
         }
+
+        setProducts(data.products ?? []);
       } catch (err) {
         setError('An error occurred while fetching products');
         toast.error('An error occurred while fetching products');
@@ -62,9 +63,9 @@ export default function ExplorePage() {
         credentials: 'include',
         body: JSON.stringify({ quantity: 1 }),
       });
-  
+
       const data = await res.json();
-  
+
       if (res.ok && data.status === 'success') {
         toast.success(data.message ?? `${product.title} added to cart`);
       } else {
@@ -75,7 +76,6 @@ export default function ExplorePage() {
       toast.error('Something went wrong!');
     }
   };
-  
 
   let content: React.ReactNode;
 
@@ -100,7 +100,7 @@ export default function ExplorePage() {
         <h3 className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">
           No Products Available
         </h3>
-        <p className="text-gray-500 sec-ff">You haven’t added any products yet.</p>
+        <p className="text-gray-500 sec-ff">No products available to explore at this time.</p>
       </div>
     );
   } else {
@@ -178,11 +178,9 @@ export default function ExplorePage() {
 
   return (
     <div className="w-full min-h-full bg-[var(--light-bg)] pb-12">
-
-      {/* Main content with top padding to avoid overlap */}
       <main className="p-4 sm:p-6 pt-24">
         <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--txt-clr)] pry-ff">
-            Explore Products
+          Explore Products
         </h2>
         {content}
       </main>
