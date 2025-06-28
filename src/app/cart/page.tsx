@@ -66,7 +66,7 @@ export default function CartPage() {
       const data = await res.json();
 
       if (!res.ok || data.status !== 'success') {
-        throw new Error(data?.message ?? 'Failed to update cart');
+        throw new Error(data?.message || 'Failed to update cart');
       }
 
       setCartItems((prevItems) =>
@@ -96,9 +96,9 @@ export default function CartPage() {
 
   if (cartItems.length === 0) {
     return (
-      <div className="p-8 text-center">
+      <div className="p-8 text-center flex flex-col items-center justify-center min-h-screen bg-[var(--light-bg)]">
         <Image src="/empty-cart.jpg" alt="Empty Cart" width={200} height={200} className="mx-auto" />
-        <p className="mt-4 text-lg text-white">Your cart is empty</p>
+        <p className="mt-4 text-lg text-[var(--txt-clr)] sec-ff">Your cart is empty</p>
       </div>
     );
   }
@@ -111,7 +111,7 @@ export default function CartPage() {
         {cartItems.map((item, i) => (
           <div
             key={i}
-            className="flex flex-col sm:flex-row items-center gap-4 bg-white/5 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
+            className="flex flex-col sm:flex-row items-start gap-4 bg-white/5 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
           >
             <div className="w-full sm:w-28 h-28 relative rounded-lg overflow-hidden">
               <Image
