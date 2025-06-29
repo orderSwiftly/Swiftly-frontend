@@ -1,9 +1,10 @@
 'use client';
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Search, Menu, X, ShoppingCart } from "lucide-react";
 import Image from 'next/image';
 import Link from "next/link";
+import toast from 'react-hot-toast';
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -14,19 +15,44 @@ const NAV_ITEMS = [
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [userName, setUserName] = useState('');
+
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
+  useEffect(() => {
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
+    if (!api_url) return;
+
+    const fetchUser = async () => {
+      try {
+        const res = await fetch(`${api_url}/api/v1/user/me`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.status === 'success') {
+          const fullname = data.data.user.fullname;
+          setUserName(fullname);
+        }
+      } catch (error) {
+        console.error('Error fetching user profile:', error);
+        toast.error('Failed to load user profile.');
+      }
+    };
+
+    fetchUser();
+  }, []);
+
   return (
-    <nav
-      className={`fixed top-0 left-0 z-50 w-full 
-        bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-sm pry-ff`}
-    >
+    <nav className="fixed top-0 left-0 z-50 w-full bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-sm pry-ff">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
-        <Link href='/'>
+        <Link href="/">
           <div className="flex items-center gap-2">
             <Image
-              src='/tredia-logo.png'
+              src="/tredia-logo.png"
               alt="Tredia Logo"
               width={40}
               height={40}
@@ -54,7 +80,7 @@ export default function Navigation() {
           </li>
         </ul>
 
-        {/* Desktop Icons */}
+        {/* Desktop Right Icons */}
         <div className="flex items-center gap-4">
           <Link
             href="/cart"
@@ -63,12 +89,18 @@ export default function Navigation() {
             <ShoppingCart className="w-5 h-5" />
           </Link>
 
-          <Link
-            href="/signup"
-            className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
-          >
-            Sign up
-          </Link>
+          {userName ? (
+            <Link href='/dashboard' className="hidden md:inline-block text-[var(--txt-clr)] font-medium capitalize hover:text-[var(--acc-clr)] transition">
+              Hi, {userName}
+            </Link>
+          ) : (
+            <Link
+              href="/signup"
+              className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
+            >
+              Sign up
+            </Link>
+          )}
         </div>
 
         {/* Mobile Menu Toggle */}
@@ -94,6 +126,7 @@ export default function Navigation() {
               </Link>
             </li>
           ))}
+
           <li>
             <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-md focus-within:ring-2 ring-[var(--acc-clr)]">
               <input
@@ -117,13 +150,19 @@ export default function Navigation() {
           </li>
 
           <li>
-            <Link
-              href="/signup"
-              onClick={toggleMobileMenu}
-              className="text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
-            >
-              Sign up
-            </Link>
+            {userName ? (
+              <span className="text-[var(--txt-clr)] font-medium capitalize">
+                Hi, {userName}
+              </span>
+            ) : (
+              <Link
+                href="/signup"
+                onClick={toggleMobileMenu}
+                className="text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
+              >
+                Sign up
+              </Link>
+            )}
           </li>
         </ul>
       </div>
