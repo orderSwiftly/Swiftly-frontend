@@ -15,6 +15,8 @@ import {
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import useAuthRedirect from '@/hooks/useAuthRedirect';
+import useUserStore from '@/stores/useUserStore';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -28,15 +30,16 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
-  const [userInitial, setUserInitial] = useState('N');
-  const [userFullname, setUserFullname] = useState('');
+
+  useAuthRedirect(); // 🔐 Redirect if not logged in
+
+  const { user, setUser } = useUserStore();
+  const userFullname = user?.fullname || '';
+  const userInitial = userFullname.trim().charAt(0).toUpperCase() || 'N';
 
   useEffect(() => {
     const api_url = process.env.NEXT_PUBLIC_API_URL;
-    if (!api_url) {
-      console.error('API URL missing');
-      return;
-    }
+    if (!api_url || user) return;
 
     const getProfile = async () => {
       try {
@@ -50,9 +53,7 @@ export default function Sidebar() {
           throw new Error(data?.message ?? 'Failed to fetch profile');
         }
 
-        const fullname = data?.data?.user?.fullname || 'N';
-        setUserFullname(fullname);
-        setUserInitial(fullname.trim().charAt(0).toUpperCase());
+        setUser(data.data.user);
       } catch (error) {
         console.error('Error fetching profile:', error);
         toast.error('Failed to load profile. Please log in again.');
@@ -60,7 +61,7 @@ export default function Sidebar() {
     };
 
     getProfile();
-  }, []);
+  }, [user, setUser]);
 
   return (
     <>
@@ -138,7 +139,7 @@ export default function Sidebar() {
           <span className="py-2.5 px-4 rounded-full bg-gray-400 text-[var(--bg-clr)] sec-ff text-sm font-bold">
             {userInitial}
           </span>
-          <span className="text-sm text-[var(--txt-clr)] font-medium ">
+          <span className="text-sm text-[var(--txt-clr)] font-medium">
             {userFullname}
           </span>
         </div>

@@ -88,16 +88,19 @@ export default function Navigation() {
         <div className="flex items-center gap-4">
           <Link
             href="/cart"
-            className="hidden md:inline-block text-[var(--txt-clr)] hover:text-[var(--acc-clr)] transition"
+            className="hidden md:inline-flex items-center justify-center px-3 py-2 rounded-full bg-[var(--acc-clr)] text-[var(--bg-clr)] hover:bg-opacity-90 transition"
           >
             <ShoppingCart className="w-5 h-5" />
           </Link>
 
+
           {user ? (
             <Link
-              href='/dashboard'
+              href="/dashboard"
               className="hidden md:inline-block text-[var(--txt-clr)] font-medium capitalize hover:text-[var(--acc-clr)] transition"
-            >Hi, {user.fullname}</Link>
+            >
+              Hi, {user.fullname}
+            </Link>
           ) : (
             <Link
               href="/signup"
@@ -120,7 +123,7 @@ export default function Navigation() {
       {/* Mobile Nav */}
       <div
         className={`md:hidden fixed top-14 left-0 w-full bg-black/90 backdrop-blur-md shadow-lg transition-transform duration-300 ease-in-out ${
-          isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"
+          isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
         <ul className="flex flex-col items-center py-6 space-y-6 text-[var(--txt-clr)] uppercase text-sm">
@@ -147,7 +150,7 @@ export default function Navigation() {
             <Link
               href="/cart"
               onClick={toggleMobileMenu}
-              className="flex items-center gap-2 text-[var(--txt-clr)] hover:text-[var(--acc-clr)] transition"
+              className="flex items-center gap-2 px-4 py-2 rounded-md bg-[var(--acc-clr)] text-[var(--bg-clr)] hover:bg-opacity-90 transition"
             >
               <ShoppingCart className="w-4 h-4" />
               Cart
@@ -156,7 +159,10 @@ export default function Navigation() {
 
           <li>
             {user ? (
-              <Link href='/dashboard' className="text-[var(--acc-clr)] font-medium capitalize">
+              <Link
+                href="/dashboard"
+                className="text-[var(--acc-clr)] font-medium capitalize"
+              >
                 Hi, {user.fullname}
               </Link>
             ) : (

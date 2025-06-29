@@ -1,5 +1,3 @@
-// import Header from '@/components/header';
-
 export default function DashboardHome() {
   return (
       <main className="min-h-screen w-full bg-[var(--light-bg)] flex flex-col">
