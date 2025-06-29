@@ -44,8 +44,9 @@ export default function Sidebar() {
           {open ? <X size={20} /> : <Menu size={20} />}
         </button>
 
+        {/* Logo */}
         <div className="mb-6 text-xl font-bold">
-          <Link href='/'>
+          <Link href="/">
             <Image
               src="/tredia-logo.png"
               alt="Tredia Logo"
@@ -56,6 +57,7 @@ export default function Sidebar() {
           </Link>
         </div>
 
+        {/* Nav Links */}
         <nav className="space-y-4">
           {navItems.map(({ label, href, icon: Icon }) => {
             const isActive = pathname === href;
@@ -73,7 +75,30 @@ export default function Sidebar() {
             );
           })}
         </nav>
+
+        {/* Profile Circle at the bottom */}
+        <div className="mt-auto pt-4 flex justify-start">
+          <span className="py-2.5 px-4 rounded-full bg-gray-400 text-black text-sm font-bold">
+            N
+          </span>
+        </div>
       </aside>
+
+      {/* Top Logo & Profile for Mobile */}
+      <div className="md:hidden fixed top-0 left-0 w-full bg-[var(--bg-clr)] flex items-center justify-between px-4 py-3 z-50">
+        <Link href="/">
+          <Image
+            src="/tredia-logo.png"
+            alt="Tredia Logo"
+            width={40}
+            height={40}
+            className="w-auto object-cover"
+          />
+        </Link>
+        <span className="py-2.5 px-4 rounded-full bg-gray-400 text-black text-sm font-bold">
+          N
+        </span>
+      </div>
 
       {/* Bottom Nav for Mobile */}
       <nav className="fixed md:hidden bottom-0 left-0 w-full bg-[var(--bg-clr)] text-[var(--txt-clr)] shadow-inner flex justify-around py-3 z-50">
