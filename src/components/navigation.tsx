@@ -5,6 +5,7 @@ import { Search, Menu, X, ShoppingCart } from "lucide-react";
 import Image from 'next/image';
 import Link from "next/link";
 import toast from 'react-hot-toast';
+import useUserStore from "@/stores/useUserStore";
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -15,16 +16,18 @@ const NAV_ITEMS = [
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [userName, setUserName] = useState('');
+  const { user, setUser } = useUserStore();
+  const [isLoading, setIsLoading] = useState(false);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
 
   useEffect(() => {
     const api_url = process.env.NEXT_PUBLIC_API_URL;
-    if (!api_url) return;
+    if (user || isLoading || !api_url) return;
 
     const fetchUser = async () => {
       try {
+        setIsLoading(true);
         const res = await fetch(`${api_url}/api/v1/user/me`, {
           method: 'GET',
           credentials: 'include',
@@ -33,12 +36,13 @@ export default function Navigation() {
         const data = await res.json();
 
         if (res.ok && data.status === 'success') {
-          const fullname = data.data.user.fullname;
-          setUserName(fullname);
+          setUser(data.data.user);
         }
       } catch (error) {
         console.error('Error fetching user profile:', error);
         toast.error('Failed to load user profile.');
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -89,10 +93,11 @@ export default function Navigation() {
             <ShoppingCart className="w-5 h-5" />
           </Link>
 
-          {userName ? (
-            <Link href='/dashboard' className="hidden md:inline-block text-[var(--txt-clr)] font-medium capitalize hover:text-[var(--acc-clr)] transition">
-              Hi, {userName}
-            </Link>
+          {user ? (
+            <Link
+              href='/dashboard'
+              className="hidden md:inline-block text-[var(--txt-clr)] font-medium capitalize hover:text-[var(--acc-clr)] transition"
+            >Hi, {user.fullname}</Link>
           ) : (
             <Link
               href="/signup"
@@ -150,10 +155,10 @@ export default function Navigation() {
           </li>
 
           <li>
-            {userName ? (
-              <span className="text-[var(--txt-clr)] font-medium capitalize">
-                Hi, {userName}
-              </span>
+            {user ? (
+              <Link href='/dashboard' className="text-[var(--acc-clr)] font-medium capitalize">
+                Hi, {user.fullname}
+              </Link>
             ) : (
               <Link
                 href="/signup"
