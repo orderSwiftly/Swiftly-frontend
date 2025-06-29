@@ -13,7 +13,8 @@ import {
   X,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
+import toast from 'react-hot-toast';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -27,6 +28,39 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   const [open, setOpen] = useState(true);
+  const [userInitial, setUserInitial] = useState('N');
+  const [userFullname, setUserFullname] = useState('');
+
+  useEffect(() => {
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
+    if (!api_url) {
+      console.error('API URL missing');
+      return;
+    }
+
+    const getProfile = async () => {
+      try {
+        const res = await fetch(`${api_url}/api/v1/user/me`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        const data = await res.json();
+        if (!res.ok || data.status !== 'success') {
+          throw new Error(data?.message ?? 'Failed to fetch profile');
+        }
+
+        const fullname = data?.data?.user?.fullname || 'N';
+        setUserFullname(fullname);
+        setUserInitial(fullname.trim().charAt(0).toUpperCase());
+      } catch (error) {
+        console.error('Error fetching profile:', error);
+        toast.error('Failed to load profile. Please log in again.');
+      }
+    };
+
+    getProfile();
+  }, []);
 
   return (
     <>
@@ -76,11 +110,16 @@ export default function Sidebar() {
           })}
         </nav>
 
-        {/* Profile Circle at the bottom */}
-        <div className="mt-auto pt-4 flex justify-start">
-          <span className="py-2.5 px-4 rounded-full bg-gray-400 text-black text-sm font-bold">
-            N
+        {/* Profile Info at the Bottom */}
+        <div className="mt-auto pt-4 flex items-center gap-3 sec-ff">
+          <span className="py-2.5 px-4 rounded-full bg-gray-400 text-[var(--bg-clr)] text-sm font-bold">
+            {userInitial}
           </span>
+          {open && (
+            <span className="text-sm text-[var(--txt-clr)] font-medium">
+              {userFullname}
+            </span>
+          )}
         </div>
       </aside>
 
@@ -95,9 +134,14 @@ export default function Sidebar() {
             className="w-auto object-cover"
           />
         </Link>
-        <span className="py-2.5 px-4 rounded-full bg-gray-400 text-black text-sm font-bold">
-          N
-        </span>
+        <div className="flex items-center gap-2">
+          <span className="py-2.5 px-4 rounded-full bg-gray-400 text-[var(--bg-clr)] sec-ff text-sm font-bold">
+            {userInitial}
+          </span>
+          <span className="text-sm text-[var(--txt-clr)] font-medium ">
+            {userFullname}
+          </span>
+        </div>
       </div>
 
       {/* Bottom Nav for Mobile */}
