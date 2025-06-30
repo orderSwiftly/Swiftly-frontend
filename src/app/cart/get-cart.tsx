@@ -170,9 +170,18 @@ export default function GetCartComp() {
         ))}
       </div>
 
-      <div className="mt-10 text-right text-lg font-bold text-[var(--acc-clr)] sec-ff">
-        Subtotal: ₦{subtotal.toLocaleString()}
+      <div className="mt-10 flex justify-end">
+        <div className="w-full sm:w-[60%] md:w-[45%] lg:w-[35%] text-left space-y-4 bg-white/5 p-6 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700">
+          <h2 className="text-xl font-bold text-[var(--acc-clr)] sec-ff">Cart Summary</h2>
+          <p className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">
+            Subtotal: ₦{subtotal.toLocaleString()}
+          </p>
+          <button className="w-full py-3 rounded-lg bg-[var(--acc-clr)] text-[var(--bg-clr)] sec-ff text-base font-semibold cursor-pointer hover:opacity-90 transition">
+            Check out
+          </button>
+        </div>
       </div>
+
     </div>
   );
 }
