@@ -5,6 +5,7 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 import AddToCart from './add-to-cart';
+import RemoveCart from './remove';
 
 type Product = {
   title: string;
@@ -26,41 +27,43 @@ export default function GetCartComp() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
+  const refetchCart = async () => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/get`, {
+        method: 'GET',
+        credentials: 'include',
+      });
+      const data = await res.json();
+
+      if (!res.ok || data.status !== 'success') {
+        throw new Error(data?.message ?? 'Failed to load cart');
+      }
+
+      setCartItems(data.cart ?? []);
+    } catch (err) {
+      console.error(err);
+      toast.error('Error refreshing cart');
+      setError('Failed to load cart.');
+    }
+  };
+
   useEffect(() => {
     const fetchCart = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/get`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-        const data = await res.json();
-
-        if (!res.ok || data.status !== 'success') {
-          throw new Error(data?.message ?? 'Failed to load cart');
-        }
-
-        setCartItems(data.cart ?? []);
-      } catch (err) {
-        console.error(err);
-        toast.error('Error loading cart');
-        setError('Failed to load cart.');
-      } finally {
-        setLoading(false);
-      }
+      setLoading(true);
+      await refetchCart();
+      setLoading(false);
     };
 
     fetchCart();
   }, []);
 
-  const handleQuantityChange = async (productId: string, newQuantity: number) => {
+  const handleQuantityChange = async (productId: string, action: 'increment' | 'decrement') => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/update/${productId}`, {
         method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         credentials: 'include',
-        body: JSON.stringify({ quantity: newQuantity }),
+        body: JSON.stringify({ action }),
       });
 
       const data = await res.json();
@@ -69,14 +72,32 @@ export default function GetCartComp() {
         throw new Error(data?.message || 'Failed to update cart');
       }
 
-      setCartItems((prevItems) =>
-        prevItems.map((item) =>
-          item.productId === productId ? { ...item, quantity: newQuantity } : item
-        )
-      );
+      toast.success('Cart updated');
+      await refetchCart();
     } catch (err) {
       console.error(err);
       toast.error('Error updating quantity');
+    }
+  };
+
+  const handleRemove = async (productId: string) => {
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/remove/${productId}`, {
+        method: 'DELETE',
+        credentials: 'include',
+      });
+
+      const data = await res.json();
+
+      if (!res.ok || data.status !== 'success') {
+        throw new Error(data?.message || 'Failed to remove item');
+      }
+
+      toast.success('Item removed from cart');
+      await refetchCart();
+    } catch (err) {
+      console.error(err);
+      toast.error('Error removing item from cart');
     }
   };
 
@@ -111,9 +132,10 @@ export default function GetCartComp() {
         {cartItems.map((item, i) => (
           <div
             key={i}
-            className="flex flex-col sm:flex-row items-start gap-4 bg-white/5 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
+            className="flex flex-col sm:flex-row items-start sm:items-center gap-6 bg-white/5 p-4 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 hover:shadow-md transition"
           >
-            <div className="w-full sm:w-28 h-28 relative rounded-lg overflow-hidden">
+            {/* Image */}
+            <div className="w-full sm:w-28 h-28 relative rounded-lg overflow-hidden shrink-0">
               <Image
                 src={item.product.productImg?.[0] || '/fallback.jpg'}
                 alt={item.product.title}
@@ -122,20 +144,27 @@ export default function GetCartComp() {
               />
             </div>
 
-            <div className="flex-1 text-left">
-              <h4 className="text-lg font-semibold text-[var(--txt-clr)] pry-ff">{item.product.title}</h4>
-              <p className="text-sm text-gray-400 mt-1 sec-ff">
-                ₦{item.price.toLocaleString()} × {item.quantity}
-              </p>
-              <p className="text-sm text-[var(--txt-clr)] mt-2 font-medium sec-ff">
-                Total: ₦{(item.price * item.quantity).toLocaleString()}
-              </p>
+            {/* Info & Controls */}
+            <div className="flex-1 w-full flex flex-col justify-between">
+              <div>
+                <h4 className="text-lg font-semibold text-[var(--txt-clr)] pry-ff">{item.product.title}</h4>
+                <p className="text-sm text-gray-400 mt-1 sec-ff">
+                  ₦{item.price.toLocaleString()} × {item.quantity}
+                </p>
+                <p className="text-sm text-[var(--txt-clr)] mt-2 font-medium sec-ff">
+                  Total: ₦{(item.price * item.quantity).toLocaleString()}
+                </p>
+              </div>
 
-              <AddToCart
-                quantity={item.quantity}
-                onIncrement={() => handleQuantityChange(item.productId, item.quantity + 1)}
-                onDecrement={() => handleQuantityChange(item.productId, Math.max(1, item.quantity - 1))}
-              />
+              <div className="mt-4 flex items-center justify-between gap-4">
+                <AddToCart
+                  quantity={item.quantity}
+                  onIncrement={() => handleQuantityChange(item.productId, 'increment')}
+                  onDecrement={() => handleQuantityChange(item.productId, 'decrement')}
+                />
+
+                <RemoveCart onRemove={() => handleRemove(item.productId)} />
+              </div>
             </div>
           </div>
         ))}
