@@ -6,6 +6,7 @@ import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 import AddToCart from './add-to-cart';
 import RemoveCart from './remove';
+import Link from 'next/link';
 
 type Product = {
   title: string;
@@ -176,9 +177,11 @@ export default function GetCartComp() {
           <p className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">
             Subtotal: ₦{subtotal.toLocaleString()}
           </p>
+          <Link href="/order" className="w-full">
           <button className="w-full py-3 rounded-lg bg-[var(--acc-clr)] text-[var(--bg-clr)] sec-ff text-base font-semibold cursor-pointer hover:opacity-90 transition">
             Check out
           </button>
+          </Link>
         </div>
       </div>
 

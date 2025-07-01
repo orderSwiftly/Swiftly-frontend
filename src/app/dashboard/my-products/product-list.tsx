@@ -72,7 +72,9 @@ export default function ProductList() {
           height={200}
           className="mx-auto mb-4"
         />
-        <h3 className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">No Products Available</h3>
+        <h3 className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">
+          No Products Available
+        </h3>
         <p className="text-gray-500 sec-ff">You haven’t added any products yet.</p>
       </div>
     );
@@ -82,8 +84,17 @@ export default function ProductList() {
         {products.map((product) => (
           <li
             key={product._id}
-            className="bg-white dark:bg-[var(--bg-clr)] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 dark:border-gray-700"
+            className={`relative bg-white dark:bg-[var(--bg-clr)] rounded-2xl overflow-hidden shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-200 dark:border-gray-700 ${
+              product.stock === 0 ? 'opacity-50' : ''
+            }`}
           >
+            {/* Sold Out Badge */}
+            {product.stock === 0 && (
+              <span className="absolute top-2 left-2 bg-red-600 text-white text-xs font-semibold px-2 py-1 rounded z-10">
+                Sold Out
+              </span>
+            )}
+
             {/* Product Image */}
             <div className="relative w-full h-48 overflow-hidden">
               <Image
@@ -105,9 +116,9 @@ export default function ProductList() {
                   {product.description}
                 </p>
 
-                  <p className="text-xl font-bold text-[var(--txt-clr)] mt-auto sec-ff mb-2">
-                    ₦{product.price.toLocaleString()}
-                  </p>
+                <p className="text-xl font-bold text-[var(--txt-clr)] mt-auto sec-ff mb-2">
+                  ₦{product.price.toLocaleString()}
+                </p>
 
                 <div className="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-300 mb-3">
                   <span className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-md">
@@ -140,11 +151,8 @@ export default function ProductList() {
                       />
                     </Link>
                   </button>
-
                 </div>
               </div>
-
-              
             </div>
           </li>
         ))}
