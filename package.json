@@ -12,6 +12,7 @@
     "@tailwindcss/postcss": "^4.1.10",
     "framer-motion": "^12.18.1",
     "js-cookie": "^3.0.5",
+    "lottie-react": "^2.4.1",
     "lucide-react": "^0.517.0",
     "motion": "^12.18.1",
     "next": "15.3.3",
