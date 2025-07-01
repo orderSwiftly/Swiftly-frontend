@@ -149,7 +149,7 @@ export default function NewOrder() {
         {/* Shipping Form */}
         <div className="bg-white/5 p-6 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
           <h3 className="text-lg font-semibold mb-2 pry-ff text-[var(--txt-clr)]">Shipping Address</h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sec-ff">
             {Object.entries(address).map(([key, val]) => (
               <input
                 key={key}
