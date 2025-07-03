@@ -4,6 +4,7 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
+import { useRouter } from 'next/navigation';
 
 interface OrderItem {
   productId: string;
@@ -26,6 +27,7 @@ interface Order {
   items: OrderItem[];
   totalPrice: number;
   orderStatus: string;
+  paymentStatus: string;
   createdAt: string;
   shippingAddress: ShippingAddress;
 }
@@ -33,6 +35,8 @@ interface Order {
 export default function GetOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
+
+  const router = useRouter();
 
   const fetchOrders = async () => {
     try {
@@ -131,7 +135,15 @@ export default function GetOrders() {
             </p>
           </div>
 
-          <div className="text-right font-bold text-[var(--acc-clr)] sec-ff mt-2">
+          <div className="text-right font-bold text-[var(--acc-clr)] sec-ff mt-2 flex items-center justify-between">
+          {order.paymentStatus !== 'paid' && (
+  <button
+    onClick={() => router.push(`/payment/initialize?orderId=${order._id}`)}
+    className='bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize p-2 cursor-pointer rounded-lg'>
+    checkout
+  </button>
+)}
+
             Total: ₦{order.totalPrice.toLocaleString()}
           </div>
         </div>
