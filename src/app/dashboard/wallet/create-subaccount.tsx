@@ -115,17 +115,14 @@ export default function CreateSubaccount() {
             Percentage Charge (%)
           </label>
           <input
-            id="percentage_charge"
-            name="percentage_charge"
-            type="number"
-            min={0}
-            max={100}
-            value={form.percentage_charge}
-            onChange={handleChange}
-            className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-3
-                       placeholder-gray-400 text-[var(--txt-clr)]
-                       focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)]"
-          />
+    id="percentage_charge"
+    name="percentage_charge"
+    type="number"
+    value={form.percentage_charge}
+    disabled
+    className="w-full rounded-lg bg-white/10 border border-white/10 px-4 py-3
+               focus:outline-none placeholder-gray-400 text-[var(--txt-clr)] opacity-60 cursor-not-allowed"
+  />
         </div>
 
         <button
