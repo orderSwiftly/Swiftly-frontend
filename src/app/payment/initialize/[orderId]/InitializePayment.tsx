@@ -1,19 +1,20 @@
 'use client';
 
-import { useSearchParams } from 'next/navigation';
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 
-export default function InitializePayment() {
-  const searchParams = useSearchParams();
-  const orderId = searchParams.get('orderId') ?? '';
+interface Props {
+  orderId: string;
+}
+
+export default function InitializePayment({ orderId }: Props) {
   const [initializing, setInitializing] = useState(true);
 
   useEffect(() => {
-    const initializePayment = async () => {
+    const init = async () => {
       if (!orderId) {
-        toast.error('Order ID missing');
+        toast.error('Order ID is missing');
         return;
       }
 
@@ -32,7 +33,6 @@ export default function InitializePayment() {
           throw new Error(data.message ?? 'Failed to initialize payment');
         }
 
-        // ✅ Redirect to Paystack
         window.location.href = data.data.authorization_url;
       } catch (err: unknown) {
         const errorMessage =
@@ -45,7 +45,7 @@ export default function InitializePayment() {
       }
     };
 
-    initializePayment();
+    init();
   }, [orderId]);
 
   return (
