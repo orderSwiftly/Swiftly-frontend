@@ -1,11 +1,15 @@
+// app/payment/initialize/[orderId]/page.tsx
 import { Suspense } from 'react';
 import InitializePayment from './InitializePayment';
 import PulseLoader from '@/components/pulse-loader';
 
-// Prevent static generation because we’re using search params
 export const dynamic = 'force-dynamic';
 
-export default function PaymentInitializePage() {
+export default function PaymentInitializePage({
+  params,
+}: {
+  readonly params: { readonly orderId: string };
+}) {
   return (
     <Suspense
       fallback={
@@ -14,7 +18,7 @@ export default function PaymentInitializePage() {
         </div>
       }
     >
-      <InitializePayment />
+      <InitializePayment orderId={params.orderId} />
     </Suspense>
   );
 }

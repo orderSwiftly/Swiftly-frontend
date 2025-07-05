@@ -138,10 +138,12 @@ export default function GetOrders() {
           <div className="text-right font-bold text-[var(--acc-clr)] sec-ff mt-2 flex items-center justify-between">
           {order.paymentStatus !== 'paid' && (
   <button
-    onClick={() => router.push(`/payment/initialize?orderId=${order._id}`)}
-    className='bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize p-2 cursor-pointer rounded-lg'>
-    checkout
-  </button>
+  onClick={() => router.push(`/payment/initialize/${order._id}`)}
+  className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize p-2 cursor-pointer rounded-lg"
+>
+  Checkout
+</button>
+
 )}
 
             Total: ₦{order.totalPrice.toLocaleString()}

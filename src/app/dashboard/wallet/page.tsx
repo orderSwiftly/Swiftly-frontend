@@ -1,10 +1,17 @@
-import CreateSubaccount from './create-subaccount';
+'use client';
+
+import dynamic from 'next/dynamic';
+import PulseLoader from '@/components/pulse-loader';
+
+const CreateSubaccountPage = dynamic(() => import('./CreateSubaccount/page'), {
+  loading: () => (
+    <div className="h-screen flex items-center justify-center">
+      <PulseLoader />
+    </div>
+  ),
+  ssr: false,
+});
 
 export default function WalletPage() {
-  return (
-    <main className="min-h-screen w-full bg-[var(--light-bg)] dark:bg-[var(--dark-bg)]
-    flex items-center justify-center p-6">
-      <CreateSubaccount />
-    </main>
-  );
+  return <CreateSubaccountPage />;
 }
