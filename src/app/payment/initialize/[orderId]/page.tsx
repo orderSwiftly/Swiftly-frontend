@@ -1,17 +1,17 @@
-// app/payment/initialize/[orderId]/page.tsx
-'use client';
-
+// src/app/payment/initialize/[orderId]/page.tsx
 import { Suspense } from 'react';
 import InitializePayment from './InitializePayment';
 import PulseLoader from '@/components/pulse-loader';
 
 export const dynamic = 'force-dynamic';
 
-export default function PaymentInitializePage({
-  params,
-}: {
-  readonly params: { readonly orderId: string };
-}) {
+interface PageProps {
+  params: {
+    orderId: string;
+  };
+}
+
+export default function PaymentInitializePage({ params }: PageProps) {
   return (
     <Suspense
       fallback={
