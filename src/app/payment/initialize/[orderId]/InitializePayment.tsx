@@ -33,6 +33,7 @@ export default function InitializePayment({ orderId }: Props) {
           throw new Error(data.message ?? 'Failed to initialize payment');
         }
 
+        // ✅ Redirect to Paystack authorization page
         window.location.href = data.data.authorization_url;
       } catch (err: unknown) {
         const errorMessage =

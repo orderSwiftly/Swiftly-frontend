@@ -1,4 +1,6 @@
 // app/payment/initialize/[orderId]/page.tsx
+'use client';
+
 import { Suspense } from 'react';
 import InitializePayment from './InitializePayment';
 import PulseLoader from '@/components/pulse-loader';
