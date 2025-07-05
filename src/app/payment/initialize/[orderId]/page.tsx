@@ -1,21 +1,14 @@
-// src/app/payment/initialize/[orderId]/page.tsx
 import { Suspense } from 'react';
 import InitializePayment from './InitializePayment';
 import PulseLoader from '@/components/pulse-loader';
 
 export const dynamic = 'force-dynamic';
 
-interface PageProps {
-  params: {
-    orderId: string;
-  };
-}
-
-export default function PaymentInitializePage({ params }: PageProps) {
+export default function Page({ params }: { params: { orderId: string } }) {
   return (
     <Suspense
       fallback={
-        <div className="h-screen flex items-center justify-center">
+        <div className="h-screen w-full flex items-center justify-center bg-[var(--light-bg)]">
           <PulseLoader />
         </div>
       }
