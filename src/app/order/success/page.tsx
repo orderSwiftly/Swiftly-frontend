@@ -3,7 +3,7 @@
 import Link from 'next/link';
 // import Image from 'next/image';
 import Lottie from 'lottie-react';
-import successAnimation from '@/animations/blue-gif.json';
+import successAnimation from '@/animations/success.json';
 
 export default function OrderSuccessPage() {
   return (

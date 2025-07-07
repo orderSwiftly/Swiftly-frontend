@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@tailwindcss/postcss": "^4.1.10",
+    "firebase": "^11.10.0",
     "framer-motion": "^12.18.1",
     "js-cookie": "^3.0.5",
     "lottie-react": "^2.4.1",
