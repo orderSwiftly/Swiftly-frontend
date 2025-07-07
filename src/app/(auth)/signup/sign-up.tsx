@@ -6,6 +6,8 @@ import { Mail, Eye, EyeOff } from 'lucide-react';
 import { FcGoogle } from 'react-icons/fc';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
+// import { messaging } from '@/lib/firebase'; // adjust path if needed
+// import { getToken } from 'firebase/messaging';
 
 export default function SignupComp() {
   const router = useRouter();
@@ -23,6 +25,10 @@ export default function SignupComp() {
     setLoading(true);
 
     try {
+      // 🔥 Get FCM Token
+      // const fcmToken = await getToken(messaging, {
+      //   vapidKey: process.env.NEXT_PUBLIC_VAPID_KEY,
+      // });
       const res = await fetch(`${api_url}/api/v1/auth/user/signup`, {
         method: 'POST',
         headers: {
