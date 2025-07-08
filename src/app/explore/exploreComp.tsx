@@ -7,6 +7,7 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import SearchComp from '@/components/ui/search'; // Adjust the import path as necessary
 
 type Product = {
   _id: string;
@@ -23,6 +24,8 @@ export default function ExplorePage() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
   const router = useRouter();
+  const [searchTerm, setSearchTerm] = useState('');
+
 
   useEffect(() => {
     const fetchProducts = async () => {
@@ -55,6 +58,40 @@ export default function ExplorePage() {
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    const fetchProducts = async () => {
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      setLoading(true);
+      setError('');
+      
+      try {
+        const res = await fetch(
+          `${api_url}/api/v1/product/search?query=${encodeURIComponent(searchTerm)}&inStock=true`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
+  
+        const data = await res.json();
+  
+        if (!res.ok || data.status !== 'success') {
+          throw new Error(data.message ?? 'Failed to fetch products');
+        }
+  
+        setProducts(data.data.products ?? []);
+      } catch (err) {
+        setError('Failed to load products.');
+        toast.error('Failed to load products.');
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+  
+    fetchProducts();
+  }, [searchTerm]);
+  
   const handleAddToCart = async (product: Product) => {
     try {
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/add/${product._id}`, {
@@ -192,9 +229,14 @@ export default function ExplorePage() {
   return (
     <div className="w-full min-h-full bg-[var(--light-bg)] pb-12">
       <main className="p-4 sm:p-6 pt-24">
-        <h2 className="text-xl md:text-2xl font-bold mb-6 text-[var(--txt-clr)] pry-ff">
-          Explore Products
-        </h2>
+        <section className="flex flex-col md:flex-row items-center justify-between gap-4 mb-8 w-full max-w-7xl mx-auto">
+          <h2 className="text-xl md:text-2xl font-bold text-[var(--txt-clr)] pry-ff text-center md:text-right">
+            Explore Products
+          </h2>
+
+          <SearchComp onSearch={setSearchTerm} className="w-full max-w-md" />
+        </section>
+
         {content}
       </main>
     </div>
