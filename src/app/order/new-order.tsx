@@ -84,6 +84,7 @@ export default function NewOrder() {
     } catch (err) {
       console.error(err);
       toast.error('Something went wrong');
+      router.push('/order/failure'); // ✅ Redirect to failure page
     } finally {
       setSubmitting(false);
     }
