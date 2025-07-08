@@ -200,7 +200,7 @@ export default function ExplorePage() {
                 {/* Buttons */}
                 <div className="mt-4 flex items-center justify-between">
                   <Link
-                    href={`/dashboard/my-products/${product._id}`}
+                    href={`/explore/product/${product._id}`}
                     className="group flex items-center gap-2 sec-ff font-normal text-[var(--acc-clr)]"
                   >
                     <span>View Details</span>

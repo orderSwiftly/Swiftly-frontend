@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from "react";
-import { Search, Menu, X, ShoppingCart } from "lucide-react";
+import { Menu, X, ShoppingCart } from "lucide-react";
 import Image from 'next/image';
 import Link from "next/link";
 import toast from 'react-hot-toast';
@@ -72,16 +72,6 @@ export default function Navigation() {
               <Link href={item.href}>{item.label}</Link>
             </li>
           ))}
-          <li>
-            <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-md ring-inset focus-within:ring-2 ring-[var(--acc-clr)]">
-              <input
-                type="search"
-                placeholder="Search..."
-                className="bg-transparent outline-none text-sm text-[var(--txt-clr)] placeholder:text-[var(--txt-clr)] w-48"
-              />
-              <Search className="w-4 h-4 text-[var(--txt-clr)]" />
-            </div>
-          </li>
         </ul>
 
         {/* Desktop Right Icons */}
@@ -134,17 +124,6 @@ export default function Navigation() {
               </Link>
             </li>
           ))}
-
-          <li>
-            <div className="flex items-center gap-2 px-3 py-1 bg-white/10 rounded-md focus-within:ring-2 ring-[var(--acc-clr)]">
-              <input
-                type="search"
-                placeholder="Search..."
-                className="bg-transparent outline-none text-sm text-[var(--txt-clr)] placeholder:text-[var(--txt-clr)] w-36"
-              />
-              <Search className="w-4 h-4 text-[var(--txt-clr)]" />
-            </div>
-          </li>
 
           <li>
             <Link
