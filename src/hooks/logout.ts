@@ -20,9 +20,9 @@ export default function useLogout() {
       const data = await res.json();
 
       if (res.ok) {
-        clearUser();
+        clearUser(); // ✅ resets user, hydration, and auth check
         toast.success(data.message ?? 'Logged out successfully!');
-        router.push('/login'); // Or /signup, depending on your flow
+        router.push('/login');
       } else {
         toast.error(data.message ?? 'Logout failed.');
       }
