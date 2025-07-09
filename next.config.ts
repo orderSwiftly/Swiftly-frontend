@@ -5,7 +5,7 @@ const nextConfig = {
   //   return [
   //     {
   //       source: '/api/:path*',
-  //       destination: 'https://tredia.vercel.app/api/:path*',
+  //       destination: 'https://tredia.vercel.app/api/:path*', // alt https://tredia-be.onrender.com
   //     },
   //   ];
   // },
