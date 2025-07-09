@@ -1,3 +1,4 @@
+// hooks/useAuthRedirect.ts
 'use client';
 
 import { useRouter } from 'next/navigation';
@@ -6,13 +7,13 @@ import useUserStore from '@/stores/useUserStore';
 
 export default function useAuthRedirect() {
   const router = useRouter();
-  const { user, hasHydrated } = useUserStore();
+  const { user, hasHydrated, isAuthChecked } = useUserStore();
 
   useEffect(() => {
-    if (!hasHydrated) return; // Wait for hydration
+    if (!hasHydrated || !isAuthChecked) return;
 
-    if (!user) {
-      router.push('/signup');
+    if (user === null) {
+      router.push('/login');
     }
-  }, [user, hasHydrated, router]);
+  }, [user, hasHydrated, isAuthChecked, router]);
 }

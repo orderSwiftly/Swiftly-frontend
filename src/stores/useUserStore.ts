@@ -9,18 +9,27 @@ interface User {
 
 interface UserStore {
   user: User | null;
-  setUser: (user: User) => void;
-  clearUser: () => void;
   hasHydrated: boolean;
-  setHasHydrated: (value: boolean) => void;
+  isAuthChecked: boolean;
+  setUser: (user: User | null) => void;
+  setHasHydrated: (hydrated: boolean) => void;
+  setIsAuthChecked: (checked: boolean) => void;
+  clearUser: () => void;
 }
 
 const useUserStore = create<UserStore>((set) => ({
   user: null,
   hasHydrated: false,
+  isAuthChecked: false,
   setUser: (user) => set({ user }),
-  clearUser: () => set({ user: null }),
-  setHasHydrated: (value) => set({ hasHydrated: value }),
+  setHasHydrated: (hydrated) => set({ hasHydrated: hydrated }),
+  setIsAuthChecked: (checked) => set({ isAuthChecked: checked }),
+  clearUser: () =>
+    set({
+      user: null,
+      hasHydrated: false,
+      isAuthChecked: false,
+    }),
 }));
 
 export default useUserStore;
