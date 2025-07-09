@@ -20,8 +20,9 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
     try {
-      const res = await fetch('https://tredia-app.onrender.com/api/v1/auth/user/login', {
+      const res = await fetch(`${api_url}/api/v1/auth/user/login`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
