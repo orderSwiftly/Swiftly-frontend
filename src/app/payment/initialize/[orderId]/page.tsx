@@ -4,11 +4,13 @@ import PulseLoader from '@/components/pulse-loader';
 
 export const dynamic = 'force-dynamic';
 
-export default function Page({
-  params,
-}: {
-  params: { orderId: string };
-}) {
+type PageProps = {
+  params: {
+    orderId: string;
+  };
+};
+
+export default async function InitializePage({params}: PageProps) {
   return (
     <Suspense
       fallback={
