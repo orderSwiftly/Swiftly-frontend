@@ -1,13 +1,7 @@
-// ❌ NO 'use client' here
+import dynamic from 'next/dynamic';
 
-import PaymentCallbackPage from './paymentCallback';
+const PaymentCallbackPage = dynamic(() => import('./paymentCallback'), { ssr: false });
 
-type PageProps = {
-  params: {
-    reference: string;
-  };
-};
-
-export default function Page({ params }: PageProps) {
+export default function Page({ params }: { params: { reference: string } }) {
   return <PaymentCallbackPage reference={params.reference} />;
 }
