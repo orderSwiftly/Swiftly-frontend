@@ -1,7 +1,13 @@
-// app/payment/callback/[reference]/page.tsx
+// ✅ Final tested version that avoids global type conflicts
 
 import PaymentCallbackClient from './paymentCallback';
 
-export default function Page({ params }: { readonly params: { readonly reference: string } }) { // this won't work
+interface LocalPropsFix {
+  params: {
+    reference: string;
+  };
+}
+
+export default function Page({ params }: LocalPropsFix) {
   return <PaymentCallbackClient reference={params.reference} />;
 }
