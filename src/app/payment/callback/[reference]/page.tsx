@@ -1,7 +1,11 @@
-// src/app/payment/callback/[reference]/page.tsx
+import PaymentCallbackClient from './paymentCallback';
 
-import PaymentCallbackPage from './paymentCallback'; // This will be a client component
+interface PageProps {
+  params: {
+    reference: string;
+  };
+}
 
-export default function Page({ params }: { params: { reference: string } }) {
-  return <PaymentCallbackPage reference={params.reference} />;
+export default function Page({ params }: PageProps) {
+  return <PaymentCallbackClient reference={params.reference} />;
 }

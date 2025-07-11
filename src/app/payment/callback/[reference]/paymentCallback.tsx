@@ -1,5 +1,3 @@
-// src/app/payment/callback/[reference]/PaymentCallbackPage.tsx
-
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -9,16 +7,11 @@ import failureAnimation from '@/animations/failure.json';
 import PulseLoader from '@/components/pulse-loader';
 import Link from 'next/link';
 
-export default function PaymentCallbackPage({ reference }: { reference: string }) {
+export default function PaymentCallback({ reference }: { reference: string }) {
   const [status, setStatus] = useState<'loading' | 'success' | 'failed'>('loading');
 
   useEffect(() => {
     const verifyPayment = async () => {
-      if (!reference) {
-        setStatus('failed');
-        return;
-      }
-
       try {
         const res = await fetch(
           `${process.env.NEXT_PUBLIC_API_URL}/api/v1/paystack/callback?reference=${reference}`,
@@ -26,7 +19,6 @@ export default function PaymentCallbackPage({ reference }: { reference: string }
             credentials: 'include',
           }
         );
-
         const data = await res.json();
 
         if (res.ok && data.status === 'success') {
@@ -35,7 +27,7 @@ export default function PaymentCallbackPage({ reference }: { reference: string }
           setStatus('failed');
         }
       } catch (err) {
-        console.error('Payment verification failed:', err, reference);
+        console.error(err);
         setStatus('failed');
       }
     };
@@ -46,6 +38,7 @@ export default function PaymentCallbackPage({ reference }: { reference: string }
   return (
     <div className="min-h-screen flex flex-col items-center justify-center bg-[var(--light-bg)] px-4 py-12 text-center space-y-6">
       {status === 'loading' && <PulseLoader />}
+
       {status === 'success' && (
         <>
           <div className="w-24 h-24 relative">
@@ -65,6 +58,7 @@ export default function PaymentCallbackPage({ reference }: { reference: string }
           </Link>
         </>
       )}
+
       {status === 'failed' && (
         <>
           <div className="w-24 h-24 relative">
