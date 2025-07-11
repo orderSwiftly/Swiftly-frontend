@@ -4,12 +4,12 @@ import { Suspense } from 'react';
 import InitializePayment from './InitializePayment';
 import PulseLoader from '@/components/pulse-loader';
 
-export default async function InitializePage({
-  params,
-}: {
-  params: Promise<{ orderId: string }>;
-}) {
-  const { orderId } = await params;
+type InitializePageProps = {
+  params: { orderId: string };
+};
+
+export default function InitializePage({ params }: InitializePageProps) {
+  const { orderId } = params;
 
   return (
     <Suspense
