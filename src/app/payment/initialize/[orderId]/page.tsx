@@ -1,16 +1,16 @@
+// src/app/payment/initialize/[orderId]/page.tsx
+
 import { Suspense } from 'react';
 import InitializePayment from './InitializePayment';
 import PulseLoader from '@/components/pulse-loader';
 
-export const dynamic = 'force-dynamic';
-
-type PageProps = {
-  params: {
-    orderId: string;
-  };
+type InitializePageProps = {
+  params: { orderId: string };
 };
 
-export default async function InitializePage({params}: PageProps) {
+export default function InitializePage({ params }: InitializePageProps) {
+  const { orderId } = params;
+
   return (
     <Suspense
       fallback={
@@ -19,7 +19,7 @@ export default async function InitializePage({params}: PageProps) {
         </div>
       }
     >
-      <InitializePayment orderId={params.orderId} />
+      <InitializePayment orderId={orderId} />
     </Suspense>
   );
 }
