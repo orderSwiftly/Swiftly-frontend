@@ -102,12 +102,12 @@ export default function GetOrders() {
                 key={index}
                 className="flex items-center justify-between gap-4 p-3 rounded-md bg-white/10 border border-white/10"
               >
-                <div className="w-14 h-14 relative shrink-0">
+                <div className="w-14 h-auto relative shrink-0">
                   <Image
                     src={item.productImg?.[0] || '/fallback.jpg'}
                     alt={item.title}
-                    width={56}
-                    height={56}
+                    width={54}
+                    height={54}
                     className="object-cover rounded-md"
                   />
                 </div>
