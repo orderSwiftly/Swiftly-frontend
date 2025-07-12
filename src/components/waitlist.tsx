@@ -93,8 +93,8 @@ export default function Waitlist() {
             </div>
 
             {/* Button */}
-            <button className="w-full sm:w-auto flex flex-row items-center justify-center gap-2 text-xs sm:text-sm sec-ff text-[var(--txt-clr)] bg-gradient-to-br from-[#01bbbb] to-[#05e2ff] backdrop-blur-sm px-4 py-2 rounded-md shadow-md whitespace-nowrap cursor-pointer font-normal">
-              <span>Join Waitlist</span>
+            <button className="w-full sm:w-auto flex flex-row items-center justify-center gap-2 text-xs sm:text-sm sec-ff text-[var(--bg-clr)] bg-gradient-to-br from-[#01bbbb] to-[#05e2ff] backdrop-blur-sm px-4 py-2 rounded-md shadow-md whitespace-nowrap cursor-pointer font-normal">
+              <span>Join Tredia</span>
               <ArrowRight size={18} />
             </button>
           </div>
