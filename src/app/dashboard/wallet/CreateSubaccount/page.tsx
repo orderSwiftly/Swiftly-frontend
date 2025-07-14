@@ -1,179 +1,91 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import toast from 'react-hot-toast';
+import GetSubaccount from './get-subaccount';
+import CreateSubaccountPage from './create-subaccount';
 import PulseLoader from '@/components/pulse-loader';
+import toast from 'react-hot-toast';
 
-type Bank = {
-  name: string;
-  code: string;
-};
+export default function SubaccountPage() {
+  const [subaccountCode, setSubaccountCode] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [isModalOpen, setIsModalOpen] = useState(false);
 
-export default function CreateSubaccountPage() {
-  const [form, setForm] = useState({
-    business_name: '',
-    bank_code: '',
-    account_number: '',
-    percentage_charge: 10,
-  });
-
-  const [banks, setBanks] = useState<Bank[]>([]);
-  const [loading, setLoading] = useState(false);
-  const [bankLoading, setBankLoading] = useState(true);
-
-  // Fetch list of banks
-  useEffect(() => {
-    const fetchBanks = async () => {
-      try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/paystack/banks`);
-        const data = await res.json();
-
-        if (res.ok && data.status === 'success') {
-          setBanks(data.data);
-        } else {
-          throw new Error(data.message ?? 'Failed to load banks');
-        }
-      } catch (err: unknown) {
-        const message = err instanceof Error ? err.message : 'Bank fetch failed';
-        toast.error(message);
-      } finally {
-        setBankLoading(false);
-      }
-    };
-
-    fetchBanks();
-  }, []);
-
-  // Handle form input change
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
-    const { name, value } = e.target;
-    setForm(prev => ({ ...prev, [name]: value }));
-  };
-
-  // Handle form submission
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
-
+  const fetchUserSubaccount = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/paystack/create-subaccount`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${api_url}/api/v1/user/paystack/subaccount`, {
+        method: 'GET',
         credentials: 'include',
-        body: JSON.stringify(form),
       });
 
       const data = await res.json();
-      if (!res.ok || data.status !== true) {
-        throw new Error(data.message || 'Failed to create sub‑account');
+      if (res.ok && data.status === true && data.data?.subaccount_code) {
+        setSubaccountCode(data.data.subaccount_code);
+      } else {
+        setSubaccountCode(null);
       }
-
-      toast.success('Subaccount created successfully 🎉');
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : 'Something went wrong';
-      toast.error(message);
+    } catch (error) {
+      console.error('Error fetching subaccount:', error);
+      toast.error('Failed to fetch subaccount');
+      setSubaccountCode(null);
     } finally {
       setLoading(false);
     }
   };
 
-  // Remove duplicate banks
-  const uniqueBanks = Array.from(
-    new Map(banks.map(bank => [`${bank.code}-${bank.name}`, bank])).values()
-  );
+  useEffect(() => {
+    fetchUserSubaccount();
+  }, []);
+
+  const handleSubaccountCreated = () => {
+    setIsModalOpen(false);
+    fetchUserSubaccount();
+  };
 
   return (
-    <main className="min-h-screen w-full bg-[var(--light-bg)] flex flex-col items-center justify-start p-6">
-      <h1 className="text-2xl font-bold text-[var(--txt-clr)] mb-6 pry-ff">Create Paystack Subaccount</h1>
-
-      <form onSubmit={handleSubmit} className="grid gap-5 sec-ff">
-        {/* Business Name */}
-        <div>
-          <label htmlFor="business_name" className="text-sm mb-1 block text-[var(--txt-clr)]">
-            Business Name
-          </label>
-          <input
-            name="business_name"
-            id="business_name"
-            type="text"
-            value={form.business_name}
-            onChange={handleChange}
-            required
-            placeholder="ACME Stores Ltd."
-            className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)]"
-          />
-        </div>
-
-        {/* Bank */}
-        <div>
-          <label htmlFor="bank_code" className="text-sm mb-1 block text-[var(--txt-clr)]">
-            Bank
-          </label>
-          {bankLoading ? (
-            <p className="text-gray-400">Loading banks...</p>
-          ) : (
-            <select
-              name="bank_code"
-              id="bank_code"
-              value={form.bank_code}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)]"
-            >
-              <option value="" disabled>
-                Select a bank
-              </option>
-              {uniqueBanks.map((bank) => (
-                <option key={`${bank.code}-${bank.name}`} value={bank.code}>
-                  {bank.name}
-                </option>
-              ))}
-            </select>
-          )}
-        </div>
-
-        {/* Account Number */}
-        <div>
-          <label htmlFor="account_number" className="text-sm mb-1 block text-[var(--txt-clr)]">
-            Account Number
-          </label>
-          <input
-            name="account_number"
-            id="account_number"
-            type="text"
-            value={form.account_number}
-            onChange={handleChange}
-            required
-            maxLength={10}
-            placeholder="0123456789"
-            className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)]"
-          />
-        </div>
-
-        {/* Percentage Charge */}
-        <div>
-          <label htmlFor="percentage_charge" className="text-sm mb-1 block text-[var(--txt-clr)]">
-            Platform Percentage Charge
-          </label>
-          <input
-            name="percentage_charge"
-            id="percentage_charge"
-            type="number"
-            value={form.percentage_charge}
-            readOnly
-            className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/10 text-[var(--txt-clr)] opacity-60 cursor-not-allowed"
-          />
-        </div>
-
-        {/* Submit Button */}
+    <main className="p-6 space-y-6 bg-[var(--light-bg)] min-h-screen flex flex-col items-center justify-between">
+      {/* Header */}
+      <section className="flex items-center justify-between mb-4 bg-white/20 backdrop-blur-lg p-4 rounded shadow-md w-full max-w-5xl">
+        <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Subaccount Page</h1>
         <button
-          type="submit"
-          disabled={loading}
-          className="mt-4 w-full py-3 rounded-md bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold hover:opacity-90 transition-opacity duration-200 disabled:opacity-50 flex items-center justify-center cursor-pointer"
+          onClick={() => setIsModalOpen(true)}
+          className="bg-[var(--acc-clr)] sec-ff text-[var(--bg-clr)] px-4 py-2 font-semibold rounded hover:opacity-90 transition cursor-pointer shadow-md"
         >
-          {loading ? <PulseLoader /> : 'Create Subaccount'}
+          Create Subaccount
         </button>
-      </form>
+      </section>
+
+      {/* Loader */}
+      {loading ? (
+        <div className="flex justify-center items-center h-40">
+          <PulseLoader />
+        </div>
+      ) : (
+        <>
+          {subaccountCode ? (
+            <GetSubaccount subaccountCode={subaccountCode} />
+          ) : (
+            <p className="text-gray-500 sec-ff">No subaccount exists for this user yet.</p>
+          )}
+        </>
+      )}
+
+      {/* Modal */}
+      {isModalOpen && (
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[1000]">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg relative">
+            <button
+              onClick={() => setIsModalOpen(false)}
+              className="absolute top-2 right-2 text-gray-500 hover:text-gray-800 dark:hover:text-white text-2xl"
+            >
+              &times;
+            </button>
+            <h2 className="text-xl font-semibold text-[var(--txt-clr)] mb-4">Create Subaccount</h2>
+            <CreateSubaccountPage onSubaccountCreated={handleSubaccountCreated} />
+          </div>
+        </div>
+      )}
     </main>
   );
 }
