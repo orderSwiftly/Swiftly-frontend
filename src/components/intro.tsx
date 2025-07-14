@@ -114,7 +114,7 @@ export default function Introduction() {
           className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg transition-all duration-300 sec-ff font-semibold w-fit cursor-pointer
             hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110"
         >
-          Join the Waitlist
+          Get started with Tredia
         </motion.button>
       </section>
 

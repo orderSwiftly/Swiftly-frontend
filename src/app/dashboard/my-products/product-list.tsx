@@ -38,7 +38,6 @@ export default function ProductList() {
           setProducts(data.data.products ?? []);
         } else {
           setError(data.message ?? 'Failed to fetch products');
-          toast.error(data.message ?? 'Failed to fetch products');
         }
       } catch (err) {
         setError('An error occurred while fetching products');
@@ -61,10 +60,10 @@ export default function ProductList() {
       </div>
     );
   } else if (error) {
-    content = <p className="text-red-500 text-center">{error}</p>;
+    content = <p className="text-gray-400 sec-ff text-center">{error}</p>;
   } else if (products.length === 0) {
     content = (
-      <div className="text-center py-12">
+      <div className="flex flex-col justify-center items-center py-12">
         <Image
           src="/no-product.jpg"
           alt="No products found"
