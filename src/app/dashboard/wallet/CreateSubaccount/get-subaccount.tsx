@@ -6,9 +6,12 @@ import toast from 'react-hot-toast';
 
 type Subaccount = {
   business_name: string;
-  bank_code: string;
+  account_name: string;
   account_number: string;
+  settlement_bank: string;
   percentage_charge: number;
+  currency: string;
+  is_verified: boolean;
 };
 
 interface GetSubaccountProps {
@@ -29,12 +32,16 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
 
       try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${api_url}/api/v1/paystack/subaccount/${subaccountCode}`, {
-          method: 'GET',
-          credentials: 'include',
-        });
+        const res = await fetch(
+          `${api_url}/api/v1/paystack/subaccount/${subaccountCode}`,
+          {
+            method: 'GET',
+            credentials: 'include',
+          }
+        );
 
         const data = await res.json();
+
         if (res.ok && data.status === true) {
           setSubaccount(data.data);
         } else {
@@ -58,18 +65,31 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
           <PulseLoader />
         </div>
       ) : (
-        <section className="max-w-xl mx-auto bg-[var(--light-bg)] shadow rounded p-6">
-          <h1 className="text-xl font-bold mb-4 text-[var(--txt-clr)]">Subaccount Details</h1>
+        <section className="max-w-xl mx-auto bg-white dark:bg-gray-800 shadow rounded p-6">
+          <h1 className="text-xl font-bold mb-4 text-[var(--acc-clr)] pry-ff">Subaccount Details</h1>
 
           {subaccount ? (
-            <div className="space-y-2 text-[var(--txt-clr)]">
-              <p><strong>Business Name:</strong> {subaccount.business_name}</p>
-              <p><strong>Bank Code:</strong> {subaccount.bank_code}</p>
-              <p><strong>Account Number:</strong> {subaccount.account_number}</p>
-              <p><strong>Percentage Charge:</strong> {subaccount.percentage_charge}%</p>
+            <div className="space-y-2 text-[var(--txt-clr)] sec-ff">
+              <p><strong className='text-[var(--acc-clr)]'>Business Name:</strong> {subaccount.business_name || 'N/A'}</p>
+              <p><strong className='text-[var(--acc-clr)]'>Account Name:</strong> {subaccount.account_name || 'N/A'}</p>
+              <p><strong className='text-[var(--acc-clr)]'>Account Number:</strong> {subaccount.account_number || 'N/A'}</p>
+              <p><strong className='text-[var(--acc-clr)]'>Settlement Bank:</strong> {subaccount.settlement_bank || 'N/A'}</p>
+              <p><strong className='text-[var(--acc-clr)]'>Currency:</strong> {subaccount.currency || 'NGN'}</p>
+              <p><strong className='text-[var(--acc-clr)]'>Percentage Charge:</strong> {subaccount.percentage_charge}%</p>
+              <p>
+                <strong className='text-[var(--acc-clr)]'>Status:</strong>{' '}
+                <span
+                  className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
+                    subaccount.is_verified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
+                  }`}
+                >
+                  {subaccount.is_verified ? 'Verified' : 'Not Verified'}
+                </span>
+              </p>
+
             </div>
           ) : (
-            <p className="text-gray-500 dark:text-gray-300">No subaccount found.</p>
+            <p className="text-gray-500 dark:text-gray-300">No subaccount details available.</p>
           )}
         </section>
       )}

@@ -11,65 +11,65 @@ export default function SubaccountPage() {
   const [loading, setLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const fetchUserSubaccount = async () => {
-    try {
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${api_url}/api/v1/user/paystack/subaccount`, {
-        method: 'GET',
-        credentials: 'include',
-      });
-
-      const data = await res.json();
-      if (res.ok && data.status === true && data.data?.subaccount_code) {
-        setSubaccountCode(data.data.subaccount_code);
-      } else {
-        setSubaccountCode(null);
-      }
-    } catch (error) {
-      console.error('Error fetching subaccount:', error);
-      toast.error('Failed to fetch subaccount');
-      setSubaccountCode(null);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchUserSubaccount = async () => {
+      try {
+        const api_url = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${api_url}/api/v1/paystack/user/subaccount`, {
+          method: 'GET',
+          credentials: 'include',
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.status === true && data.data?.subaccount_code) {
+          setSubaccountCode(data.data.subaccount_code);
+        } else {
+          setSubaccountCode(null);
+        }
+      } catch (error) {
+        console.error('Error fetching subaccount:', error);
+        toast.error('Failed to fetch subaccount');
+        setSubaccountCode(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUserSubaccount();
   }, []);
 
   const handleSubaccountCreated = () => {
     setIsModalOpen(false);
-    fetchUserSubaccount();
+    setLoading(true);
+    setSubaccountCode(null); // reset before refetching
   };
 
   return (
-    <main className="p-6 space-y-6 bg-[var(--light-bg)] min-h-screen flex flex-col items-center justify-between">
+    <main className="p-6 space-y-6 bg-[var(--light-bg)] min-h-screen flex flex-col items-center">
       {/* Header */}
-      <section className="flex items-center justify-between mb-4 bg-white/20 backdrop-blur-lg p-4 rounded shadow-md w-full max-w-5xl">
+      <section className="flex items-center justify-between w-full max-w-5xl bg-white/20 backdrop-blur-lg p-4 rounded shadow-md">
         <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Subaccount Page</h1>
         <button
           onClick={() => setIsModalOpen(true)}
-          className="bg-[var(--acc-clr)] sec-ff text-[var(--bg-clr)] px-4 py-2 font-semibold rounded hover:opacity-90 transition cursor-pointer shadow-md"
+          className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-4 py-2 rounded font-semibold hover:opacity-90 transition sec-ff cursor-pointer"
         >
           Create Subaccount
         </button>
       </section>
 
-      {/* Loader */}
-      {loading ? (
-        <div className="flex justify-center items-center h-40">
-          <PulseLoader />
-        </div>
-      ) : (
-        <>
-          {subaccountCode ? (
-            <GetSubaccount subaccountCode={subaccountCode} />
-          ) : (
-            <p className="text-gray-500 sec-ff">No subaccount exists for this user yet.</p>
-          )}
-        </>
-      )}
+      {/* Content */}
+      <section className="w-full max-w-3xl">
+        {loading ? (
+          <div className="flex justify-center items-center h-40">
+            <PulseLoader />
+          </div>
+        ) : subaccountCode ? (
+          <GetSubaccount subaccountCode={subaccountCode} />
+        ) : (
+          <p className="text-gray-500 sec-ff text-center">No subaccount exists for this user yet.</p>
+        )}
+      </section>
 
       {/* Modal */}
       {isModalOpen && (
