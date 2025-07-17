@@ -17,6 +17,7 @@ type Product = {
   productImg: string[];
   stock: number;
   location: string;
+  productStatus: 'approve' | 'decline' | 'pending';
 };
 
 export default function ExplorePage() {
@@ -59,6 +60,7 @@ export default function ExplorePage() {
   }, []);
 
   useEffect(() => {
+    if (!searchTerm.trim()) return; // ✅ prevent empty search
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       setLoading(true);
