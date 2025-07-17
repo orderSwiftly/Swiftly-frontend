@@ -192,7 +192,7 @@ export default function AddProducts({ closeModal }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110 transition cursor-pointer"
+            className="mt-2 bg-[var(--acc-clr)] flex items-center justify-center text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110 transition cursor-pointer"
           >
             {loading ? <PulseLoader /> : 'Submit Product'}
           </button>
