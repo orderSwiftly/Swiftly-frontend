@@ -45,7 +45,8 @@ export default function PaymentCallbackPage() {
 
     async function verifyPayment() {
       try {
-        const res = await fetch(`/api/v1/paystack/callback?reference=${reference}`, {
+        const api_url = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${api_url}/api/v1/paystack/callback?reference=${reference}`, {
           signal: controller.signal,
         });
         const data = await res.json();
