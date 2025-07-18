@@ -23,7 +23,7 @@ export default function Leaderboard() {
         <section className="flex-1 space-y-10 scroll-smooth" id="how-it-works">
           <h1 className="text-[var(--acc-clr)] text-3xl font-bold" id="overview">How Tredia Works</h1>
 
-          <div className="space-y-4">
+          <div className="space-y-4 sec-ff">
             <p>
               <strong className="text-[var(--txt-clr)]">Tredia – Where Trust Meets Trade</strong><br />
               Tredia is a next-gen peer-to-peer marketplace designed to solve three major pain points in online commerce:
@@ -42,7 +42,7 @@ export default function Leaderboard() {
 
           <div id="buyer-verification">
             <h2 className="text-xl font-semibold text-[var(--acc-clr)]">1. Buyer Verification & Accountability</h2>
-            <p className="text-[var(--sec-clr)]">
+            <p className="text-[var(--sec-clr)] sec-ff">
               Buyers are tied to verified student emails to limit burner accounts and ensure credibility. Only verified purchasers
               can leave product ratings. Ratings are locked until delivery confirmation. Minimum platform spend is required
               before a rating affects public scores.
@@ -51,7 +51,7 @@ export default function Leaderboard() {
 
           <div id="rating-flow">
             <h2 className="text-xl font-semibold text-[var(--acc-clr)]">2. Buyer Rating Flow</h2>
-            <ul className="list-disc list-inside text-[var(--sec-clr)]">
+            <ul className="list-disc list-inside text-[var(--sec-clr)] sec-ff">
               <li>Rate within 7 days of delivery to make new purchases.</li>
               <li>Auto-reminders sent 24 hours before deadline.</li>
               <li>`Skip & Explain` available — abuse penalized.</li>
@@ -62,7 +62,7 @@ export default function Leaderboard() {
 
           <div id="escrow">
             <h2 className="text-xl font-semibold text-[var(--acc-clr)]">3. Escrow + Dispute Resolution</h2>
-            <ul className="list-disc list-inside text-[var(--sec-clr)]">
+            <ul className="list-disc list-inside text-[var(--sec-clr)] sec-ff">
               <li>Funds held until buyer confirms satisfaction.</li>
               <li>Buyers submit complaints within 48 hours with evidence.</li>
               <li>Refunds require return or proof of damage.</li>
@@ -72,7 +72,7 @@ export default function Leaderboard() {
 
           <div id="seller-gamification">
             <h2 className="text-xl font-semibold text-[var(--acc-clr)]">4. Seller Gamification & Safeguards</h2>
-            <ul className="list-disc list-inside text-[var(--sec-clr)]">
+            <ul className="list-disc list-inside text-[var(--sec-clr)] sec-ff">
               <li>High trust = lower platform fees, better visibility.</li>
               <li>Reputation is easier to lose than gain.</li>
               <li>Flagged or inactive sellers experience score decay.</li>
@@ -81,7 +81,7 @@ export default function Leaderboard() {
 
           <div id="pickup">
             <h2 className="text-xl font-semibold text-[var(--acc-clr)]">5. Pickup & Delivery Integrity</h2>
-            <p className="text-[var(--sec-clr)]">
+            <p className="text-[var(--sec-clr)] sec-ff">
               High-risk transactions can use approved public locations with QR code verification.
               Sellers can opt out if concerned about safety.
             </p>
@@ -89,13 +89,13 @@ export default function Leaderboard() {
 
           <div id="returns">
             <h2 className="text-xl font-semibold text-[var(--acc-clr)]">6. Complaint and Return Handling</h2>
-            <p className="text-[var(--sec-clr)]">
+            <p className="text-[var(--sec-clr)] sec-ff">
               Complaints must be filed during escrow with photo/video proof. If buyers simply change their minds,
               returns are allowed as long as the item is intact and escrow is still active.
             </p>
           </div>
 
-          <footer className="pt-8 text-[var(--txt-clr)] font-medium">
+          <footer className="pt-8 text-[var(--txt-clr)] font-medium sec-ff">
             Tredia is built for a culture of accountability, trust, and transparency.
             Every feature nudges users toward fairer, safer, and more rewarding digital trade.
           </footer>
