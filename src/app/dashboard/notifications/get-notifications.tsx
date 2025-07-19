@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useState } from 'react';
+import PulseLoader from '@/components/pulse-loader';
 
 type Notification = {
   _id: string;
@@ -84,7 +85,7 @@ const NotificationsList = () => {
   return (
     <div className="space-y-4">
       {loading ? (
-        <p className="text-center text-[var(--sec-clr)]">Loading notifications...</p>
+        <div className="flex justify-center items-center mt-5"><PulseLoader /></div>
       ) : notifications.length === 0 ? (
         <p className="text-center text-[var(--txt-clr)] pry-ff">No notifications found.</p>
       ) : (
