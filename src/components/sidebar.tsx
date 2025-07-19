@@ -67,10 +67,11 @@ export default function Sidebar() {
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex flex-col ${
-          open ? 'w-64' : 'w-20'
-        } transition-all duration-300 bg-[var(--bg-clr)] text-[var(--txt-clr)] shadow-md sec-ff p-4`}
-      >
+  className={`hidden md:fixed md:top-0 md:left-0 md:h-screen md:flex flex-col ${
+    open ? 'w-64' : 'w-20'
+  } transition-all duration-300 bg-[var(--bg-clr)] text-[var(--txt-clr)] shadow-md sec-ff p-4 z-40`}
+>
+
         {/* Toggle Button */}
         <button
           onClick={() => setOpen(!open)}

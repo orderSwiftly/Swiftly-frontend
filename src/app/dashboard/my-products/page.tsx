@@ -3,8 +3,8 @@ import ProductCard from './product-card';
 
 export default function MyProducts() {
   return (
-    <main className="min-h-screen bg-[var(--light-bg)] p-6">
-      <section className="max-w-7xl mx-auto">
+    <main className="min-h-screen w-full bg-[var(--light-bg)] pt-[70px] md:pl-64 flex justify-between px-2">
+      <section className="w-full mx-auto">
         <ProductCard />
       </section>
     </main>

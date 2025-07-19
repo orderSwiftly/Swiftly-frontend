@@ -46,7 +46,7 @@ export default function SubaccountPage() {
   };
 
   return (
-    <main className="p-6 space-y-6 bg-[var(--light-bg)] min-h-screen flex flex-col items-center">
+    <main className="min-h-screen w-full bg-[var(--light-bg)] pt-[70px] md:pl-72 flex justify-start flex-col px-2 space-y-10">
       {/* Header */}
       <section className="flex items-center justify-between w-full max-w-5xl bg-white/20 backdrop-blur-lg p-4 rounded shadow-md">
         <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Subaccount Page</h1>

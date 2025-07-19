@@ -11,7 +11,7 @@ interface OrderItem {
   title: string;
   quantity: number;
   price: number;
-  productImg?: string[]; // optional
+  productImg?: string[];
 }
 
 interface ShippingAddress {
@@ -35,7 +35,6 @@ interface Order {
 export default function GetOrders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
-
   const router = useRouter();
 
   const fetchOrders = async () => {
@@ -72,92 +71,88 @@ export default function GetOrders() {
 
   if (orders.length === 0) {
     return (
-      <div className="text-center py-10">
-        <p className="text-lg text-[var(--txt-clr)] sec-ff">You have not placed any orders yet.</p>
+      <div className="px-6 py-10 text-left">
+        <p className="text-lg text-[var(--txt-clr)] sec-ff">
+          You have not placed any orders yet.
+        </p>
       </div>
     );
   }
 
   return (
-    <div className="space-y-6 min-h-screen bg-[var(--light-bg)] px-4 py-12 text-center max-w-3xl mx-auto">
-      <h2 className="text-xl font-bold mb-6 text-[var(--txt-clr)] sec-ff">Your Orders</h2>
-      <section className="space-y-6">
-        {orders.map((order) => (
+    <div className="min-h-screen bg-[var(--light-bg)] px-4 py-12 max-w-4xl mx-auto space-y-8">
+      <h2 className="text-2xl font-bold text-[var(--txt-clr)] sec-ff">Your Orders</h2>
+
+      {orders.map((order) => (
         <div
           key={order._id}
-          className="bg-white/5 rounded-xl p-4 border border-white/10 space-y-4"
+          className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5"
         >
-          {/* Order Info */}
-          <div className="flex justify-between items-center">
-            <span className="text-sm sec-ff text-gray-400">
-              Order ID: <span className="font-medium">{order._id}</span>
-            </span>
-            <span className="text-sm font-semibold capitalize text-[var(--acc-clr)] sec-ff">
+          {/* Header */}
+          <div className="flex flex-col sm:flex-row justify-between gap-2">
+            <p className="text-sm text-gray-400 sec-ff">
+              <span className="font-medium text-white">Order ID:</span> {order._id}
+            </p>
+            <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize sec-ff">
               {order.orderStatus}
-            </span>
+            </p>
           </div>
 
           {/* Items */}
-          <div className="space-y-3">
+          <div className="space-y-4">
             {order.items.map((item, index) => (
               <div
                 key={index}
-                className="flex items-center justify-between gap-4 p-3 rounded-md bg-white/10 border border-white/10"
+                className="flex items-center gap-4 border border-white/10 bg-white/10 rounded-md p-3"
               >
-                <div className="w-14 h-auto relative shrink-0">
-                  <Image
-                    src={item.productImg?.[0] || '/fallback.jpg'}
-                    alt={item.title}
-                    width={54}
-                    height={54}
-                    className="object-cover rounded-md"
-                  />
-                </div>
+                <div className="w-20 h-20 sm:w-24 sm:h-24 relative overflow-hidden rounded-md bg-gray-100">
+  <Image
+    src={item.productImg?.[0] || '/fallback.jpg'}
+    alt={item.title}
+    fill
+    className="object-cover"
+  />
+</div>
 
                 <div className="flex-1">
-                  <p className="text-sm font-medium pry-ff text-[var(--txt-clr)] line-clamp-1">
+                  <p className="text-sm font-semibold text-[var(--txt-clr)] pry-ff line-clamp-1">
                     {item.title}
                   </p>
-                  <p className="text-xs text-gray-400 sec-ff">
+                  <p className="text-xs text-gray-400 sec-ff mt-1">
                     ₦{item.price.toLocaleString()} × {item.quantity}
                   </p>
                 </div>
 
-                <div className="text-sm font-semibold text-[var(--txt-clr)] sec-ff whitespace-nowrap">
+                <p className="text-sm font-bold text-[var(--txt-clr)] sec-ff whitespace-nowrap">
                   ₦{(item.price * item.quantity).toLocaleString()}
-                </div>
+                </p>
               </div>
             ))}
           </div>
 
           {/* Shipping Address */}
-          <div className="pt-2 space-y-1">
-            <p className="text-sm text-gray-400 sec-ff">
-              Shipping: {order.shippingAddress.addressLine1}, {order.shippingAddress.city}, {order.shippingAddress.state}
-            </p>
+          <div className="text-sm text-gray-400 sec-ff">
+            Shipping to: {order.shippingAddress.addressLine1}, {order.shippingAddress.city},{' '}
+            {order.shippingAddress.state}
           </div>
 
-          <div className="text-right font-bold text-[var(--acc-clr)] sec-ff mt-2 flex items-center justify-between">
-          {order.paymentStatus !== 'paid' && (
+          {/* Footer */}
+          <div className="flex justify-between items-center pt-2">
+            <p className="text-lg font-bold text-[var(--acc-clr)] sec-ff">
+              Total: ₦{order.totalPrice.toLocaleString()}
+            </p>
+
+            {order.paymentStatus !== 'paid' && (
               <button
-                onClick={() => {
-                  if (!order._id) {
-                    toast.error('Invalid order ID');
-                    return;
-                  }
-                  router.push(`/order/${order._id}/payment`);
-                }}
-                className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-4 py-2 cursor-pointer rounded-lg"
+                onClick={() => router.push(`/order/${order._id}/payment`)}
+                className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
               >
                 Checkout
               </button>
             )}
-
-            Total: ₦{order.totalPrice.toLocaleString()}
           </div>
         </div>
       ))}
-      </section>
     </div>
   );
 }
