@@ -128,7 +128,7 @@ export default function PaymentCallbackPage() {
 
       <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg border">
         <p className="text-[var(--acc-clr)] sec-ff mb-4">{message}</p>
-        
+
         {orderData && (
           <div className="text-sm text-gray-600 sec-ff space-y-2">
             <div className="flex justify-between">
