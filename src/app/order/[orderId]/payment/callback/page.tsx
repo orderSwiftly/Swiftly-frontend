@@ -127,20 +127,20 @@ export default function PaymentCallbackPage() {
       </div>
 
       <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg border">
-        <p className="text-[var(--txt-clr)] sec-ff mb-4">{message}</p>
-        
+        <p className="text-[var(--acc-clr)] sec-ff mb-4">{message}</p>
+
         {orderData && (
           <div className="text-sm text-gray-600 sec-ff space-y-2">
             <div className="flex justify-between">
-              <span>Order ID:</span>
+              <span className='font-bold'>Order ID:</span>
               <span className="font-mono">{orderData._id?.slice(-8)}</span>
             </div>
             <div className="flex justify-between">
-              <span>Total Amount:</span>
+              <span className='font-bold'>Total Amount:</span>
               <span className="font-semibold">₦{orderData.totalPrice?.toLocaleString()}</span>
             </div>
             <div className="flex justify-between">
-              <span>Delivery Code:</span>
+              <span className='font-bold'>Delivery Code:</span>
               <span className="font-mono bg-gray-100 px-2 py-1 rounded">{orderData.deliveryCode}</span>
             </div>
           </div>

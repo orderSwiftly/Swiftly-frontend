@@ -79,7 +79,7 @@ export default function GetOrders() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 min-h-screen flex flex-col items-center justify-center bg-[var(--light-bg)] px-4 py-12 text-center">
       {orders.map((order) => (
         <div
           key={order._id}
