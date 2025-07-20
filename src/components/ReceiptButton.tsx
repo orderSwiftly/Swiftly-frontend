@@ -27,7 +27,7 @@ const ReceiptButton: React.FC<ReceiptButtonProps> = ({
   return (
     <button
       onClick={handleDownload}
-      className="bg-[#2DCAD7] hover:bg-[#25b0b8] text-white font-semibold px-4 py-2 rounded-md mt-4"
+      className="bg-[var(--acc-clr)] hover:bg-[#25b0b8] text-[var(--bg-clr)] font-semibold px-4 py-2 rounded-md mt-4 sec-ff"
     >
       Download Receipt
     </button>
