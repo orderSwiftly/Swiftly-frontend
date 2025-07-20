@@ -6,6 +6,7 @@ import Lottie from 'lottie-react';
 import Link from 'next/link';
 import successAnimation from '@/animations/success.json';
 import failedAnimation from '@/animations/failure.json';
+import ReceiptButton from '@/components/ReceiptButton';
 
 type ErrorBlockProps = {
   title: string;
@@ -143,6 +144,16 @@ export default function PaymentCallbackPage() {
               <span className='font-bold'>Delivery Code:</span>
               <span className="font-mono bg-gray-100 px-2 py-1 rounded">{orderData.deliveryCode}</span>
             </div>
+
+            <div className="pt-4">
+              <ReceiptButton
+                orderId={orderData._id ?? 'Unknown'}
+                amount={orderData.totalPrice ?? 0}
+                deliveryCode={orderData.deliveryCode ?? 'N/A'}
+                fullname="Customer" // You can dynamically pass user's name if available
+              />
+            </div>
+            
           </div>
         )}
       </div>
