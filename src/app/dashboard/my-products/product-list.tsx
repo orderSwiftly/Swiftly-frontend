@@ -16,6 +16,7 @@ type Product = {
   stock: number;
   location: string;
   productStatus: string;
+  averageRating?: number; // ✅ newly added
 };
 
 export default function ProductList() {
@@ -35,7 +36,7 @@ export default function ProductList() {
         const data = await res.json();
 
         if (res.ok && data.status === 'success') {
-          setProducts(data.data.products ?? []);
+          setProducts(data.data.enrichedProducts ?? []);
         } else {
           setError(data.message ?? 'Failed to fetch products');
         }
@@ -108,17 +109,30 @@ export default function ProductList() {
             {/* Product Details */}
             <div className="p-4 flex flex-col justify-between h-full space-y-2 sec-ff">
               <div>
-                <h4 className="text-lg font-semibold text-[var(--txt-clr)] mb-1 pry-ff">
-                  {product.title}
-                </h4>
+                {/* Title & Rating */}
+                <div className="mb-1">
+                  <h4 className="text-lg font-semibold text-[var(--txt-clr)] pry-ff">
+                    {product.title}
+                  </h4>
+                  {typeof product.averageRating === 'number' && (
+                    <div className="text-yellow-500 text-sm mt-1 flex items-center gap-1">
+                      <span className="font-medium">{product.averageRating.toFixed(1)}</span>
+                      <span className="text-xs text-gray-500 dark:text-gray-400">/5</span>
+                    </div>
+                  )}
+                </div>
+
+                {/* Description */}
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2 sec-ff mb-2">
                   {product.description}
                 </p>
 
+                {/* Price */}
                 <p className="text-xl font-bold text-[var(--txt-clr)] mt-auto sec-ff mb-2">
                   ₦{product.price.toLocaleString()}
                 </p>
 
+                {/* Info Tags */}
                 <div className="flex flex-wrap gap-2 text-sm text-gray-600 dark:text-gray-300 mb-3">
                   <span className="bg-gray-100 dark:bg-white/10 px-2 py-1 rounded-md">
                     Stock: {product.stock}
@@ -138,6 +152,7 @@ export default function ProductList() {
                     {product.productStatus}
                   </span>
 
+                  {/* View Details */}
                   <button className="bg-transparent border-none p-0 m-0">
                     <Link
                       href={`/dashboard/my-products/${product._id}`}

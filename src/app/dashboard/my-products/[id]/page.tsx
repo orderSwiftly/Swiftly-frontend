@@ -6,6 +6,14 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 
+type Review = {
+  _id: string;
+  user: { fullName: string };
+  rating: number;
+  comment: string;
+  createdAt: string;
+};
+
 type Product = {
   _id: string;
   title: string;
@@ -15,11 +23,13 @@ type Product = {
   stock: number;
   location: string;
   productStatus: string;
+  averageRating?: number;
 };
 
 export default function ProductDetails() {
   const { id } = useParams();
   const [product, setProduct] = useState<Product | null>(null);
+  const [reviews, setReviews] = useState<Review[]>([]);
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
@@ -44,6 +54,7 @@ export default function ProductDetails() {
 
         setProduct(data.data.product);
         setMainImage(data.data.product.productImg?.[0] ?? '/fallback.jpg');
+        setReviews(data.data.reviews ?? []);
       } catch (error) {
         toast.error('Error fetching product');
         console.error(error);
@@ -61,11 +72,11 @@ export default function ProductDetails() {
         <PulseLoader />
       </div>
     );
-  
+
   if (!product) return <p className="text-center py-10 text-red-500">Product not found.</p>;
 
   return (
-    <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)]">
+    <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)] pt-[70px] md:pl-72">
       {/* Title */}
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 pry-ff">{product.title}</h1>
 
@@ -97,10 +108,17 @@ export default function ProductDetails() {
       )}
 
       {/* Product Details */}
-      <div className="bg-[var(--light-bg)] dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+      <div className="bg-[var(--light-bg)] dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700 mb-6">
         <p className="text-gray-700 dark:text-gray-300 mb-4 sec-ff leading-relaxed">
           {product.description}
         </p>
+
+        {typeof product.averageRating === 'number' && (
+          <div className="text-yellow-500 text-sm mb-4 sec-ff">
+            <span className="font-medium">{product.averageRating.toFixed(1)}</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">/5 rating</span>
+          </div>
+        )}
 
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300 sec-ff">
           <p><span className="font-medium">Price:</span> ₦{product.price.toLocaleString()}</p>
@@ -121,6 +139,28 @@ export default function ProductDetails() {
             </span>
           </p>
         </div>
+      </div>
+
+      {/* Reviews Section */}
+      <div className="bg-white dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+        <h2 className="text-lg font-bold mb-4 pry-ff">Customer Reviews</h2>
+        {reviews.length === 0 ? (
+          <p className="text-gray-500 sec-ff">No reviews yet for this product.</p>
+        ) : (
+          <ul className="space-y-4">
+            {reviews.map((review) => (
+              <li key={review._id} className="border-b pb-4">
+                <p className="font-semibold text-[var(--txt-clr)]">{review.user.fullName}</p>
+                <div className="text-yellow-500 text-sm mb-1">
+                  {'★'.repeat(review.rating)}{' '}
+                  {'☆'.repeat(5 - review.rating)}
+                </div>
+                <p className="text-sm text-gray-600 dark:text-gray-400">{review.comment}</p>
+                <p className="text-xs text-gray-400 mt-1">{new Date(review.createdAt).toLocaleDateString()}</p>
+              </li>
+            ))}
+          </ul>
+        )}
       </div>
     </div>
   );

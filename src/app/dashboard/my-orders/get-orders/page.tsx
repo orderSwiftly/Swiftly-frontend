@@ -2,7 +2,6 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 import { useRouter } from 'next/navigation';
 
@@ -38,24 +37,31 @@ export default function GetOrders() {
   const router = useRouter();
 
   const fetchOrders = async () => {
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/order/get-orders`, {
-        credentials: 'include',
-      });
-      const data = await res.json();
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/order/get-orders`, {
+      method: 'GET',
+      credentials: 'include',
+    });
 
-      if (res.ok && data.status === 'success') {
-        setOrders(data.data.orders || []);
-      } else {
-        throw new Error(data.message || 'Failed to fetch orders');
-      }
-    } catch (err) {
-      console.error(err);
-      toast.error('Error loading orders');
-    } finally {
-      setLoading(false);
+    const data = await res.json();
+
+    if (res.ok && data.status === 'success') {
+      const fetchedOrders = Array.isArray(data.data?.orders) ? data.data.orders : [];
+
+      setOrders(fetchedOrders);
+    } else {
+      // If no orders array or response has failed
+      setOrders([]); // fallback to empty list to avoid crashing
+      console.warn('Orders not found or failed response:', data.message || 'Unknown error');
     }
-  };
+  } catch (err) {
+    console.error('Error fetching orders:', err);
+    setOrders([]); // fallback to empty
+  } finally {
+    setLoading(false);
+  }
+};
+
 
   useEffect(() => {
     fetchOrders();
@@ -63,7 +69,7 @@ export default function GetOrders() {
 
   if (loading) {
     return (
-      <div className="h-screen flex items-center justify-center">
+      <div className="h-screen flex items-center justify-center bg-[var(--light-bg)]">
         <PulseLoader />
       </div>
     );
