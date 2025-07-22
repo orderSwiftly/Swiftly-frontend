@@ -14,7 +14,6 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useState, useEffect } from 'react';
-import toast from 'react-hot-toast';
 import useAuthRedirect from '@/hooks/useAuthRedirect';
 import useUserStore from '@/stores/useUserStore';
 
@@ -56,7 +55,6 @@ export default function Sidebar() {
         setUser(data.data.user);
       } catch (error) {
         console.error('Error fetching profile:', error);
-        toast.error('Failed to load profile. Please log in again.');
       }
     };
 
