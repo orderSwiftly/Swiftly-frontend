@@ -14,8 +14,6 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  // const api_url = process.env.NEXT_PUBLIC_API_URL;
-
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -35,8 +33,20 @@ export default function Login() {
 
       if (!res.ok) throw new Error(data?.message ?? 'Login failed');
 
+      // 🐛 DEBUG: Check if cookie is set
+      console.log('Login successful, checking cookies...');
+      console.log('Document cookies:', document.cookie);
+      console.log('Response headers:', res.headers.get('set-cookie'));
+
       toast.success('Login successful!');
-      router.push('/dashboard');
+      
+      // 🐛 DEBUG: Add small delay to ensure cookie is set
+      setTimeout(() => {
+        console.log('About to redirect to dashboard...');
+        console.log('Cookies before redirect:', document.cookie);
+        router.push('/dashboard');
+      }, 200);
+
     } catch (err: unknown) {
       console.error('Login error:', err);
       if (err instanceof Error) {
@@ -111,7 +121,7 @@ export default function Login() {
         </form>
 
         <p className="text-sm text-center text-white/70 sec-ff">
-          Don’t have an account?{' '}
+          Don`t have an account?{' '}
           <a href="/signup" className="text-[var(--acc-clr)] font-medium hover:underline">
             Sign up
           </a>
