@@ -18,6 +18,7 @@ type Product = {
   stock: number;
   location: string;
   productStatus: 'approve' | 'decline' | 'pending';
+  averageRating?: number; // Optional field for average rating
 };
 
 export default function ExplorePage() {
@@ -180,6 +181,14 @@ export default function ExplorePage() {
                 <h4 className="text-lg font-semibold text-[var(--txt-clr)] pry-ff">
                   {product.title}
                 </h4>
+
+                {typeof product.averageRating === 'number' && (
+  <div className="text-yellow-500 text-sm mt-1 flex items-center gap-1">
+    <span className="font-medium">{product.averageRating.toFixed(1)}</span>
+    <span className="text-xs text-gray-500 dark:text-gray-400">/5</span>
+  </div>
+)}
+
 
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                   {product.description}
