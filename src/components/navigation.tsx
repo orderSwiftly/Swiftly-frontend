@@ -1,11 +1,11 @@
+// components/Navigation.tsx
 'use client';
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import Image from 'next/image';
 import Link from "next/link";
-import toast from 'react-hot-toast';
-import useUserStore from "@/stores/useUserStore";
+import { useUserStore } from '@/stores/userStore';
 
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
@@ -16,38 +16,9 @@ const NAV_ITEMS = [
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, setUser } = useUserStore();
-  const [isLoading, setIsLoading] = useState(false);
+  const { user, isLoading, isAuthenticated } = useUserStore();
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
-
-  useEffect(() => {
-    const api_url = process.env.NEXT_PUBLIC_API_URL;
-    if (user || isLoading || !api_url) return;
-
-    const fetchUser = async () => {
-      try {
-        setIsLoading(true);
-        const res = await fetch(`${api_url}/api/v1/user/me`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        const data = await res.json();
-
-        if (res.ok && data.status === 'success') {
-          setUser(data.data.user);
-        }
-      } catch (error) {
-        console.error('Error fetching user profile:', error);
-        toast.error('Failed to load user profile.');
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchUser();
-  }, []);
 
   return (
     <nav className="fixed top-0 left-0 z-50 w-full bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-sm pry-ff">
@@ -60,13 +31,14 @@ export default function Navigation() {
               alt="Tredia Logo"
               width={40}
               height={40}
-              className="w-auto object-cover"
+              className="w-10 h-10 object-cover"
             />
+            <span className="text-xl font-bold text-[var(--sec-clr)]">Tredia</span>
           </div>
         </Link>
 
         {/* Desktop Nav */}
-        <ul className="hidden md:flex gap-6 text-[var(--txt-clr)] uppercase text-sm items-center">
+        <ul className="hidden md:flex gap-8 text-[var(--sec-clr)]  font-medium items-center">
           {NAV_ITEMS.map((item) => (
             <li key={item.label} className="hover:text-[var(--acc-clr)] transition-colors">
               <Link href={item.href}>{item.label}</Link>
@@ -74,37 +46,40 @@ export default function Navigation() {
           ))}
         </ul>
 
-        {/* Desktop Right Icons */}
+        {/* Desktop Right Section */}
         <div className="flex items-center gap-4">
           <Link
             href="/cart"
-            className="hidden md:inline-flex items-center justify-center px-3 py-2 rounded-full bg-[var(--acc-clr)] text-[var(--bg-clr)] hover:bg-opacity-90 transition"
+            className="hidden md:inline-flex items-center justify-center p-2 rounded-full bg-[var(--acc-clr)] text-[var(--bg-clr)]"
           >
             <ShoppingCart className="w-5 h-5" />
           </Link>
 
-
-          {user ? (
+          {isLoading ? (
+            <div className="hidden md:block">
+              <div className="animate-pulse bg-gray-200 rounded h-4 w-20"></div>
+            </div>
+          ) : isAuthenticated && user ? (
             <Link
               href="/dashboard"
-              className="hidden md:inline-block text-[var(--txt-clr)] font-medium capitalize hover:text-[var(--acc-clr)] transition"
+              className="hidden md:inline-block font-medium text-[var(--acc-clr)] transition-colors"
             >
               Hi, {user.fullname}
             </Link>
           ) : (
-            <Link
-              href="/signup"
-              className="hidden md:inline-block text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
-            >
-              Sign up
-            </Link>
+              <Link
+                href="/signup"
+                className="hidden md:inline-block text-[var(--bg-clr)] px-4 py-2 rounded-lg bg-[var(--acc-clr)] transition-colors font-medium"
+              >
+                Sign up
+              </Link>
           )}
         </div>
 
         {/* Mobile Menu Toggle */}
         <button
           onClick={toggleMobileMenu}
-          className="md:hidden cursor-pointer text-[var(--txt-clr)] focus:outline-none"
+          className="md:hidden text-[var(--sec-clr)] cursor-pointer rounded-md p-1"
         >
           {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
         </button>
@@ -112,11 +87,11 @@ export default function Navigation() {
 
       {/* Mobile Nav */}
       <div
-        className={`md:hidden fixed top-14 left-0 w-full bg-black/90 backdrop-blur-md shadow-lg transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed top-14 left-0 w-full bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-lg transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
-        <ul className="flex flex-col items-center py-6 space-y-6 text-[var(--txt-clr)] uppercase text-sm">
+        <ul className="flex flex-col items-center py-6 space-y-6 text-[var(--sec-clr)] uppercase text-sm">
           {NAV_ITEMS.map((item) => (
             <li key={item.label} onClick={toggleMobileMenu}>
               <Link href={item.href} className="hover:text-[var(--acc-clr)] transition-colors">
@@ -137,9 +112,12 @@ export default function Navigation() {
           </li>
 
           <li>
-            {user ? (
+            {isLoading ? (
+              <div className="animate-pulse bg-[var(--sec-clr)]/20 rounded h-4 w-24"></div>
+            ) : isAuthenticated && user ? (
               <Link
                 href="/dashboard"
+                onClick={toggleMobileMenu}
                 className="text-[var(--acc-clr)] font-medium capitalize"
               >
                 Hi, {user.fullname}

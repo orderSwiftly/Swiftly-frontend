@@ -68,9 +68,17 @@ export default function AddProducts({ closeModal }: Props) {
         payload.append('productImg', file);
       });
 
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
+
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/product/new-product`, {
         method: 'POST',
-        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
         body: payload,
       });
 

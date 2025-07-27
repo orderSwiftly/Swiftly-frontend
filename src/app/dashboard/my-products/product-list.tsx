@@ -28,18 +28,25 @@ export default function ProductList() {
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       try {
-        const res = await fetch(`${api_url}/api/v1/product/my-products`, {
-          method: 'GET',
-          credentials: 'include',
-        });
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
 
-        const data = await res.json();
+      const res = await fetch(`${api_url}/api/v1/product/my-products`, {
+        method: 'GET',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
+      });
 
-        if (res.ok && data.status === 'success') {
-          setProducts(data.data.enrichedProducts ?? []);
-        } else {
-          setError(data.message ?? 'Failed to fetch products');
-        }
+      const data = await res.json();
+
+      if (res.ok && data.status === 'success') {
+        setProducts(data.data.enrichedProducts ?? []);
+      } else {
+        setError(data.message ?? 'Failed to fetch products');
+      }
       } catch (err) {
         setError('An error occurred while fetching products');
         toast.error('An error occurred while fetching products');

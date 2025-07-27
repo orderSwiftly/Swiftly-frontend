@@ -37,10 +37,15 @@ export default function GetOrders() {
   const router = useRouter();
 
   const fetchOrders = async () => {
-  try {
+    try {
+    const token = localStorage.getItem('token');
+    if (!token) throw new Error('No token found');
+
     const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/order/get-orders`, {
       method: 'GET',
-      credentials: 'include',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+      },
     });
 
     const data = await res.json();

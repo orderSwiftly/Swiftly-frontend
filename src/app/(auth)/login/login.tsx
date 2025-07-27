@@ -18,42 +18,30 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
 
-    const api_url = process.env.NEXT_PUBLIC_API_URL;
     try {
-      const res = await fetch(`${api_url}/api/v1/auth/user/login`, {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/user/login`, {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        credentials: 'include', // ✅ REQUIRED for cookies to work
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ email, password }),
       });
 
       const data = await res.json();
 
-      if (!res.ok) throw new Error(data?.message ?? 'Login failed');
-
-      // 🐛 DEBUG: Check if cookie is set
-      console.log('Login successful, checking cookies...');
-      console.log('Document cookies:', document.cookie);
-      console.log('Response headers:', res.headers.get('set-cookie'));
-
-      toast.success('Login successful!');
-      
-      // 🐛 DEBUG: Add small delay to ensure cookie is set
-      setTimeout(() => {
-        console.log('About to redirect to dashboard...');
-        console.log('Cookies before redirect:', document.cookie);
-        router.push('/dashboard');
-      }, 200);
-
-    } catch (err: unknown) {
-      console.error('Login error:', err);
-      if (err instanceof Error) {
-        toast.error(err.message ?? 'Error logging in');
-      } else {
-        toast.error('Error logging in');
+      if (!res.ok || data.status !== 'success') {
+        throw new Error(data.message || 'Login failed');
       }
+      
+      // Store token first
+      localStorage.setItem('token', data.data.token);
+
+      // Small delay to ensure everything is set
+      setTimeout(() => {
+        router.push('/dashboard');
+      }, 100);
+      
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Login failed';
+      toast.error(message);
     } finally {
       setLoading(false);
     }
@@ -62,7 +50,6 @@ export default function Login() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-[var(--bg-clr)] px-4">
       <div className="w-full max-w-md bg-white/10 backdrop-blur-md p-8 sm:p-10 rounded-2xl shadow-2xl text-[var(--txt-clr)] space-y-6">
-        {/* Logo */}
         <div className="flex justify-center">
           <Image src="/tredia.png" alt="Tredia Logo" width={80} height={80} className="rounded-full" priority />
         </div>

@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import PushNotification from "@/components/PushNotification";
+import AuthProvider from "@/components/providers/AuthProvider";
 
 export const metadata: Metadata = {
   title: {
@@ -32,9 +33,11 @@ export default function RootLayout({
         />
       </head>
       <body>
-        {children}
-        <Toaster position="top-center" reverseOrder={false} />
-        <PushNotification />
+        <AuthProvider>
+          {children}
+          <Toaster position="top-center" reverseOrder={false} />
+          <PushNotification />
+        </AuthProvider>
       </body>
     </html>
   );

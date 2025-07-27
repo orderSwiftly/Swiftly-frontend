@@ -1,3 +1,4 @@
+// components/Sidebar.tsx
 'use client';
 
 import Link from 'next/link';
@@ -9,13 +10,10 @@ import {
   Wallet2,
   Settings,
   LayoutDashboard,
-  Menu,
-  X,
+  LogOut,
 } from 'lucide-react';
 import Image from 'next/image';
-import { useState, useEffect } from 'react';
-import useAuthRedirect from '@/hooks/useAuthRedirect';
-import useUserStore from '@/stores/useUserStore';
+import { useUserStore } from '@/stores/userStore';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -28,140 +26,122 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
-  const [open, setOpen] = useState(true);
+  const { user, isLoading, logout } = useUserStore();
 
-  useAuthRedirect(); // 🔐 Redirect if not logged in
-
-  const { user, setUser } = useUserStore();
-  const userFullname = user?.fullname || '';
-  const userInitial = userFullname.trim().charAt(0).toUpperCase() || 'N';
-
-  useEffect(() => {
-    const api_url = process.env.NEXT_PUBLIC_API_URL;
-    if (!api_url || user) return;
-
-    const getProfile = async () => {
-      try {
-        const res = await fetch(`${api_url}/api/v1/user/me`, {
-          method: 'GET',
-          credentials: 'include',
-        });
-
-        const data = await res.json();
-        if (!res.ok || data.status !== 'success') {
-          throw new Error(data?.message ?? 'Failed to fetch profile');
-        }
-
-        setUser(data.data.user);
-      } catch (error) {
-        console.error('Error fetching profile:', error);
-      }
-    };
-
-    getProfile();
-  }, [user, setUser]);
+  const userInitial = user?.fullname?.charAt(0)?.toUpperCase() || 'U';
+  const userFullname = user?.fullname || 'User';
 
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside
-  className={`hidden md:fixed md:top-0 md:left-0 md:h-screen md:flex flex-col ${
-    open ? 'w-64' : 'w-20'
-  } transition-all duration-300 bg-[var(--bg-clr)] text-[var(--txt-clr)] shadow-md sec-ff p-4 z-40`}
->
-
-        {/* Toggle Button */}
-        <button
-          onClick={() => setOpen(!open)}
-          className="self-end mb-4 text-white/70 hover:text-white"
-        >
-          {open ? <X size={20} /> : <Menu size={20} />}
-        </button>
-
+      <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-[var(--bg-clr)] text-white flex-col z-40">
         {/* Logo */}
-        <div className="mb-6 text-xl font-bold">
-          <Link href="/">
+        <div className="p-6 border-b border-gray-700 pry-ff">
+          <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/tredia-logo.png"
               alt="Tredia Logo"
               width={40}
               height={40}
-              className="w-auto object-cover"
+              className="w-10 h-10 object-cover"
             />
+            <span className="text-xl font-bold">Tredia</span>
           </Link>
         </div>
 
-        {/* Nav Links */}
-        <nav className="space-y-4">
-          {navItems.map(({ label, href, icon: Icon }) => {
+        {/* Navigation */}
+        <nav className="flex-1 px-4 py-6 sec-ff">
+          <ul className="space-y-2">
+            {navItems.map(({ label, href, icon: Icon }) => {
+              const isActive = pathname === href;
+              return (
+                <li key={href}>
+                  <Link
+                    href={href}
+                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+                      isActive
+                        ? 'hover:bg-gray-800 text-text-[var(--sec-clr)]'
+                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <span>{label}</span>
+                  </Link>
+                </li>
+              );
+            })}
+          </ul>
+        </nav>
+
+        {/* User Section */}
+        <div className="p-4 border-t border-gray-700 sec-ff">
+          <div className="flex items-center space-x-3 mb-4">
+            <div className="w-10 h-10 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center font-semibold">
+              {userInitial}
+            </div>
+            <div className="flex-1 min-w-0">
+              <p className="text-sm font-medium text-[var(--sec-clr)] truncate">
+                {isLoading ? 'Loading...' : userFullname}
+              </p>
+              <p className="text-xs text-gray-400">User</p>
+            </div>
+          </div>
+          
+          <button
+            onClick={logout}
+            className="flex items-center space-x-3 w-full px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-[var(--sec-clr)] rounded-lg transition-colors duration-200 cursor-pointer"
+          >
+            <LogOut className="w-5 h-5" />
+            <span>Logout</span>
+          </button>
+        </div>
+      </aside>
+
+      {/* Mobile Bottom Navigation */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] border-t border-gray-700 z-50">
+        <div className="flex justify-around items-center py-2">
+          {navItems.slice(0, 5).map(({ label, href, icon: Icon }) => {
             const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
-                className={`flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200 hover:bg-white/10 ${
-                  isActive ? 'bg-white/10 font-semibold' : ''
+                className={`flex flex-col items-center py-2 px-3 min-w-0 ${
+                  isActive ? 'text-blue-400' : 'text-gray-400'
                 }`}
               >
-                <Icon className="w-5 h-5" />
-                {open && <span>{label}</span>}
+                <Icon className="w-5 h-5 mb-1" />
+                <span className="text-xs truncate">{label.split(' ')[0]}</span>
               </Link>
             );
           })}
-        </nav>
-
-        {/* Profile Info at the Bottom */}
-        <div className="mt-auto pt-4 flex items-center gap-3 sec-ff">
-          <span className="py-2.5 px-4 rounded-full bg-gray-400 text-[var(--bg-clr)] text-sm font-bold">
-            {userInitial}
-          </span>
-          {open && (
-            <span className="text-sm text-[var(--txt-clr)] font-medium">
-              {userFullname}
-            </span>
-          )}
         </div>
-      </aside>
+      </nav>
 
-      {/* Top Logo & Profile for Mobile */}
-      <div className="md:hidden fixed top-0 left-0 w-full bg-[var(--bg-clr)] flex items-center justify-between px-4 py-3 z-50">
-        <Link href="/">
+      {/* Mobile Top Bar */}
+      <div className="md:hidden fixed top-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] px-4 py-3 flex items-center justify-between z-50">
+        <Link href="/" className="flex items-center space-x-2">
           <Image
             src="/tredia-logo.png"
             alt="Tredia Logo"
-            width={40}
-            height={40}
-            className="w-auto object-cover"
+            width={32}
+            height={32}
+            className="w-8 h-8 object-cover"
           />
+          <span className="text-lg font-bold">Tredia</span>
         </Link>
-        <div className="flex items-center gap-2">
-          <span className="py-2.5 px-4 rounded-full bg-gray-400 text-[var(--bg-clr)] sec-ff text-sm font-bold">
+        
+        <div className="flex items-center space-x-2">
+          <div className="w-8 h-8 bg-[var(--acc-clr)] rounded-full flex items-center justify-center text-sm font-semibold">
             {userInitial}
-          </span>
-          <span className="text-sm text-[var(--txt-clr)] font-medium">
-            {userFullname}
-          </span>
+          </div>
+          <span className="text-sm">{isLoading ? 'Loading...' : userFullname}</span>
         </div>
       </div>
 
-      {/* Bottom Nav for Mobile */}
-      <nav className="fixed md:hidden bottom-0 left-0 w-full bg-[var(--bg-clr)] text-[var(--txt-clr)] shadow-inner flex justify-around py-3 z-50">
-        {navItems.map(({ label, href, icon: Icon }) => {
-          const isActive = pathname === href;
-          return (
-            <Link
-              key={href}
-              href={href}
-              className={`flex flex-col items-center text-xs ${
-                isActive ? 'text-[var(--acc-clr)]' : 'text-white/70'
-              }`}
-            >
-              <Icon className="w-5 h-5" />
-              <span className="text-[10px]">{label.split(' ')[0]}</span>
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Spacer for mobile */}
+      <div className="md:hidden h-16"></div> {/* Top spacer */}
+      <div className="md:hidden h-16"></div> {/* Bottom spacer */}
     </>
   );
 }
