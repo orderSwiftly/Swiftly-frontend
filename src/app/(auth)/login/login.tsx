@@ -6,6 +6,7 @@ import { Eye, EyeOff } from 'lucide-react';
 import Image from 'next/image';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
+import { useUserStore } from '@/stores/userStore';
 
 export default function Login() {
   const router = useRouter();
@@ -14,38 +15,43 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+const { setUser } = useUserStore();
 
-    try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/user/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-      const data = await res.json();
+  try {
+    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/user/login`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password }),
+    });
 
-      if (!res.ok || data.status !== 'success') {
-        throw new Error(data.message || 'Login failed');
-      }
-      
-      // Store token first
-      localStorage.setItem('token', data.data.token);
+    const data = await res.json();
 
-      // Small delay to ensure everything is set
-      setTimeout(() => {
-        router.push('/dashboard');
-      }, 100);
-      
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Login failed';
-      toast.error(message);
-    } finally {
-      setLoading(false);
+    if (!res.ok || data.status !== 'success') {
+      throw new Error(data.message || 'Login failed');
     }
-  };
+
+    // Save token and sync Zustand
+    localStorage.setItem('token', data.data.user.token);
+    setUser(data.data.user); // 👈 instant state update
+
+    // Redirect
+    setTimeout(() => {
+      router.push('/dashboard');
+    }, 200);
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Login failed';
+    toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
+
+
+
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[var(--bg-clr)] px-4">

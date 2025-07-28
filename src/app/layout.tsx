@@ -1,8 +1,10 @@
+// app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import PushNotification from "@/components/PushNotification";
 import AuthProvider from "@/components/providers/AuthProvider";
+// import Navigation from "@/components/navigation";
 
 export const metadata: Metadata = {
   title: {
@@ -11,7 +13,6 @@ export const metadata: Metadata = {
   },
   description: "Trust-first commerce for university trade and beyond",
 };
-
 
 export default function RootLayout({
   children,

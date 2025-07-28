@@ -1,23 +1,20 @@
 // stores/userStore.ts
 import { create } from 'zustand';
-import { persist } from 'zustand/middleware';
+import { persist, createJSONStorage } from 'zustand/middleware';
 
 export interface User {
-  id: string;
+  _id: string;
   fullname: string;
   email: string;
   phone?: string;
   avatar?: string;
   role?: string;
-  // Add other user properties as needed
 }
 
 interface UserState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
-  
-  // Actions
   setUser: (user: User) => void;
   clearUser: () => void;
   setLoading: (loading: boolean) => void;
@@ -33,19 +30,14 @@ export const useUserStore = create<UserState>()(
       isAuthenticated: false,
 
       setUser: (user: User) => {
-        set({ 
-          user, 
-          isAuthenticated: true,
-          isLoading: false 
-        });
+        set({ user, isAuthenticated: true, isLoading: false });
       },
 
       clearUser: () => {
-        set({ 
-          user: null, 
-          isAuthenticated: false,
-          isLoading: false 
-        });
+        set({ user: null, isAuthenticated: false, isLoading: false });
+        if (typeof window !== 'undefined') {
+          localStorage.removeItem('token');
+        }
       },
 
       setLoading: (loading: boolean) => {
@@ -53,6 +45,8 @@ export const useUserStore = create<UserState>()(
       },
 
       fetchUser: async () => {
+        if (typeof window === 'undefined') return;
+        
         const token = localStorage.getItem('token');
         const api_url = process.env.NEXT_PUBLIC_API_URL;
 
@@ -67,14 +61,12 @@ export const useUserStore = create<UserState>()(
           const res = await fetch(`${api_url}/api/v1/user/me`, {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
             },
           });
 
           if (!res.ok) {
-            // Token is invalid
-            localStorage.removeItem('token');
             get().clearUser();
             return;
           }
@@ -84,12 +76,12 @@ export const useUserStore = create<UserState>()(
           if (data.status === 'success') {
             get().setUser(data.data.user);
           } else {
-            localStorage.removeItem('token');
             get().clearUser();
           }
-        } catch (error) {
-          console.error('Error fetching user:', error);
-          // Don't clear user on network errors, might be temporary
+        } catch (err) {
+          console.error('Fetch user error:', err);
+          get().clearUser();
+        } finally {
           set({ isLoading: false });
         }
       },
@@ -98,36 +90,34 @@ export const useUserStore = create<UserState>()(
         try {
           const api_url = process.env.NEXT_PUBLIC_API_URL;
           const token = localStorage.getItem('token');
-          
-          if (api_url && token) {
-            // Try to call server logout endpoint
+
+          if (token && api_url) {
             await fetch(`${api_url}/api/v1/auth/user/logout`, {
               method: 'POST',
               headers: {
-                'Authorization': `Bearer ${token}`,
+                Authorization: `Bearer ${token}`,
                 'Content-Type': 'application/json',
               },
             });
           }
-        } catch (error) {
-          console.error('Server logout error:', error);
-          // Continue with local logout even if server fails
+        } catch (err) {
+          console.error('Logout error:', err);
         } finally {
-          // Always clear local data
-          localStorage.removeItem('token');
           get().clearUser();
-          
-          // Redirect to login page
-          window.location.href = '/auth/login';
+          if (typeof window !== 'undefined') {
+            window.location.href = '/login';
+          }
         }
       },
     }),
     {
-      name: 'user-storage', // Storage key
-      partialize: (state) => ({ 
+      name: 'user-storage',
+      storage: createJSONStorage(() => localStorage),
+      partialize: (state) => ({
         user: state.user,
-        isAuthenticated: state.isAuthenticated 
-      }), // Only persist user and auth status, not loading state
+        isAuthenticated: state.isAuthenticated,
+      }),
+      skipHydration: false,
     }
   )
 );

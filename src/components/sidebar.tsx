@@ -1,6 +1,6 @@
-// components/Sidebar.tsx
 'use client';
 
+import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -11,6 +11,8 @@ import {
   Settings,
   LayoutDashboard,
   LogOut,
+  ChevronLeft,
+  ChevronRight,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUserStore } from '@/stores/userStore';
@@ -25,6 +27,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
+  const [isCollapsed, setIsCollapsed] = useState(false);
   const pathname = usePathname();
   const { user, isLoading, logout } = useUserStore();
 
@@ -34,9 +37,13 @@ export default function Sidebar() {
   return (
     <>
       {/* Desktop Sidebar */}
-      <aside className="hidden md:flex fixed top-0 left-0 h-screen w-64 bg-[var(--bg-clr)] text-white flex-col z-40">
-        {/* Logo */}
-        <div className="p-6 border-b border-gray-700 pry-ff">
+      <aside
+        className={`hidden md:flex fixed top-0 left-0 h-screen ${
+          isCollapsed ? 'w-20' : 'w-64'
+        } bg-[var(--bg-clr)] text-white flex-col z-40 transition-all duration-300`}
+      >
+        {/* Logo and Toggle */}
+        <div className="p-2 border-b border-gray-700 pry-ff flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/tredia-logo.png"
@@ -45,12 +52,19 @@ export default function Sidebar() {
               height={40}
               className="w-10 h-10 object-cover"
             />
-            <span className="text-xl font-bold">Tredia</span>
+            {!isCollapsed && <span className="text-xl font-bold">Tredia</span>}
           </Link>
+          <button onClick={() => setIsCollapsed(!isCollapsed)}>
+            {isCollapsed ? (
+              <ChevronRight className="w-5 h-5" />
+            ) : (
+              <ChevronLeft className="w-5 h-5" />
+            )}
+          </button>
         </div>
 
         {/* Navigation */}
-        <nav className="flex-1 px-4 py-6 sec-ff">
+        <nav className="flex-1 px-2 py-6 sec-ff">
           <ul className="space-y-2">
             {navItems.map(({ label, href, icon: Icon }) => {
               const isActive = pathname === href;
@@ -58,14 +72,16 @@ export default function Sidebar() {
                 <li key={href}>
                   <Link
                     href={href}
-                    className={`flex items-center space-x-3 px-4 py-3 rounded-lg transition-colors duration-200 ${
+                    className={`flex items-center ${
+                      isCollapsed ? 'justify-center' : 'space-x-3'
+                    } px-4 py-3 rounded-lg transition-colors duration-200 ${
                       isActive
-                        ? 'hover:bg-gray-800 text-text-[var(--sec-clr)]'
+                        ? 'hover:bg-gray-800 text-[var(--sec-clr)]'
                         : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
-                    <span>{label}</span>
+                    {!isCollapsed && <span>{label}</span>}
                   </Link>
                 </li>
               );
@@ -79,20 +95,24 @@ export default function Sidebar() {
             <div className="w-10 h-10 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center font-semibold">
               {userInitial}
             </div>
-            <div className="flex-1 min-w-0">
-              <p className="text-sm font-medium text-[var(--sec-clr)] truncate">
-                {isLoading ? 'Loading...' : userFullname}
-              </p>
-              <p className="text-xs text-gray-400">User</p>
-            </div>
+            {!isCollapsed && (
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium text-[var(--sec-clr)] truncate">
+                  {isLoading ? 'Loading...' : userFullname}
+                </p>
+                <p className="text-xs text-gray-400">User</p>
+              </div>
+            )}
           </div>
-          
+
           <button
             onClick={logout}
-            className="flex items-center space-x-3 w-full px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-[var(--sec-clr)] rounded-lg transition-colors duration-200 cursor-pointer"
+            className={`flex items-center ${
+              isCollapsed ? 'justify-center' : 'space-x-3'
+            } w-full px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-[var(--sec-clr)] rounded-lg transition-colors duration-200 cursor-pointer`}
           >
             <LogOut className="w-5 h-5" />
-            <span>Logout</span>
+            {!isCollapsed && <span>Logout</span>}
           </button>
         </div>
       </aside>
@@ -130,16 +150,16 @@ export default function Sidebar() {
           />
           <span className="text-lg font-bold">Tredia</span>
         </Link>
-        
+
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-[var(--acc-clr)] rounded-full flex items-center justify-center text-sm font-semibold">
+          <div className="w-8 h-8 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center text-sm font-semibold">
             {userInitial}
           </div>
           <span className="text-sm">{isLoading ? 'Loading...' : userFullname}</span>
         </div>
       </div>
 
-      {/* Spacer for mobile */}
+      {/* Mobile Spacers */}
       <div className="md:hidden h-16"></div> {/* Top spacer */}
       <div className="md:hidden h-16"></div> {/* Bottom spacer */}
     </>

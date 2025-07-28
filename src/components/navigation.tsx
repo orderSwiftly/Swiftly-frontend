@@ -66,9 +66,10 @@ export default function Navigation() {
             >
               Hi, {user.fullname}
             </Link>
+
           ) : (
               <Link
-                href="/signup"
+                href="/login"
                 className="hidden md:inline-block text-[var(--bg-clr)] px-4 py-2 rounded-lg bg-[var(--acc-clr)] transition-colors font-medium"
               >
                 Sign up
@@ -124,7 +125,7 @@ export default function Navigation() {
               </Link>
             ) : (
               <Link
-                href="/signup"
+                href="/login"
                 onClick={toggleMobileMenu}
                 className="text-[var(--bg-clr)] bg-[var(--acc-clr)] px-4 py-1 rounded hover:bg-opacity-90 transition font-semibold capitalize"
               >
