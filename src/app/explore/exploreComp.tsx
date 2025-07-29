@@ -32,10 +32,17 @@ export default function ExplorePage() {
   useEffect(() => {
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+  
+      if (!token) {
+        throw new Error('No token found');
+      }
       try {
         const res = await fetch(`${api_url}/api/v1/product/explore`, {
           method: 'GET',
-          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+          }
         });
 
         const data = await res.json();
@@ -64,6 +71,11 @@ export default function ExplorePage() {
     if (!searchTerm.trim()) return; // ✅ prevent empty search
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+
       setLoading(true);
       setError('');
       
@@ -72,7 +84,10 @@ export default function ExplorePage() {
           `${api_url}/api/v1/product/search?query=${encodeURIComponent(searchTerm)}&inStock=true`,
           {
             method: 'GET',
-            credentials: 'include',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+              'Content-Type': 'application/json',
+            }
           }
         );
   
@@ -97,10 +112,16 @@ export default function ExplorePage() {
   
   const handleAddToCart = async (product: Product) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/add/${product._id}`, {
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+      const res = await fetch(`${api_url}/api/v1/cart/add/${product._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
         credentials: 'include',
         body: JSON.stringify({ quantity: 1 }),

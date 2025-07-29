@@ -19,7 +19,7 @@ type Product = {
 };
 
 export default function ProductDetails() {
-  const { id } = useParams();
+  const { id } = useParams() as { id: string };
   const [product, setProduct] = useState<Product | null>(null);
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
@@ -29,11 +29,15 @@ export default function ProductDetails() {
 
     const fetchProduct = async () => {
       try {
+        const api_url = process.env.NEXT_PUBLIC_API_URL;
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/product/explore/${id}`,
+          `${api_url}/api/v1/product/explore/${id}`,
           {
             method: 'GET',
-            credentials: 'include',
           }
         );
 
