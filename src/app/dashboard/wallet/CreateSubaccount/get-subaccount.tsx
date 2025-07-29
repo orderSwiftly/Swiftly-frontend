@@ -31,12 +31,18 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
       }
 
       try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
         const api_url = process.env.NEXT_PUBLIC_API_URL;
         const res = await fetch(
           `${api_url}/api/v1/paystack/subaccount/${subaccountCode}`,
           {
             method: 'GET',
-            credentials: 'include',
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            }
           }
         );
 

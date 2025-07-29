@@ -33,7 +33,7 @@ export default function useLogout() {
         clearUser();
         
         toast.success(data.message ?? 'Logged out successfully!');
-        router.push('/auth/login'); // Fixed route path
+        router.push('/login'); // Fixed route path
       } else {
         toast.error(data.message ?? 'Logout failed.');
       }

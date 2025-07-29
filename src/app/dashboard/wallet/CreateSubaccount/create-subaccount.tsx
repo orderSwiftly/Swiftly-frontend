@@ -57,10 +57,17 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
     setLoading(true);
 
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/paystack/create-subaccount`, {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${api_url}/api/v1/paystack/create-subaccount`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify(form),
       });
 

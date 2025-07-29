@@ -38,13 +38,18 @@ export default function ProductDetails() {
 
     const fetchProduct = async () => {
       try {
+        const api_url = process.env.NEXT_PUBLIC_API_URL;
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
         const res = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/v1/product/get-product/${id}`,
-          {
+          `${api_url}/api/v1/product/get-product/${id}`, {
             method: 'GET',
-            credentials: 'include',
-          }
-        );
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            }
+        });
 
         const data = await res.json();
         if (!res.ok || data.status !== 'success') {

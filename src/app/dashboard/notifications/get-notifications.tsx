@@ -26,7 +26,6 @@ const NotificationsList = () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${api_url}/api/v1/notification/user/get-notifications`, {
         method: 'GET',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
         },

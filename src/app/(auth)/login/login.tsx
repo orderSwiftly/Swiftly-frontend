@@ -7,6 +7,7 @@ import Image from 'next/image';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import { useUserStore } from '@/stores/userStore';
+import Link from 'next/link';
 
 export default function Login() {
   const router = useRouter();
@@ -57,7 +58,9 @@ const handleLogin = async (e: React.FormEvent) => {
     <main className="min-h-screen flex items-center justify-center bg-[var(--bg-clr)] px-4">
       <div className="w-full max-w-md bg-white/10 backdrop-blur-md p-8 sm:p-10 rounded-2xl shadow-2xl text-[var(--txt-clr)] space-y-6">
         <div className="flex justify-center">
-          <Image src="/tredia.png" alt="Tredia Logo" width={80} height={80} className="rounded-full" priority />
+          <Link href="/">
+            <Image src="/tredia.png" alt="Tredia Logo" width={80} height={80} className="rounded-full" priority />
+          </Link>
         </div>
 
         <h1 className="text-3xl font-bold text-center pry-ff">Welcome Back to Tredia</h1>

@@ -103,10 +103,10 @@ export const useUserStore = create<UserState>()(
         } catch (err) {
           console.error('Logout error:', err);
         } finally {
+          // Clear token and user state from localStorage or zustand
+          localStorage.removeItem('token');
           get().clearUser();
-          if (typeof window !== 'undefined') {
-            window.location.href = '/login';
-          }
+          window.location.href = '/login'; // redirect
         }
       },
     }),

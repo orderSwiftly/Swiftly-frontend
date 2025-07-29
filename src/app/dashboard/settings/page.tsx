@@ -19,12 +19,16 @@ export default function SettingsPage() {
     setLoading(true);
     try {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No token found');
+      }
       const res = await fetch(`${api_url}/api/v1/auth/user/reset-password`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
         },
-        credentials: 'include',
         body: JSON.stringify({ currentPassword, newPassword }),
       });
 
