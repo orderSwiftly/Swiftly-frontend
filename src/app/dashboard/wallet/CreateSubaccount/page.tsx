@@ -15,9 +15,18 @@ export default function SubaccountPage() {
     const fetchUserSubaccount = async () => {
       try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;
+        
+        const token = localStorage.getItem('token');
+        if (!token) {
+          throw new Error('No token found');
+        }
+
         const res = await fetch(`${api_url}/api/v1/paystack/user/subaccount`, {
           method: 'GET',
-          credentials: 'include',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
         });
 
         const data = await res.json();

@@ -30,32 +30,46 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
         return;
       }
 
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      if (!api_url) {
+        toast.error('API URL is not defined');
+        setLoading(false);
+        return;
+      }
+
       try {
         const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
+        if (!token) throw new Error('No token found in localStorage');
+
+        const res = await fetch(`${api_url}/api/v1/paystack/subaccount/${subaccountCode}`, {
+          method: 'GET',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        if (!res.ok) {
+          const errorData = await res.json();
+          throw new Error(errorData.message || 'Failed to fetch subaccount');
         }
-        const api_url = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(
-          `${api_url}/api/v1/paystack/subaccount/${subaccountCode}`,
-          {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            }
-          }
-        );
 
         const data = await res.json();
 
-        if (res.ok && data.status === true) {
+        if (data.status === true && data.data) {
           setSubaccount(data.data);
         } else {
-          throw new Error(data.message || 'Failed to fetch subaccount');
+          throw new Error(data.message || 'Subaccount not found');
         }
-      } catch (err) {
-        console.error(err);
-        toast.error('Error loading subaccount');
+      } catch (err: unknown) {
+        console.error('Subaccount fetch error:', err);
+        const errorMessage =
+          err instanceof Error
+            ? err.message
+            : typeof err === 'string'
+            ? err
+            : 'Error fetching subaccount';
+        toast.error(errorMessage);
       } finally {
         setLoading(false);
       }
@@ -92,7 +106,6 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
                   {subaccount.is_verified ? 'Verified' : 'Not Verified'}
                 </span>
               </p>
-
             </div>
           ) : (
             <p className="text-gray-500 dark:text-gray-300">No subaccount details available.</p>
