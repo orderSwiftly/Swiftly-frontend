@@ -1,12 +1,17 @@
 export async function initPayment(orderId: string) {
     try {
         const apiUrl = process.env.NEXT_PUBLIC_API_URL;
+        const token = localStorage.getItem('token');
+
+        if (!token) {
+            throw new Error('No token found');
+        }
         const res = await fetch(`${apiUrl}/api/v1/paystack/initialize/${orderId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
-            credentials: 'include',
         });
 
         const data = await res.json();

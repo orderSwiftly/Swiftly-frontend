@@ -51,8 +51,16 @@ export default function NewOrder() {
 
   const fetchCart = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/get`, {
-        credentials: 'include',
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found');
+      }
+      const res = await fetch(`${api_url}/api/v1/cart/get`, {
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
       });
       const data = await res.json();
       if (res.ok && data.status === 'success') {
@@ -67,10 +75,18 @@ export default function NewOrder() {
   const handleSubmit = async () => {
     setSubmitting(true);
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/order/checkout`, {
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error('No token found');
+      }
+      const res = await fetch(`${api_url}/api/v1/order/checkout`, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
         body: JSON.stringify({ shippingAddress: address }),
       });
 
