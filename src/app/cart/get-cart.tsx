@@ -30,9 +30,17 @@ export default function GetCartComp() {
 
   const refetchCart = async () => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/get`, {
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error ('no token found')
+      }
+      const res = await fetch(`${api_url}/api/v1/cart/get`, {
         method: 'GET',
-        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        },
       });
       const data = await res.json();
 
@@ -60,10 +68,18 @@ export default function GetCartComp() {
 
   const handleQuantityChange = async (productId: string, action: 'increment' | 'decrement') => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/update/${productId}`, {
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error ('no token found')
+      }
+      const res = await fetch(`${api_url}/api/v1/cart/update/${productId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json' },
-        credentials: 'include',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`,
+        },
         body: JSON.stringify({ action }),
       });
 
@@ -83,9 +99,17 @@ export default function GetCartComp() {
 
   const handleRemove = async (productId: string) => {
     try {
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/cart/remove/${productId}`, {
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const token = localStorage.getItem('token');
+
+      if (!token) {
+        throw new Error ('no token found')
+      }
+      const res = await fetch(`${api_url}/api/v1/cart/remove/${productId}`, {
         method: 'DELETE',
-        credentials: 'include',
+        headers: {
+          'Authorization': `Bearer ${token}`,
+        }
       });
 
       const data = await res.json();
