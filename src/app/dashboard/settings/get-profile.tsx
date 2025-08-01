@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
+import PulseLoader from '@/components/pulse-loader';
 
 interface UserProfile {
   fullname: string;
@@ -44,23 +45,43 @@ export default function GetProfile() {
   }, []);
 
   return (
-    <div className="w-full max-w-md bg-white/5 border border-white/10 rounded-xl p-6 shadow-lg space-y-4">
+    <div className="w-full max-w-xl bg-white/5 border border-white/10 rounded-2xl p-6 shadow-xl backdrop-blur-sm">
       {loading ? (
-        <p className="text-[var(--txt-clr)] text-lg">Loading profile...</p>
+        <div className="flex items-center justify-center">
+            <PulseLoader />
+        </div>
       ) : profile ? (
-        <>
-          <h1 className="text-2xl font-bold text-[var(--acc-clr)] pry-ff">
-            {profile.fullname}
-          </h1>
-          <div className="space-y-2">
-            <p className="text-[var(--txt-clr)] sec-ff">
-              <span className="font-semibold text-gray-400">Email:</span> {profile.email}
-            </p>
-            <p className="text-[var(--txt-clr)] sec-ff capitalize">
-              <span className="font-semibold text-gray-400">Role:</span> {profile.role}
+        <div className="space-y-6">
+          <div>
+            <h2 className="text-3xl font-bold pry-ff text-[var(--acc-clr)]">
+              Welcome back, {profile.fullname.split(' ')[0]} 👋
+            </h2>
+            <p className="text-[var(--txt-clr)] mt-2 sec-ff">
+              Here’s your profile summary. Make sure your information is up to date.
             </p>
           </div>
-        </>
+
+          <div className="space-y-2 sec-ff">
+            <div className="flex items-center justify-start space-x-2.5 bg-white/5 border border-white/10 rounded-xl p-2">
+              <span className="text-gray-400 font-semibold text-lg">Full Name:</span>
+              <span className="text-[var(--txt-clr)] text-base">{profile.fullname}</span>
+            </div>
+
+            <div className="flex items-center justify-start space-x-2.5 bg-white/5 border border-white/10 rounded-xl p-2">
+              <span className="text-gray-400 font-semibold text-lg">Email</span>
+              <span className="text-[var(--txt-clr)] text-base">{profile.email}</span>
+            </div>
+
+            <div className="flex items-center justify-start space-x-2.5 bg-white/5 border border-white/10 rounded-xl p-2">
+              <span className="text-gray-400 font-semibold text-lg">Role:</span>
+              <span className="text-[var(--txt-clr)] capitalize text-base">{profile.role}</span>
+            </div>
+          </div>
+
+          <p className="text-sm text-gray-400 mt-4">
+            If your profile details are incorrect, please use the form on the right to update them.
+          </p>
+        </div>
       ) : (
         <p className="text-red-500 text-lg">Failed to load profile.</p>
       )}

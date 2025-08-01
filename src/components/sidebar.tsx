@@ -120,7 +120,7 @@ export default function Sidebar() {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] border-t border-gray-700 z-50">
         <div className="flex justify-around items-center py-2">
-          {navItems.slice(0, 5).map(({ label, href, icon: Icon }) => {
+          {navItems.slice(0, 6).map(({ label, href, icon: Icon }) => {
             const isActive = pathname === href;
             return (
               <Link
