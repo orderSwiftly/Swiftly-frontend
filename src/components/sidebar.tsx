@@ -126,7 +126,7 @@ export default function Sidebar() {
               <Link
                 key={href}
                 href={href}
-                className={`flex flex-col items-center py-2 px-3 min-w-0 ${
+                className={`flex flex-col items-center py-2 px-3 min-w-0 hover:text-[var(--acc-clr)] ${
                   isActive ? 'text-[var(--acc-clr)]' : 'text-gray-400'
                 }`}
               >
@@ -148,14 +148,14 @@ export default function Sidebar() {
             height={32}
             className="w-8 h-8 object-cover"
           />
-          <span className="text-lg font-bold">Tredia</span>
+          <span className="text-lg font-bold pry-ff">Tredia</span>
         </Link>
 
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center text-sm font-semibold">
+          <div className="w-8 h-8 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center text-sm font-semibold sec-ff">
             {userInitial}
           </div>
-          <span className="text-sm">{isLoading ? 'Loading...' : userFullname}</span>
+          <span className="text-sm sec-ff">{isLoading ? 'Loading...' : userFullname}</span>
         </div>
       </div>
 

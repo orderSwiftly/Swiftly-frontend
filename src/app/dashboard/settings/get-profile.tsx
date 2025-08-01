@@ -54,7 +54,7 @@ export default function GetProfile() {
         <div className="space-y-6">
           <div>
             <h2 className="text-3xl font-bold pry-ff text-[var(--acc-clr)]">
-              Welcome back, {profile.fullname.split(' ')[0]} 👋
+              Welcome back, {profile.fullname.split(' ')[0]}
             </h2>
             <p className="text-[var(--txt-clr)] mt-2 sec-ff">
               Here’s your profile summary. Make sure your information is up to date.
