@@ -3,6 +3,15 @@
 
 @import "tailwindcss";
 
+html,
+body {
+  margin: 0;
+  padding: 0;
+  /* box-sizing: border-box; */
+  background-color: var(--light-bg);
+}
+
+
 :root {
   --bg-clr: #00050E;
   --light-bg: #0A0F1A;

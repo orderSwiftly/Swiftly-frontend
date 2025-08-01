@@ -93,9 +93,8 @@ export default function GetOrders() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--light-bg)] px-4 py-12 max-w-4xl mx-auto space-y-8">
-      <h2 className="text-2xl font-bold text-[var(--txt-clr)] sec-ff">Your Orders</h2>
-
+    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-4xl mx-auto space-y-8">
+      <h1 className="text-2xl font-bold mb-4 text-[var(--acc-clr)] pry-ff">My Orders</h1>
       {orders.map((order) => (
         <div
           key={order._id}

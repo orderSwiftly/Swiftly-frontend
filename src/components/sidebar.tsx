@@ -19,8 +19,8 @@ import { useUserStore } from '@/stores/userStore';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
-  { label: 'My Products', href: '/dashboard/my-products', icon: Package },
-  { label: 'My Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
+  { label: 'Products', href: '/dashboard/my-products', icon: Package },
+  { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
   { label: 'Notifications', href: '/dashboard/notifications', icon: Bell },
   { label: 'Wallet', href: '/dashboard/wallet', icon: Wallet2 },
   { label: 'Settings', href: '/dashboard/settings', icon: Settings },
@@ -127,7 +127,7 @@ export default function Sidebar() {
                 key={href}
                 href={href}
                 className={`flex flex-col items-center py-2 px-3 min-w-0 ${
-                  isActive ? 'text-blue-400' : 'text-gray-400'
+                  isActive ? 'text-[var(--acc-clr)]' : 'text-gray-400'
                 }`}
               >
                 <Icon className="w-5 h-5 mb-1" />
