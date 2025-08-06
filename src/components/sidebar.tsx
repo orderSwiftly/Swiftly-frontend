@@ -8,7 +8,7 @@ import {
   ShoppingBag,
   Bell,
   Wallet2,
-  Settings,
+  User,
   LayoutDashboard,
   LogOut,
   ChevronLeft,
@@ -23,7 +23,7 @@ const navItems = [
   { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
   { label: 'Notifications', href: '/dashboard/notifications', icon: Bell },
   { label: 'Wallet', href: '/dashboard/wallet', icon: Wallet2 },
-  { label: 'Settings', href: '/dashboard/settings', icon: Settings },
+  { label: 'Profile', href: '/dashboard/profile', icon: User },
 ];
 
 export default function Sidebar() {
