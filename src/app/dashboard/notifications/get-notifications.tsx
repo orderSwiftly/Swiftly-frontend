@@ -23,11 +23,16 @@ const NotificationsList = () => {
 
   const fetchNotifications = async () => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${api_url}/api/v1/notification/user/get-notifications`, {
         method: 'GET',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
       });
 
@@ -44,12 +49,16 @@ const NotificationsList = () => {
 
   const markAsRead = async (id: string) => {
     try {
+      const token = localStorage.getItem('token');
+      if (!token) {
+        throw new Error('No authentication token found');
+      }
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${api_url}/api/v1/notification/user/notifications/${id}/read`, {
         method: 'PATCH',
-        credentials: 'include',
         headers: {
           'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
         },
       });
 
@@ -99,7 +108,6 @@ const NotificationsList = () => {
           >
             {/* Left Side */}
             <div className="flex items-start sm:items-center gap-3 w-full sm:w-auto">
-              <input type="checkbox" className="accent-[var(--acc-clr)] mt-1 sm:mt-0" />
 
               <img
                 src="/default-avatar.jpg"
