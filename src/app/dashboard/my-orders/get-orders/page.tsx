@@ -4,6 +4,8 @@ import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import PulseLoader from '@/components/pulse-loader';
 import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { ArrowRight } from 'lucide-react';
 
 interface OrderItem {
   productId: string;
@@ -118,13 +120,13 @@ export default function GetOrders() {
                 className="flex items-center gap-4 border border-white/10 bg-white/10 rounded-md p-3"
               >
                 <div className="w-20 h-20 sm:w-24 sm:h-24 relative overflow-hidden rounded-md bg-gray-100">
-  <Image
-    src={item.productImg?.[0] || '/fallback.jpg'}
-    alt={item.title}
-    fill
-    className="object-cover"
-  />
-</div>
+                  <Image
+                    src={item.productImg?.[0] || '/fallback.jpg'}
+                    alt={item.title}
+                    fill
+                    className="object-cover"
+                  />
+                </div>
 
                 <div className="flex-1">
                   <p className="text-sm font-semibold text-[var(--txt-clr)] pry-ff line-clamp-1">
@@ -154,13 +156,26 @@ export default function GetOrders() {
               Total: ₦{order.totalPrice.toLocaleString()}
             </p>
 
+            <Link
+              className='text-[var(--acc-clr)] sec-ff flex items-center gap-1 group'
+              href={`/dashboard/my-orders/get-orders/${order._id}`}>
+              <span className="hover:underline">View Order</span>
+              <ArrowRight size={16} className='transition-transform duration-150 group-hover:translate-x-1' />
+            </Link>
+
             {order.paymentStatus !== 'paid' && (
-              <button
-                onClick={() => router.push(`/order/${order._id}/payment`)}
-                className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
-              >
-                Checkout
-              </button>
+              <div>
+                <button
+                  onClick={() => router.push(`/order/${order._id}/payment`)}
+                  className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
+                >
+                  Checkout
+                </button>
+
+                <Link
+                  className='text-[var(--acc-clr)] hover:underline sec-ff'
+                  href={`/order/${order._id}`}>View Order</Link>
+              </div>
             )}
           </div>
         </div>
