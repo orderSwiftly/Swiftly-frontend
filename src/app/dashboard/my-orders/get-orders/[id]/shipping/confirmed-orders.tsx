@@ -165,7 +165,7 @@ export default function GetConfirmedOrders() {
                   Total: ₦{order.totalPrice.toLocaleString()}
                 </p>
                 <Link
-                  href={`/dashboard/shipping/${order._id}`}
+                  href={`/dashboard/my-orders/get-orders/${order._id}/shipping`}
                   className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
                 >
                   Ship Order
