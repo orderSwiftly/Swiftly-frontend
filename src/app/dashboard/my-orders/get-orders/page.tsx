@@ -171,10 +171,6 @@ export default function GetOrders() {
                 >
                   Checkout
                 </button>
-
-                <Link
-                  className='text-[var(--acc-clr)] hover:underline sec-ff'
-                  href={`/order/${order._id}`}>View Order</Link>
               </div>
             )}
           </div>
