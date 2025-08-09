@@ -45,7 +45,7 @@ export default function GetConfirmedOrders() {
 
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       const res = await axios.get(
-        `${api_url}/api/v1/order/get-shipping-orders`,
+        `${api_url}/api/v1/order/get-confirmed-orders`,
         {
           headers: { Authorization: `Bearer ${token}` },
         }
