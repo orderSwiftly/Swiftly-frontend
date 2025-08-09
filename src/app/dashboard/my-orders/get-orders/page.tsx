@@ -8,12 +8,14 @@ import Link from 'next/link';
 import { ArrowRight, Truck } from 'lucide-react';
 import ToggleNav from '@/components/toggle-nav';
 import { ShipOrders } from '@/lib/ship';
+
 interface OrderItem {
   productId: string;
   title: string;
   quantity: number;
   price: number;
   productImg?: string[];
+  productOwnerId?: string; // Add this field
 }
 
 interface ShippingAddress {
@@ -32,6 +34,7 @@ interface Order {
   paymentStatus: string;
   createdAt: string;
   shippingAddress: ShippingAddress;
+  canShip?: boolean; // Add this field from backend
 }
 
 export default function GetOrders() {
@@ -40,7 +43,14 @@ export default function GetOrders() {
   const [loading, setLoading] = useState(true);
   const [activeTab, setActiveTab] = useState('pending');
   const [shippingLoading, setShippingLoading] = useState<string | null>(null);
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const router = useRouter();
+
+  // Get current user ID from localStorage or JWT token
+  useEffect(() => {
+    const userId = localStorage.getItem('userId');
+    setCurrentUserId(userId);
+  }, []);
 
   const fetchOrders = async () => {
     try {
@@ -48,6 +58,7 @@ export default function GetOrders() {
       if (!token) {
         throw new Error('No token found');
       }
+      
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${api_url}/api/v1/order/get-orders`, {
         method: 'GET',
@@ -60,9 +71,16 @@ export default function GetOrders() {
 
       if (res.ok && data.status === 'success') {
         const fetchedOrders = Array.isArray(data.data?.orders) ? data.data.orders : [];
-        setAllOrders(fetchedOrders);
+        
+        // Add ownership check to each order
+        const ordersWithOwnership = fetchedOrders.map((order: Order) => ({
+          ...order,
+          canShip: checkCanShipOrder(order)
+        }));
+        
+        setAllOrders(ordersWithOwnership);
         // Initialize with pending orders
-        filterOrdersByStatus('pending', fetchedOrders);
+        filterOrdersByStatus('pending', ordersWithOwnership);
       } else {
         setAllOrders([]);
         setFilteredOrders([]);
@@ -75,6 +93,14 @@ export default function GetOrders() {
     } finally {
       setLoading(false);
     }
+  };
+
+  // Check if current user can ship this order
+  const checkCanShipOrder = (order: Order): boolean => {
+    if (!currentUserId) return false;
+    
+    // Check if user owns any products in this order
+    return order.items.some(item => item.productOwnerId === currentUserId);
   };
 
   const filterOrdersByStatus = (status: string, orders: Order[] = allOrders) => {
@@ -135,7 +161,7 @@ export default function GetOrders() {
 
   useEffect(() => {
     fetchOrders();
-  }, []);
+  }, [currentUserId]); // Re-fetch when user ID is available
 
   if (loading) {
     return (
@@ -242,8 +268,8 @@ export default function GetOrders() {
                   <ArrowRight size={16} className='transition-transform duration-150 group-hover:translate-x-1' />
                 </Link>
                 
-                {/* Ship Order Button - Only show for confirmed orders */}
-                {order.orderStatus === 'confirmed' && (
+                {/* Ship Order Button - Only show for confirmed orders AND if user owns products */}
+                {order.orderStatus === 'confirmed' && order.canShip && (
                   <button
                     onClick={() => handleShipOrder(order._id)}
                     disabled={shippingLoading === order._id}
@@ -277,7 +303,7 @@ export default function GetOrders() {
                 <div>
                   <button
                     onClick={() => router.push(`/order/${order._id}/payment`)}
-                    className="bg-[var(--acc-clr)] text-[var(--acc-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
+                    className="bg-[var(--acc-clr)] !text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
                   >
                     Checkout
                   </button>
