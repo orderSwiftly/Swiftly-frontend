@@ -42,6 +42,10 @@ export default function GetOrders() {
       if (!token) return;
 
       const orders = await fetchOrders(token);
+
+      // Debug logs
+      console.log("Current user:", currentUserId);
+      console.log("Orders fetched:", orders);
       const withOwnership = orders.map(o => ({
         ...o,
         canShip: checkCanShipOrder(o, currentUserId)
