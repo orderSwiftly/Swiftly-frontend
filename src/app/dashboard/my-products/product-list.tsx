@@ -150,10 +150,10 @@ export default function ProductList() {
                   <span
                     className={`px-2 py-1 rounded-md text-[var(--txt-clr)] capitalize ${
                       product.productStatus === 'approved'
-                        ? 'bg-green-500'
+                        ? 'bg-red-500'
                         : product.productStatus === 'pending'
                         ? 'bg-yellow-600'
-                        : 'bg-red-500'
+                        : 'bg-green-500'
                     }`}
                   >
                     {product.productStatus}
