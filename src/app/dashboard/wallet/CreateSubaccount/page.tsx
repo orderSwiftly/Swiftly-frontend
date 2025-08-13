@@ -52,18 +52,51 @@ export default function SubaccountPage() {
     setIsModalOpen(false);
     setLoading(true);
     setSubaccountCode(null); // reset before refetching
+    
+    // Refetch subaccount data
+    const refetch = async () => {
+      try {
+        const api_url = process.env.NEXT_PUBLIC_API_URL;
+        const token = localStorage.getItem('token');
+        
+        const res = await fetch(`${api_url}/api/v1/paystack/user/subaccount`, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${token}`,
+            'Content-Type': 'application/json',
+          },
+        });
+
+        const data = await res.json();
+
+        if (res.ok && data.status === true && data.data?.subaccount_code) {
+          setSubaccountCode(data.data.subaccount_code);
+        } else {
+          setSubaccountCode(null);
+        }
+      } catch (error) {
+        console.error('Error refetching subaccount:', error);
+        toast.error('Failed to refresh subaccount');
+        setSubaccountCode(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    
+    refetch();
   };
 
   return (
     <main className="min-h-screen w-full bg-[var(--light-bg)] pt-[70px] md:pl-72 flex justify-start flex-col px-2 space-y-10">
       {/* Header */}
       <section className="flex items-center justify-between w-full max-w-5xl bg-white/20 backdrop-blur-lg p-4 rounded shadow-md">
-        <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Subaccount Page</h1>
+        <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Subaccount Management</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-4 py-2 rounded font-semibold hover:opacity-90 transition sec-ff cursor-pointer"
+          disabled={loading}
         >
-          Create Subaccount
+          {subaccountCode ? 'View Details' : 'Create Subaccount'}
         </button>
       </section>
 
@@ -76,7 +109,15 @@ export default function SubaccountPage() {
         ) : subaccountCode ? (
           <GetSubaccount subaccountCode={subaccountCode} />
         ) : (
-          <p className="text-gray-500 sec-ff text-center">No subaccount exists for this user yet.</p>
+          <div className="text-center p-8">
+            <p className="text-gray-500 sec-ff mb-4">No subaccount exists for this user yet.</p>
+            <button
+              onClick={() => setIsModalOpen(true)}
+              className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition"
+            >
+              Create Your First Subaccount
+            </button>
+          </div>
         )}
       </section>
 
@@ -90,8 +131,14 @@ export default function SubaccountPage() {
             >
               &times;
             </button>
-            <h2 className="text-xl font-semibold text-[var(--txt-clr)] mb-4">Create Subaccount</h2>
-            <CreateSubaccountPage onSubaccountCreated={handleSubaccountCreated} />
+            <h2 className="text-xl font-semibold text-[var(--txt-clr)] mb-4">
+              {subaccountCode ? 'Subaccount Details' : 'Create Subaccount'}
+            </h2>
+            {subaccountCode ? (
+              <GetSubaccount subaccountCode={subaccountCode} />
+            ) : (
+              <CreateSubaccountPage onSubaccountCreated={handleSubaccountCreated} />
+            )}
           </div>
         </div>
       )}
