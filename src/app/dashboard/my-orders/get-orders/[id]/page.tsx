@@ -6,6 +6,7 @@ import PulseLoader from '@/components/pulse-loader';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
 import { ArrowLeft } from 'lucide-react';
+import ConfirmDelivery from './confirm-delivery';
 
 interface OrderItem {
   productId: string;
@@ -39,6 +40,7 @@ export default function GetOrderById() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
   const { id } = useParams();
+  const [showPopup, setShowPopup] = useState(false);
 
   const fetchOrder = async () => {
     try {
@@ -84,6 +86,7 @@ export default function GetOrderById() {
       </div>
     );
   }
+
 
   return (
     <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-5xl mx-auto space-y-8 pt-[20px] md:pl-48">
@@ -185,6 +188,13 @@ export default function GetOrderById() {
           <p className="text-lg font-bold text-[var(--acc-clr)] sec-ff">
             Total: ₦{order.totalPrice.toLocaleString()}
           </p>
+          {order.orderStatus === 'shipped' && (
+            <button
+              onClick={() => setShowPopup(true)}
+              className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition">
+              {loading ? <PulseLoader /> : "Enter delivery code"}
+            </button>
+          )}
           {order.paymentStatus !== 'paid' && (
             <Link
               href={`/order/${order._id}/payment`}
@@ -195,6 +205,21 @@ export default function GetOrderById() {
           )}
         </div>
       </div>
+
+      {/* confirm delivery code popup */}
+      {showPopup && (
+        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
+            <button
+              onClick={() => setShowPopup(false)}
+              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+            >
+              ✕
+            </button>
+            <ConfirmDelivery />
+          </div>
+        </div>
+      )}
     </div>
   );
 }

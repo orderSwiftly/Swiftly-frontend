@@ -43,7 +43,7 @@ export default function useLogout() {
       clearUser();
       
       toast.success('Logged out successfully!');
-      router.push('/auth/login');
+      router.push('/login');
       
       console.error('Logout error:', error);
     }
