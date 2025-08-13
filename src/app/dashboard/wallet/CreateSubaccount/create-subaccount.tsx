@@ -25,6 +25,9 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
   const [loading, setLoading] = useState(false);
   const [bankLoading, setBankLoading] = useState(true);
 
+  // New state to show the created codes
+  const [createdCodes, setCreatedCodes] = useState<{ subaccount_code: string; recipient_code: string } | null>(null);
+
   useEffect(() => {
     const fetchBanks = async () => {
       try {
@@ -58,9 +61,8 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
 
     try {
       const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
+      if (!token) throw new Error('No token found');
+
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       const res = await fetch(`${api_url}/api/v1/paystack/create-subaccount`, {
         method: 'POST',
@@ -72,12 +74,17 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
       });
 
       const data = await res.json();
-      if (!res.ok || data.status !== true) {
-        throw new Error(data.message || 'Failed to create sub‑account');
-      }
+      if (!res.ok || data.status !== true) throw new Error(data.message || 'Failed to create sub‑account');
 
-      toast.success('Subaccount created successfully 🎉');
-      onSubaccountCreated?.(); // notify parent
+      toast.success('Subaccount & recipient created successfully 🎉');
+      onSubaccountCreated?.();
+
+      // Store the returned codes
+      setCreatedCodes({
+        subaccount_code: data.data.subaccount_code,
+        recipient_code: data.data.recipient_code,
+      });
+
       setForm({
         business_name: '',
         bank_code: '',
@@ -97,78 +104,88 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
   );
 
   return (
-    <form onSubmit={handleSubmit} className="grid gap-5 sec-ff max-w-xl mx-auto w-full">
-      <div>
-        <label htmlFor="business_name" className="text-sm mb-1 block text-[var(--txt-clr)]">Business Name</label>
-        <input
-          name="business_name"
-          id="business_name"
-          type="text"
-          value={form.business_name}
-          onChange={handleChange}
-          required
-          placeholder="ACME Stores Ltd."
-          className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] placeholder-gray-400 focus:outline-none"
-        />
-      </div>
-
-      <div>
-        <label htmlFor="bank_code" className="text-sm mb-1 block text-[var(--txt-clr)]">Bank</label>
-        {bankLoading ? (
-          <p className="text-gray-400">Loading banks...</p>
-        ) : (
-          <select
-            name="bank_code"
-            id="bank_code"
-            value={form.bank_code}
+    <div className="max-w-xl mx-auto w-full">
+      <form onSubmit={handleSubmit} className="grid gap-5 sec-ff w-full">
+        <div>
+          <label htmlFor="business_name" className="text-sm mb-1 block text-[var(--txt-clr)]">Business Name</label>
+          <input
+            name="business_name"
+            id="business_name"
+            type="text"
+            value={form.business_name}
             onChange={handleChange}
             required
-            className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] focus:outline-none"
-          >
-            <option value="" disabled>Select a bank</option>
-            {uniqueBanks.map((bank) => (
-              <option key={`${bank.code}-${bank.name}`} value={bank.code}>
-                {bank.name}
-              </option>
-            ))}
-          </select>
-        )}
-      </div>
+            placeholder="ACME Stores Ltd."
+            className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] placeholder-gray-400 focus:outline-none"
+          />
+        </div>
 
-      <div>
-        <label htmlFor="account_number" className="text-sm mb-1 block text-[var(--txt-clr)]">Account Number</label>
-        <input
-          name="account_number"
-          id="account_number"
-          type="text"
-          value={form.account_number}
-          onChange={handleChange}
-          required
-          maxLength={10}
-          placeholder="0123456789"
-          className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)]"
-        />
-      </div>
+        <div>
+          <label htmlFor="bank_code" className="text-sm mb-1 block text-[var(--txt-clr)]">Bank</label>
+          {bankLoading ? (
+            <p className="text-gray-400">Loading banks...</p>
+          ) : (
+            <select
+              name="bank_code"
+              id="bank_code"
+              value={form.bank_code}
+              onChange={handleChange}
+              required
+              className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] focus:outline-none"
+            >
+              <option value="" disabled>Select a bank</option>
+              {uniqueBanks.map((bank) => (
+                <option key={`${bank.code}-${bank.name}`} value={bank.code}>
+                  {bank.name}
+                </option>
+              ))}
+            </select>
+          )}
+        </div>
 
-      <div>
-        <label htmlFor="percentage_charge" className="text-sm mb-1 block text-[var(--txt-clr)]">Platform Charge (%)</label>
-        <input
-          name="percentage_charge"
-          id="percentage_charge"
-          type="number"
-          value={form.percentage_charge}
-          readOnly
-          className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/10 text-[var(--txt-clr)] opacity-60 cursor-not-allowed"
-        />
-      </div>
+        <div>
+          <label htmlFor="account_number" className="text-sm mb-1 block text-[var(--txt-clr)]">Account Number</label>
+          <input
+            name="account_number"
+            id="account_number"
+            type="text"
+            value={form.account_number}
+            onChange={handleChange}
+            required
+            maxLength={10}
+            placeholder="0123456789"
+            className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)]"
+          />
+        </div>
 
-      <button
-        type="submit"
-        disabled={loading}
-        className="mt-4 w-full py-3 rounded-md bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold hover:opacity-90 disabled:opacity-50 flex items-center justify-center"
-      >
-        {loading ? <PulseLoader /> : 'Create Subaccount'}
-      </button>
-    </form>
+        <div>
+          <label htmlFor="percentage_charge" className="text-sm mb-1 block text-[var(--txt-clr)]">Platform Charge (%)</label>
+          <input
+            name="percentage_charge"
+            id="percentage_charge"
+            type="number"
+            value={form.percentage_charge}
+            readOnly
+            className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/10 text-[var(--txt-clr)] opacity-60 cursor-not-allowed"
+          />
+        </div>
+
+        <button
+          type="submit"
+          disabled={loading}
+          className="mt-4 w-full py-3 rounded-md bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold hover:opacity-90 disabled:opacity-50 flex items-center justify-center"
+        >
+          {loading ? <PulseLoader /> : 'Create Subaccount'}
+        </button>
+      </form>
+
+      {/* Display the created codes */}
+      {createdCodes && (
+        <div className="mt-6 p-4 bg-white/10 rounded-md border border-white/10 text-[var(--txt-clr)]">
+          <p><strong>Subaccount Code:</strong> {createdCodes.subaccount_code}</p>
+          <p><strong>Recipient Code:</strong> {createdCodes.recipient_code}</p>
+        </div>
+      )}
+    </div>
   );
 }

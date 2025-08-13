@@ -12,6 +12,7 @@ type Subaccount = {
   percentage_charge: number;
   currency: string;
   is_verified: boolean;
+  recipient_code?: string; // <-- add recipient code here
 };
 
 interface GetSubaccountProps {
@@ -96,6 +97,7 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
               <p><strong className='text-[var(--acc-clr)]'>Settlement Bank:</strong> {subaccount.settlement_bank || 'N/A'}</p>
               <p><strong className='text-[var(--acc-clr)]'>Currency:</strong> {subaccount.currency || 'NGN'}</p>
               <p><strong className='text-[var(--acc-clr)]'>Percentage Charge:</strong> {subaccount.percentage_charge}%</p>
+              <p><strong className='text-[var(--acc-clr)]'>Recipient Code:</strong> {subaccount.recipient_code || 'N/A'}</p>
               <p>
                 <strong className='text-[var(--acc-clr)]'>Status:</strong>{' '}
                 <span
