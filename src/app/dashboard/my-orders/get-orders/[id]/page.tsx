@@ -5,7 +5,7 @@ import Image from 'next/image';
 import PulseLoader from '@/components/pulse-loader';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft } from 'lucide-react';
+import { ArrowLeft, X } from 'lucide-react';
 import ConfirmDelivery from './confirm-delivery';
 
 interface OrderItem {
@@ -89,7 +89,7 @@ export default function GetOrderById() {
 
 
   return (
-    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-5xl mx-auto space-y-8 pt-[20px] md:pl-48">
+    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-5xl mx-auto space-y-8 md:pl-48">
       {/* Back button */}
       <Link
         href="/dashboard/my-orders"
@@ -209,12 +209,12 @@ export default function GetOrderById() {
       {/* confirm delivery code popup */}
       {showPopup && (
         <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl p-6 w-full max-w-md relative">
+          <div className="bg-[var(--light-bg)] rounded-xl p-6 w-full max-w-md relative">
             <button
               onClick={() => setShowPopup(false)}
-              className="absolute top-3 right-3 text-gray-500 hover:text-black"
+              className="absolute top-3 right-3 text-[var(--acc-clr)] cursor-pointer"
             >
-              ✕
+              <X />
             </button>
             <ConfirmDelivery />
           </div>

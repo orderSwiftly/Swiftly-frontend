@@ -60,10 +60,12 @@ export default function ConfirmDelivery() {
   return (
     <main
       className="sec-ff"
-      style={{ textAlign: "center", padding: "20px", background: "#00050E" }}
+      style={{ textAlign: "center", padding: "20px", background: "#0A0F1A" }}
     >
-      <h1>Confirm Delivery</h1>
-      <p style={{ marginBottom: "20px", color: "#666" }}>
+      <h1 className="text-[var(--acc-clr)] pry-ff font-semibold">Confirm Delivery</h1>
+      <p
+        className="text-[var(--acc-clr)] sec-ff"
+        style={{ marginBottom: "20px", color: "#666" }}>
         Enter the 6-digit delivery code to confirm receipt
       </p>
 
@@ -87,12 +89,13 @@ export default function ConfirmDelivery() {
             ref={(el) => {
               if (el) inputsRef.current[index] = el;
             }}
+            className="sec-ff text-[var(--acc-clr)]"
             style={{
               width: "40px",
               height: "50px",
               textAlign: "center",
               fontSize: "1.5rem",
-              border: "1px solid #ccc",
+              border: "1px solid #2DCAD7",
               borderRadius: "5px",
               outline: "none",
             }}
@@ -102,14 +105,14 @@ export default function ConfirmDelivery() {
       </div>
 
       <button
+        className="sec-ff text-[var(--bg-clr)]"
         onClick={handleSubmit}
         disabled={isLoading || code.join("").length !== 6}
         style={{
           padding: "10px 20px",
           fontSize: "1rem",
           backgroundColor:
-            isLoading || code.join("").length !== 6 ? "#00050E" : "#2DCAD7",
-          color: "white",
+            isLoading || code.join("").length !== 6 ? "#2DCAD7" : "#2DCAD7",
           border: "none",
           borderRadius: "5px",
           cursor:
