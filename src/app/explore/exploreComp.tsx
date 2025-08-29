@@ -181,7 +181,7 @@ export default function ExplorePage() {
         </p>
         <Link
           href="/signup"
-          className="inline-block bg-[var(--acc-clr)] text-[bg-clr] sec-ff font-semibold px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition"
+          className="inline-block bg-[var(--acc-clr)] text-[bg-clr] sec-ff px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition"
         >
           Sign Up
         </Link>
