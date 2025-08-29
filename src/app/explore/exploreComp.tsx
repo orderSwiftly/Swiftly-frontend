@@ -7,7 +7,7 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowRight, ShoppingCart } from 'lucide-react';
 import { useRouter } from 'next/navigation';
-import SearchComp from '@/components/ui/search'; // Adjust the import path as necessary
+import SearchComp from '@/components/ui/search';
 
 type Product = {
   _id: string;
@@ -18,31 +18,33 @@ type Product = {
   stock: number;
   location: string;
   productStatus: 'approve' | 'decline' | 'pending';
-  averageRating?: number; // Optional field for average rating
+  averageRating?: number;
 };
 
 export default function ExplorePage() {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
-  const router = useRouter();
   const [searchTerm, setSearchTerm] = useState('');
+  const router = useRouter();
 
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   useEffect(() => {
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const token = localStorage.getItem('token');
-  
+
       if (!token) {
-        throw new Error('No token found');
+        setLoading(false);
+        return; // 👈 Guest mode: stop here
       }
+
       try {
         const res = await fetch(`${api_url}/api/v1/product/explore`, {
           method: 'GET',
           headers: {
-            'Authorization': `Bearer ${token}`,
-          }
+            Authorization: `Bearer ${token}`,
+          },
         });
 
         const data = await res.json();
@@ -65,38 +67,38 @@ export default function ExplorePage() {
     };
 
     fetchProducts();
-  }, []);
+  }, [token]);
 
+  // 🔍 Search effect
   useEffect(() => {
-    if (!searchTerm.trim()) return; // ✅ prevent empty search
+    if (!searchTerm.trim() || !token) return;
+
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const token = localStorage.getItem('token');
-      if (!token) {
-        throw new Error('No token found');
-      }
 
       setLoading(true);
       setError('');
-      
+
       try {
         const res = await fetch(
-          `${api_url}/api/v1/product/search?query=${encodeURIComponent(searchTerm)}&inStock=true`,
+          `${api_url}/api/v1/product/search?query=${encodeURIComponent(
+            searchTerm
+          )}&inStock=true`,
           {
             method: 'GET',
             headers: {
-              'Authorization': `Bearer ${token}`,
+              Authorization: `Bearer ${token}`,
               'Content-Type': 'application/json',
-            }
+            },
           }
         );
-  
+
         const data = await res.json();
-  
+
         if (!res.ok || data.status !== 'success') {
           throw new Error(data.message ?? 'Failed to fetch products');
         }
-  
+
         setProducts(data.data.products ?? []);
       } catch (err) {
         setError('Failed to load products.');
@@ -106,29 +108,32 @@ export default function ExplorePage() {
         setLoading(false);
       }
     };
-  
+
     fetchProducts();
-  }, [searchTerm]);
-  
+  }, [searchTerm, token]);
+
   const handleAddToCart = async (product: Product) => {
     try {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const token = localStorage.getItem('token');
+
       if (!token) {
-        throw new Error('No token found');
+        toast.error('Please sign up or log in to add items to cart');
+        router.push('/signup');
+        return;
       }
+
       const res = await fetch(`${api_url}/api/v1/cart/add/${product._id}`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({ quantity: 1 }),
       });
 
       if (res.status === 401) {
         toast.error('Please sign up or log in to add items to cart');
-        router.push('/signup'); // or '/login'
+        router.push('/signup');
         return;
       }
 
@@ -148,7 +153,6 @@ export default function ExplorePage() {
       toast.error(message ?? 'Something went wrong!');
     }
   };
-  
 
   let content: React.ReactNode;
 
@@ -158,9 +162,35 @@ export default function ExplorePage() {
         <PulseLoader />
       </div>
     );
+  } else if (!token) {
+    // 🚨 Guest user
+    content = (
+      <div className="text-center py-12">
+        <Image
+          src="/no-product.jpg"
+          alt="No products found"
+          width={200}
+          height={200}
+          className="mx-auto mb-4"
+        />
+        <h3 className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">
+          No Products Available
+        </h3>
+        <p className="text-gray-500 sec-ff mb-4">
+          Please sign up or log in to explore products.
+        </p>
+        <Link
+          href="/signup"
+          className="inline-block bg-[var(--acc-clr)] text-[bg-clr] sec-ff font-semibold px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition"
+        >
+          Sign Up
+        </Link>
+      </div>
+    );
   } else if (error) {
     content = <p className="text-red-500 text-center">{error}</p>;
   } else if (products.length === 0) {
+    // ✅ Logged in but no products
     content = (
       <div className="text-center py-12">
         <Image
@@ -177,6 +207,7 @@ export default function ExplorePage() {
       </div>
     );
   } else {
+    // ✅ Logged in with products
     content = (
       <section>
         <ul className="grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
@@ -203,12 +234,11 @@ export default function ExplorePage() {
                 </h4>
 
                 {typeof product.averageRating === 'number' && (
-  <div className="text-yellow-500 text-sm mt-1 flex items-center gap-1">
-    <span className="font-medium">{product.averageRating.toFixed(1)}</span>
-    <span className="text-xs text-gray-500 dark:text-gray-400">/5</span>
-  </div>
-)}
-
+                  <div className="text-yellow-500 text-sm mt-1 flex items-center gap-1">
+                    <span className="font-medium">{product.averageRating.toFixed(1)}</span>
+                    <span className="text-xs text-gray-500 dark:text-gray-400">/5</span>
+                  </div>
+                )}
 
                 <p className="text-sm text-gray-500 dark:text-gray-400 line-clamp-2">
                   {product.description}
