@@ -92,7 +92,7 @@ export default function ComplaintModal({ onClose }: ComplaintModalProps) {
 
           {/* File Upload */}
           <div>
-            <label className="text-sm font-medium text-[var(--txt-clr)]">
+            <label className="text-sm font-medium text-[var(--txt-clr)] sec-ff">
               Attachments (optional, max 4):
             </label>
 
@@ -110,7 +110,7 @@ export default function ComplaintModal({ onClose }: ComplaintModalProps) {
             <button
               type="button"
               onClick={() => fileInputRef.current?.click()}
-              className="mt-2 flex items-center gap-2 px-3 py-2 border border-[var(--acc-clr)] cursor-pointer rounded-lg text-sm text-[var(--acc-clr)] hover:bg-[var(--acc-clr)] hover:text-[var(--bg-clr)] transition duration-200"
+              className="mt-2 flex items-center gap-2 px-3 py-2 border border-[var(--acc-clr)] cursor-pointer rounded-lg text-sm text-[var(--acc-clr)] hover:bg-[var(--acc-clr)] hover:text-[var(--bg-clr)] transition duration-200 sec-ff"
             >
               <Paperclip size={16} />
               Choose Files
@@ -131,7 +131,7 @@ export default function ComplaintModal({ onClose }: ComplaintModalProps) {
                   <button
                     type="button"
                     onClick={() => removeAttachment(index)}
-                    className="absolute top-1 right-1 bg-black/50 text-white rounded-full p-1 text-xs hover:bg-black"
+                    className="absolute top-1 right-1 bg-black/50 text-[var(--acc-clr)] cursor-pointer rounded-full p-1 text-xs hover:bg-black"
                   >
                     <X size={12} />
                   </button>
@@ -145,14 +145,14 @@ export default function ComplaintModal({ onClose }: ComplaintModalProps) {
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-sm"
+              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-sm sec-ff"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={loading}
-              className="px-4 py-2 rounded-md bg-[var(--acc-clr)] text-white hover:bg-opacity-90 text-sm disabled:opacity-50"
+              className="px-4 py-2 rounded-md bg-[var(--acc-clr)] text-[var(--bg-clr)] sec-ff hover:bg-opacity-90 text-sm disabled:opacity-50"
             >
               {loading ? <PulseLoader /> : "Submit"}
             </button>
