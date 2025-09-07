@@ -89,7 +89,7 @@ export default function GetOrderById() {
 
 
   return (
-    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-5xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-5xl mx-auto space-y-8 pb-20">
       {/* Back button */}
       <Link
         href="/dashboard/my-orders"

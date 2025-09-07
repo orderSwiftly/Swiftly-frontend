@@ -91,7 +91,7 @@ export default function GetOrders() {
   }
 
   return (
-    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-4xl mx-auto space-y-8">
+    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-4xl mx-auto space-y-8 pb-20">
       <h1 className="text-2xl font-bold text-[var(--acc-clr)] pry-ff">My Orders</h1>
       <ToggleNav activeTab={activeTab} onTabChange={handleTabChange} />
       {filteredOrders.length === 0 ? (
