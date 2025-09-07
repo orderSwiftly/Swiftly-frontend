@@ -46,9 +46,15 @@ export default function SignupComp() {
       console.log('Signup successful:', data);
       toast.success('Signup successful! Redirecting to login...');
       router.push('/login'); // or show success message
-    } catch (err) {
-      console.error('Signup error', err);
-      toast.error('Error signing up');
+    } catch (err: unknown) {
+      if (err instanceof Error) {
+      console.error("Signup error:", err.message);
+      toast.error(err.message);
+    } else if (typeof err === "string") {
+      toast.error(err);
+    } else {
+      toast.error("Something went wrong");
+    }
     } finally {
       setLoading(false);
     }
