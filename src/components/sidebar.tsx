@@ -72,7 +72,7 @@ export default function Sidebar() {
                       collapsed ? 'justify-center' : 'space-x-3'
                     } px-4 py-3 rounded-lg transition-colors duration-200 ${
                       isActive
-                        ? 'hover:bg-gray-800 text-[var(--sec-clr)]'
+                        ? 'bg-gray-800 text-[var(--sec-clr)]'
                         : 'text-gray-300 hover:bg-gray-800 hover:text-white'
                     }`}
                   >
@@ -121,8 +121,10 @@ export default function Sidebar() {
               <Link
                 key={href}
                 href={href}
-                className={`flex flex-col items-center py-2 px-3 min-w-0 hover:text-[var(--acc-clr)] ${
-                  isActive ? 'text-[var(--acc-clr)]' : 'text-gray-400'
+                className={`flex flex-col items-center py-2 px-3 min-w-0 rounded-md transition-colors duration-200 ${
+                  isActive
+                    ? 'bg-gray-800 text-[var(--acc-clr)]'
+                    : 'text-gray-400 hover:text-[var(--acc-clr)]'
                 }`}
               >
                 <Icon className="w-5 h-5 mb-1" />
