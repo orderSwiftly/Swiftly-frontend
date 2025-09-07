@@ -81,7 +81,7 @@ export default function ProductDetails() {
   if (!product) return <p className="text-center py-10 text-red-500">Product not found.</p>;
 
   return (
-    <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)] pt-[70px]">
+    <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)] pt-[70px] pb-20">
       {/* Title */}
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 pry-ff">{product.title}</h1>
 
