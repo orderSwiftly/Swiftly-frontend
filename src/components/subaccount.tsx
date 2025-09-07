@@ -90,13 +90,13 @@ export default function SubaccountPage() {
     <main className="min-h-screen w-full bg-[var(--light-bg)] pt-[20px] flex justify-start flex-col px-2 space-y-10">
       {/* Header */}
       <section className="flex items-center justify-between w-full max-w-5xl bg-white/20 backdrop-blur-lg p-4 rounded shadow-md">
-        <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Subaccount Management</h1>
+        <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Account Management</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-4 py-2 rounded font-semibold hover:opacity-90 transition sec-ff cursor-pointer"
           disabled={loading}
         >
-          {subaccountCode ? 'View Details' : 'Create Subaccount'}
+          {subaccountCode ? 'View Details' : 'Create Account'}
         </button>
       </section>
 
@@ -110,12 +110,12 @@ export default function SubaccountPage() {
           <GetSubaccount subaccountCode={subaccountCode} />
         ) : (
           <div className="text-center p-8">
-            <p className="text-gray-500 sec-ff mb-4">No subaccount exists for this user yet.</p>
+            <p className="text-gray-500 sec-ff mb-4">No account exists for this user yet.</p>
             <button
               onClick={() => setIsModalOpen(true)}
               className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition"
             >
-              Create Your First Subaccount
+              Add your Bank Account
             </button>
           </div>
         )}
@@ -132,7 +132,7 @@ export default function SubaccountPage() {
               &times;
             </button>
             <h2 className="text-xl font-semibold text-[var(--txt-clr)] mb-4">
-              {subaccountCode ? 'Subaccount Details' : 'Create Subaccount'}
+              {subaccountCode ? 'Account Details' : 'Add Account'}
             </h2>
             {subaccountCode ? (
               <GetSubaccount subaccountCode={subaccountCode} />

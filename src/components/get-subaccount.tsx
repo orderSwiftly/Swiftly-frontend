@@ -87,7 +87,7 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
         </div>
       ) : (
         <section className="max-w-xl mx-auto bg-white dark:bg-gray-800 shadow rounded p-6">
-          <h1 className="text-xl font-bold mb-4 text-[var(--acc-clr)] pry-ff">Subaccount Details</h1>
+          <h1 className="text-xl font-bold mb-4 text-[var(--acc-clr)] pry-ff">Account Details</h1>
 
           {subaccount ? (
             <div className="space-y-2 text-[var(--txt-clr)] sec-ff">

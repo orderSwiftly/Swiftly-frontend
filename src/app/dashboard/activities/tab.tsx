@@ -9,7 +9,7 @@ import Settings from "@/components/settings/settings";
 const tabs = [
   { label: "Notifications", value: "notifications" },
   { label: "Settings", value: "settings" },
-  { label: "Subaccount", value: "subaccount" },
+  { label: "Account", value: "account" },
 ];
 
 export default function ActivitiesPage() {
@@ -81,7 +81,7 @@ export default function ActivitiesPage() {
             <GetNotifs />
           </div>
         )}
-        {activeTab === "subaccount" && (
+        {activeTab === "account" && (
           <div>
             <Subaccount />
           </div>
