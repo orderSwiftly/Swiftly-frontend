@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { Eye, EyeOff } from 'lucide-react';
 import { SettingsFormData } from './settings';
+import useLogout from '@/hooks/logout';
 
 type AccountSettingsProps = {
   formData: SettingsFormData;
@@ -9,6 +10,7 @@ type AccountSettingsProps = {
 };
 
 export default function AccountSettings({ formData, handleInputChange, handleSave }: AccountSettingsProps) {
+  const logout = useLogout();
   const [showPassword, setShowPassword] = useState(false);
 
   return (
@@ -66,6 +68,15 @@ export default function AccountSettings({ formData, handleInputChange, handleSav
               Update Password
             </button>
           </div>
+        </div>
+        
+        <div>
+            <button
+                onClick={logout}
+                className="bg-red-500/90 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded transition"
+            >
+          Logout
+        </button>
         </div>
 
         {/* Danger Zone */}
