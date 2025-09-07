@@ -1,3 +1,4 @@
+// src/app/dashboard/activities/tab.tsx
 'use client';
 
 import { useState, useEffect } from "react";
@@ -82,8 +83,6 @@ export default function ActivitiesPage() {
         )}
         {activeTab === "subaccount" && (
           <div>
-            <h2 className="text-xl font-semibold text-[var(--acc-clr)] mb-2">Subaccount</h2>
-            <p className="text-sm text-[var(--txt-clr)] mb-4">Manage subaccounts here.</p>
             <Subaccount />
           </div>
         )}

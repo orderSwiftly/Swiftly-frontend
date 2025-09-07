@@ -1,14 +1,10 @@
 'use client';
 
-import { useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
   Package,
   ShoppingBag,
-  Bell,
-  Wallet2,
-  User,
   LayoutDashboard,
   LogOut,
   ChevronLeft,
@@ -17,6 +13,7 @@ import {
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUserStore } from '@/stores/userStore';
+import { useSidebar } from './sidebar-context';
 
 const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
@@ -26,7 +23,7 @@ const navItems = [
 ];
 
 export default function Sidebar() {
-  const [isCollapsed, setIsCollapsed] = useState(false);
+  const { collapsed, setCollapsed } = useSidebar();
   const pathname = usePathname();
   const { user, isLoading, logout } = useUserStore();
 
@@ -38,7 +35,7 @@ export default function Sidebar() {
       {/* Desktop Sidebar */}
       <aside
         className={`hidden md:flex fixed top-0 left-0 h-screen ${
-          isCollapsed ? 'w-20' : 'w-64'
+          collapsed ? 'w-20' : 'w-64'
         } bg-[var(--bg-clr)] text-white flex-col z-40 transition-all duration-300`}
       >
         {/* Logo and Toggle */}
@@ -51,10 +48,10 @@ export default function Sidebar() {
               height={40}
               className="w-10 h-10 object-cover"
             />
-            {!isCollapsed && <span className="text-xl font-bold">Tredia</span>}
+            {!collapsed && <span className="text-xl font-bold">Tredia</span>}
           </Link>
-          <button onClick={() => setIsCollapsed(!isCollapsed)}>
-            {isCollapsed ? (
+          <button onClick={() => setCollapsed(!collapsed)}>
+            {collapsed ? (
               <ChevronRight className="w-5 h-5" />
             ) : (
               <ChevronLeft className="w-5 h-5" />
@@ -72,7 +69,7 @@ export default function Sidebar() {
                   <Link
                     href={href}
                     className={`flex items-center ${
-                      isCollapsed ? 'justify-center' : 'space-x-3'
+                      collapsed ? 'justify-center' : 'space-x-3'
                     } px-4 py-3 rounded-lg transition-colors duration-200 ${
                       isActive
                         ? 'hover:bg-gray-800 text-[var(--sec-clr)]'
@@ -80,7 +77,7 @@ export default function Sidebar() {
                     }`}
                   >
                     <Icon className="w-5 h-5" />
-                    {!isCollapsed && <span>{label}</span>}
+                    {!collapsed && <span>{label}</span>}
                   </Link>
                 </li>
               );
@@ -94,7 +91,7 @@ export default function Sidebar() {
             <div className="w-10 h-10 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center font-semibold">
               {userInitial}
             </div>
-            {!isCollapsed && (
+            {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-[var(--sec-clr)] truncate">
                   {isLoading ? 'Loading...' : userFullname}
@@ -106,11 +103,11 @@ export default function Sidebar() {
           <button
             onClick={logout}
             className={`flex items-center ${
-              isCollapsed ? 'justify-center' : 'space-x-3'
+              collapsed ? 'justify-center' : 'space-x-3'
             } w-full px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-[var(--sec-clr)] rounded-lg transition-colors duration-200 cursor-pointer`}
           >
             <LogOut className="w-5 h-5" />
-            {!isCollapsed && <span>Logout</span>}
+            {!collapsed && <span>Logout</span>}
           </button>
         </div>
       </aside>
@@ -118,7 +115,7 @@ export default function Sidebar() {
       {/* Mobile Bottom Navigation */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] border-t border-gray-700 z-50">
         <div className="flex justify-around items-center py-2">
-          {navItems.slice(0, 6).map(({ label, href, icon: Icon }) => {
+          {navItems.slice(0, 4).map(({ label, href, icon: Icon }) => {
             const isActive = pathname === href;
             return (
               <Link
