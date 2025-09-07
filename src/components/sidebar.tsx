@@ -13,6 +13,7 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
+  Clock,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUserStore } from '@/stores/userStore';
@@ -21,9 +22,7 @@ const navItems = [
   { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
   { label: 'Products', href: '/dashboard/my-products', icon: Package },
   { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
-  { label: 'Notifications', href: '/dashboard/notifications', icon: Bell },
-  { label: 'Wallet', href: '/dashboard/wallet', icon: Wallet2 },
-  { label: 'Profile', href: '/dashboard/profile', icon: User },
+  { label: 'Activities', href: '/dashboard/activities', icon: Clock },
 ];
 
 export default function Sidebar() {
