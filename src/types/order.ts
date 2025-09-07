@@ -1,3 +1,4 @@
+// types/order.ts
 export interface OrderItem {
   productId: string;
   title: string;

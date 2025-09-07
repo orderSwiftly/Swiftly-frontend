@@ -100,7 +100,6 @@ export default function Sidebar() {
                 <p className="text-sm font-medium text-[var(--sec-clr)] truncate">
                   {isLoading ? 'Loading...' : userFullname}
                 </p>
-                <p className="text-xs text-gray-400">User</p>
               </div>
             )}
           </div>
