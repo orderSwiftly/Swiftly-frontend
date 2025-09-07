@@ -75,9 +75,7 @@ export default function ActivitiesPage() {
       {/* Tabs Content */}
       <section className="w-full max-w-6xl space-y-6 sec-ff">
         {activeTab === "notifications" && (
-          <div>
-            <h2 className="text-xl font-semibold text-[var(--acc-clr)] mb-2">Notifications</h2>
-            <p className="text-sm text-[var(--txt-clr)] mb-4">Manage your notifications here.</p>
+          <div className="pb-20">
             <GetNotifs />
           </div>
         )}
