@@ -63,7 +63,7 @@ export default function AccountSettings({ formData, handleInputChange, handleSav
             </div>
             <button
               onClick={() => handleSave('password')}
-              className="px-4 py-2 bg-[var(--acc-clr)] text-white rounded-md hover:opacity-90 transition-opacity font-medium"
+              className="px-4 py-2 bg-[var(--acc-clr)] text-[var(--txt-clr)] rounded-md hover:opacity-90 transition-opacity font-medium"
             >
               Update Password
             </button>
@@ -73,7 +73,7 @@ export default function AccountSettings({ formData, handleInputChange, handleSav
         <div>
             <button
                 onClick={logout}
-                className="bg-red-500/90 hover:bg-red-600 text-white font-semibold px-4 py-2 rounded transition"
+                className="bg-red-500/90 hover:bg-red-600 text-[var(--txt-clr)] font-semibold px-4 py-2 rounded transition"
             >
           Logout
         </button>
@@ -90,7 +90,7 @@ export default function AccountSettings({ formData, handleInputChange, handleSav
                   Once you delete your account, there is no going back. Please be certain.
                 </p>
               </div>
-              <button className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors font-medium ml-4">
+              <button className="px-4 py-2 bg-red-600 text-[var(--txt-clr)] rounded-md hover:bg-red-700 transition-colors font-medium ml-4">
                 Delete Account
               </button>
             </div>

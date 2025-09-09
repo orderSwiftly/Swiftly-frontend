@@ -1,74 +1,94 @@
-import { User } from 'lucide-react';
-import { SettingsFormData } from './settings';
+"use client";
 
-type ProfileSettingsProps = {
-  formData: SettingsFormData;
-  handleInputChange: (field: string, value: string | boolean) => void;
-  handleSave: (section: string) => void;
+import { useEffect, useState } from "react";
+import { User } from "lucide-react";
+import { GetProfile } from "@/lib/get-profile";
+
+type SettingsFormData = {
+  name: string;
+  email: string;
+  bio: string;
 };
 
-export default function ProfileSettings({ formData, handleInputChange, handleSave }: ProfileSettingsProps) {
+export default function ProfileSettings() {
+  const [formData, setFormData] = useState<SettingsFormData>({
+    name: "",
+    email: "",
+    bio: "",
+  });
+
+  useEffect(() => {
+    (async () => {
+      const user = await GetProfile();
+      if (user) {
+        setFormData({
+          name: user.fullname || "",
+          email: user.email || "",
+          bio: "", // since backend doesn't send it
+        });
+      }
+    })();
+  }, []);
+
   return (
     <div className="p-6">
+      {/* Profile header */}
       <div className="flex items-center gap-4 mb-6">
         <div className="w-16 h-16 bg-[var(--acc-clr)] rounded-full flex items-center justify-center">
-          <User size={24} className="text-white" />
+          <User size={24} className="text-[var(--txt-clr)]" />
         </div>
         <div>
-          <h2 className="text-xl font-semibold text-[var(--acc-clr)] pry-ff">Profile Information</h2>
-          <p className="text-[var(--txt-clr)] sec-ff">Update your personal information and profile details.</p>
+          <h2 className="text-xl font-semibold text-[var(--acc-clr)] pry-ff">
+            Profile Information
+          </h2>
+          <p className="text-[var(--txt-clr)] sec-ff">
+            This information is fetched from your account.
+          </p>
         </div>
       </div>
 
+      {/* Profile form */}
       <div className="space-y-6">
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          {/* Full Name */}
           <div>
-            <label className="block text-sm font-medium text-[var(--txt-clr)] mb-2 sec-ff">Full Name</label>
+            <label className="block text-sm font-medium text-[var(--txt-clr)] mb-2 sec-ff">
+              Full Name
+            </label>
             <input
               type="text"
               value={formData.name}
-              onChange={(e) => handleInputChange('name', e.target.value)}
-              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-[var(--txt-clr)] focus:border-[var(--acc-clr)] focus:outline-none"
+              readOnly
+              className="w-full px-3 py-2 bg-white/10 border border-gray-300 rounded-md text-[var(--txt-clr)]"
             />
           </div>
+
+          {/* Email */}
           <div>
-            <label className="block text-sm font-medium text-[var(--txt-clr)] mb-2 sec-ff">Email</label>
+            <label className="block text-sm font-medium text-[var(--txt-clr)] mb-2 sec-ff">
+              Email
+            </label>
             <input
               type="email"
               value={formData.email}
-              onChange={(e) => handleInputChange('email', e.target.value)}
-              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-[var(--txt-clr)] focus:border-[var(--acc-clr)] focus:outline-none"
+              readOnly
+              className="w-full px-3 py-2 bg-white/10 border border-gray-300 rounded-md text-[var(--txt-clr)]"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium text-[var(--txt-clr)] mb-2 sec-ff">Phone</label>
-            <input
-              type="tel"
-              value={formData.phone}
-              onChange={(e) => handleInputChange('phone', e.target.value)}
-              className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-[var(--txt-clr)] focus:border-[var(--acc-clr)] focus:outline-none"
-            />
-          </div>
-        </div>
-        
-        <div>
-          <label className="block text-sm font-medium text-[var(--txt-clr)] mb-2 sec-ff">Bio</label>
-          <textarea
-            value={formData.bio}
-            onChange={(e) => handleInputChange('bio', e.target.value)}
-            rows={4}
-            className="w-full px-3 py-2 bg-white/10 border border-white/20 rounded-md text-[var(--txt-clr)] focus:border-[var(--acc-clr)] focus:outline-none resize-none"
-            placeholder="Tell us about yourself..."
-          />
         </div>
 
-        <div className="flex justify-end">
-          <button
-            onClick={() => handleSave('profile')}
-            className="px-6 py-2 bg-[var(--acc-clr)] text-white rounded-md hover:opacity-90 transition-opacity font-medium"
-          >
-            Update Profile
-          </button>
+        {/* Bio (static placeholder, since backend doesn’t send it yet) */}
+        <div>
+          <label className="block text-sm font-medium text-[var(--txt-clr)] mb-2 sec-ff">
+            Bio
+          </label>
+          <textarea
+            value={formData.bio}
+            readOnly
+            rows={4}
+            className="w-full px-3 py-2 bg-white/10 border border-gray-300 rounded-md text-[var(--txt-clr)] resize-none"
+            placeholder="No bio available"
+          />
         </div>
       </div>
     </div>
