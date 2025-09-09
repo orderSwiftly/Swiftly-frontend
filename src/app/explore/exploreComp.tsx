@@ -30,87 +30,87 @@ export default function ExplorePage() {
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
-  useEffect(() => {
-    const fetchProducts = async () => {
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
+useEffect(() => {
+  const fetchProducts = async () => {
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
 
-      if (!token) {
-        setLoading(false);
-        return; // 👈 Guest mode: stop here
+    try {
+      const headers: HeadersInit = {
+        "Content-Type": "application/json",
+      };
+
+      if (token) {
+        headers["Authorization"] = `Bearer ${token}`;
       }
 
-      try {
-        const res = await fetch(`${api_url}/api/v1/product/explore`, {
-          method: 'GET',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        });
+      const res = await fetch(`${api_url}/api/v1/product/explore`, {
+        method: "GET",
+        headers,
+      });
 
-        const data = await res.json();
+      const data = await res.json();
 
-        if (!res.ok || data.status !== 'success' || !Array.isArray(data.products)) {
-          const message = data?.message ?? 'Failed to fetch products';
-          setError(message);
-          toast.error(message);
-          return;
-        }
-
-        setProducts(data.products ?? []);
-      } catch (err) {
-        setError('An error occurred while fetching products');
-        toast.error('An error occurred while fetching products');
-        console.error(err);
-      } finally {
-        setLoading(false);
+      if (!res.ok || data.status !== "success" || !Array.isArray(data.products)) {
+        const message = data?.message ?? "Failed to fetch products";
+        setError(message);
+        toast.error(message);
+        return;
       }
-    };
 
-    fetchProducts();
-  }, [token]);
+      setProducts(data.products ?? []);
+    } catch (err) {
+      setError("An error occurred while fetching products");
+      toast.error("An error occurred while fetching products");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, [token]);
+
 
   // 🔍 Search effect
-  useEffect(() => {
-    if (!searchTerm.trim() || !token) return;
+useEffect(() => {
+  if (!searchTerm.trim()) return;
 
-    const fetchProducts = async () => {
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
+  const fetchProducts = async () => {
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
 
-      setLoading(true);
-      setError('');
+    setLoading(true);
+    setError("");
 
-      try {
-        const res = await fetch(
-          `${api_url}/api/v1/product/search?query=${encodeURIComponent(
-            searchTerm
-          )}&inStock=true`,
-          {
-            method: 'GET',
-            headers: {
-              Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
-            },
-          }
-        );
-
-        const data = await res.json();
-
-        if (!res.ok || data.status !== 'success') {
-          throw new Error(data.message ?? 'Failed to fetch products');
+    try {
+      const res = await fetch(
+        `${api_url}/api/v1/product/search?query=${encodeURIComponent(searchTerm)}&inStock=true`,
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
         }
+      );
 
-        setProducts(data.data.products ?? []);
-      } catch (err) {
-        setError('Failed to load products.');
-        toast.error('Failed to load products.');
-        console.error(err);
-      } finally {
-        setLoading(false);
+      const data = await res.json();
+
+      if (!res.ok || data.status !== "success") {
+        throw new Error(data.message ?? "Failed to fetch products");
       }
-    };
 
-    fetchProducts();
-  }, [searchTerm, token]);
+      setProducts(data.data.products ?? []);
+    } catch (err) {
+      setError("Failed to load products.");
+      toast.error("Failed to load products.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchProducts();
+}, [searchTerm]);
+
 
   const handleAddToCart = async (product: Product) => {
     try {
@@ -162,35 +162,10 @@ export default function ExplorePage() {
         <PulseLoader />
       </div>
     );
-  } else if (!token) {
-    // 🚨 Guest user
-    content = (
-      <div className="text-center py-12">
-        <Image
-          src="/no-product.jpg"
-          alt="No products found"
-          width={200}
-          height={200}
-          className="mx-auto mb-4"
-        />
-        <h3 className="text-lg font-semibold text-[var(--txt-clr)] sec-ff">
-          No Products Available
-        </h3>
-        <p className="text-gray-500 sec-ff mb-4">
-          Please sign up or log in to explore products.
-        </p>
-        <Link
-          href="/signup"
-          className="inline-block bg-[var(--acc-clr)] text-[bg-clr] sec-ff px-4 py-2 rounded-lg font-medium hover:bg-opacity-90 transition"
-        >
-          Sign Up
-        </Link>
-      </div>
-    );
   } else if (error) {
     content = <p className="text-red-500 text-center">{error}</p>;
   } else if (products.length === 0) {
-    // ✅ Logged in but no products
+    // ✅ No products available
     content = (
       <div className="text-center py-12">
         <Image

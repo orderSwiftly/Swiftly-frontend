@@ -29,31 +29,35 @@ export default function GetCartComp() {
   const [error, setError] = useState('');
 
   const refetchCart = async () => {
-    try {
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const token = localStorage.getItem('token');
+  try {
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
+    const token = localStorage.getItem('token');
 
-      if (!token) {
-        throw new Error ('no token found')
-      }
-      const res = await fetch(`${api_url}/api/v1/cart/get`, {
-        method: 'GET',
-        headers: {
-          'Authorization': `Bearer ${token}`,
-        },
-      });
-      const data = await res.json();
-
-      if (!res.ok || data.status !== 'success') {
-        throw new Error(data?.message ?? 'Failed to load cart');
-      }
-
-      setCartItems(data.cart ?? []);
-    } catch (err) {
-      console.error(err);
-      toast.error('Error refreshing cart');
-      setError('Failed to load cart.');
+    if (!token) {
+      throw new Error("no token found");
     }
+
+    const res = await fetch(`${api_url}/api/v1/cart/get`, {
+      method: "GET",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+      throw new Error(data?.message ?? "Failed to load cart");
+    }
+
+    // ✅ If cart is missing or empty, just set it to []
+    setCartItems(data.cart ?? []);
+    setError(""); // clear any previous error
+  } catch (err) {
+    console.error(err);
+    toast.error("Error refreshing cart");
+    setError("Failed to load cart."); // only real errors go here
+  }
   };
 
   useEffect(() => {
