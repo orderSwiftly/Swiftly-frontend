@@ -7,7 +7,7 @@ export interface User {
   fullname: string;
   email: string;
   phone?: string;
-  avatar?: string;
+  photo?: string;
   role?: string;
 }
 

@@ -1,7 +1,6 @@
-// components/Navigation.tsx
 'use client';
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Menu, X, ShoppingCart } from "lucide-react";
 import Image from 'next/image';
 import Link from "next/link";
@@ -16,9 +15,14 @@ const NAV_ITEMS = [
 
 export default function Navigation() {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const { user, isLoading, isAuthenticated } = useUserStore();
+  const { user, isLoading, fetchUser, isAuthenticated } = useUserStore();
+
+  useEffect(() => {
+    if (!user) fetchUser();
+  }, [user, fetchUser]);
 
   const toggleMobileMenu = () => setIsMobileMenuOpen(!isMobileMenuOpen);
+  const userInitial = user?.fullname?.charAt(0)?.toUpperCase() || 'U';
 
   return (
     <nav className="fixed top-0 left-0 z-50 w-full bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-sm pry-ff">
@@ -38,7 +42,7 @@ export default function Navigation() {
         </Link>
 
         {/* Desktop Nav */}
-        <ul className="hidden md:flex gap-8 text-[var(--sec-clr)]  font-medium items-center">
+        <ul className="hidden md:flex gap-8 text-[var(--sec-clr)] font-medium items-center">
           {NAV_ITEMS.map((item) => (
             <li key={item.label} className="hover:text-[var(--acc-clr)] transition-colors">
               <Link href={item.href}>{item.label}</Link>
@@ -56,24 +60,37 @@ export default function Navigation() {
           </Link>
 
           {isLoading ? (
-            <div className="hidden md:block">
-              <div className="animate-pulse bg-gray-200 rounded h-4 w-20"></div>
+            <div className="hidden md:flex items-center gap-2 animate-pulse">
+              <div className="bg-gray-200 w-8 h-8 rounded-full"></div>
+              <div className="bg-gray-200 w-20 h-4 rounded"></div>
             </div>
           ) : isAuthenticated && user ? (
             <Link
               href="/dashboard"
-              className="hidden md:inline-block font-medium text-[var(--acc-clr)] transition-colors"
+              className="hidden md:flex items-center gap-2 font-medium text-[var(--acc-clr)] transition-colors"
             >
-              Hi, {user.fullname}
+              {user.photo ? (
+                <Image
+                  width={32}
+                  height={32}
+                  src={user.photo}
+                  alt={user.fullname}
+                  className="w-8 h-8 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white font-semibold">
+                  {userInitial}
+                </div>
+              )}
+              <span>Hi, {user.fullname}</span>
             </Link>
-
           ) : (
-              <Link
-                href="/login"
-                className="hidden md:inline-block text-[var(--bg-clr)] px-4 py-2 rounded-lg bg-[var(--acc-clr)] transition-colors font-medium"
-              >
-                Sign up
-              </Link>
+            <Link
+              href="/login"
+              className="hidden md:inline-block text-[var(--bg-clr)] px-4 py-2 rounded-lg bg-[var(--acc-clr)] transition-colors font-medium"
+            >
+              Sign up
+            </Link>
           )}
         </div>
 
@@ -114,14 +131,30 @@ export default function Navigation() {
 
           <li>
             {isLoading ? (
-              <div className="animate-pulse bg-[var(--sec-clr)]/20 rounded h-4 w-24"></div>
+              <div className="flex items-center gap-2 animate-pulse">
+                <div className="bg-gray-200 w-8 h-8 rounded-full"></div>
+                <div className="bg-gray-200 w-24 h-4 rounded"></div>
+              </div>
             ) : isAuthenticated && user ? (
               <Link
                 href="/dashboard"
                 onClick={toggleMobileMenu}
-                className="text-[var(--acc-clr)] font-medium capitalize"
+                className="flex items-center gap-2 text-[var(--acc-clr)] font-medium capitalize"
               >
-                Hi, {user.fullname}
+                {user.photo ? (
+                  <Image
+                    width={32}
+                    height={32}
+                    src={user.photo}
+                    alt={user.fullname}
+                    className="w-8 h-8 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-8 h-8 rounded-full bg-gray-500 flex items-center justify-center text-white font-semibold">
+                    {userInitial}
+                  </div>
+                )}
+                <span>Hi, {user.fullname}</span>
               </Link>
             ) : (
               <Link

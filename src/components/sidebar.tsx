@@ -1,5 +1,6 @@
 'use client';
 
+import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -25,7 +26,14 @@ const navItems = [
 export default function Sidebar() {
   const { collapsed, setCollapsed } = useSidebar();
   const pathname = usePathname();
-  const { user, isLoading, logout } = useUserStore();
+  const { user, isLoading, fetchUser, logout } = useUserStore();
+
+  // Fetch user on mount if not loaded
+  useEffect(() => {
+    if (!user) {
+      fetchUser();
+    }
+  }, [user, fetchUser]);
 
   const userInitial = user?.fullname?.charAt(0)?.toUpperCase() || 'U';
   const userFullname = user?.fullname || 'User';
@@ -88,9 +96,20 @@ export default function Sidebar() {
         {/* User Section */}
         <div className="p-4 border-t border-gray-700 sec-ff">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="w-10 h-10 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center font-semibold">
-              {userInitial}
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-[var(--bg-clr)]">
+              {user?.photo ? (
+                <Image
+                  width={40}
+                  height={40}
+                  src={user.photo}
+                  alt={user.fullname}
+                  className="w-10 h-10 object-cover"
+                />
+              ) : (
+                userInitial
+              )}
             </div>
+
             {!collapsed && (
               <div className="flex-1 min-w-0">
                 <p className="text-sm font-medium text-[var(--sec-clr)] truncate">
@@ -149,8 +168,18 @@ export default function Sidebar() {
         </Link>
 
         <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 bg-gray-400 text-[var(--bg-clr)] rounded-full flex items-center justify-center text-sm font-semibold sec-ff">
-            {userInitial}
+          <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-[var(--bg-clr)]">
+            {user?.photo ? (
+              <Image
+                width={32}
+                height={32}
+                src={user.photo}
+                alt={user.fullname}
+                className="w-8 h-8 object-cover"
+              />
+            ) : (
+              userInitial
+            )}
           </div>
           <span className="text-sm sec-ff">{isLoading ? 'Loading...' : userFullname}</span>
         </div>
