@@ -56,7 +56,7 @@ export default function Settings() {
 
     switch (activeTab) {
       case 'profile':
-        return <ProfileSettings {...commonProps} />;
+        return <ProfileSettings />;
       case 'account':
         return <AccountSettings {...commonProps} />;
       case 'notifications':
@@ -64,7 +64,7 @@ export default function Settings() {
       case 'security':
         return <SecuritySettings {...commonProps} />;
       default:
-        return <ProfileSettings {...commonProps} />;
+        return <ProfileSettings />;
     }
   };
 
