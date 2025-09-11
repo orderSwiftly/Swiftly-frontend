@@ -1,3 +1,5 @@
+// src/lib/get-profile.ts
+
 import axios from "axios";
 
 export async function GetProfile() {
