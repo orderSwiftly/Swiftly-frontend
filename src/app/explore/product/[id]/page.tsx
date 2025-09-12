@@ -6,6 +6,7 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import PulseLoader from '@/components/pulse-loader';
+import ExploreReview from '@/app/explore/product/[id]/review/explore-rev';
 
 type Product = {
   _id: string;
@@ -109,7 +110,7 @@ export default function ProductDetails() {
       )}
 
       {/* Product Details */}
-      <div className="bg-white dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
+      <div className="bg-white dark:bg-[var(--bg-clr)] p-6 rounded-xl mb-4 shadow border border-gray-200 dark:border-gray-700">
         <p className="text-gray-700 dark:text-gray-300 mb-4 sec-ff leading-relaxed">
           {product.description}
         </p>
@@ -133,6 +134,10 @@ export default function ProductDetails() {
             </span>
           </p>
         </div>
+      </div>
+
+      <div>
+        <ExploreReview productId={product._id} />
       </div>
     </div>
   );
