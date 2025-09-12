@@ -89,7 +89,7 @@ export default function Navigation() {
               href="/login"
               className="hidden md:inline-block text-[var(--bg-clr)] px-4 py-2 rounded-lg bg-[var(--acc-clr)] transition-colors font-medium"
             >
-              Sign up
+              Sign in
             </Link>
           )}
         </div>
