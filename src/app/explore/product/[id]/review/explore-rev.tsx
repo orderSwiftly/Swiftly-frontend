@@ -5,12 +5,15 @@ import toast from 'react-hot-toast';
 import { GetReviews } from "@/lib/get-reviews";
 import PulseLoader from "@/components/pulse-loader";
 import { SubmitReview } from "@/lib/submit-review";
+import Image from "next/image";
 
 type Props = {
   productId: string;
 };
 
 interface Review {
+  reviewerPhoto: string | null;
+  reviewerName: string;
   _id: string;
   productId: string;
   orderId?: string;
@@ -96,20 +99,53 @@ export default function ExploreReview({ productId }: Props) {
       {/* Show reviews */}
       <div className="mt-6">
         <h3 className="text-lg font-semibold mb-2 sec-ff">Customer Reviews</h3>
-        <ul className="space-y-3">
+        <ul className="space-y-4">
           {reviews.length === 0 ? (
-            <li className="text-gray-500 sec-ff">No reviews yet.</li>
+            <li className="text-gray-500 dark:text-gray-400 sec-ff">No reviews yet.</li>
           ) : (
             reviews.map((review) => (
-              <li key={review._id} className="border-b border-gray-200 dark:border-gray-700 pb-2 sec-ff">
-                <p className="font-medium">
-                  <span className="text-yellow-400">★</span> {review.rating}
-                </p>
-                <p>{review.comment}</p>
-              </li>
-            ))
-          )}
-        </ul>
+              <li
+                key={review._id}
+                className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
+              >
+              {/* Reviewer photo */}
+              {review.reviewerPhoto ? (
+                <Image
+                  width={50}
+                  height={50}
+                  src={review.reviewerPhoto}
+                  alt={review.reviewerName || 'Anonymous'}
+                  className="w-12 h-12 rounded-full object-cover"
+                />
+              ) : (
+                <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-[var(--txt-clr)]">
+                  {review.reviewerName?.[0] || 'A'}
+                </div>
+              )}
+
+              <div className="flex-1">
+          {/* Name + rating */}
+          <div className="flex items-center justify-between mb-1">
+            <p className="font-semibold text-gray-800 dark:text-gray-100 pry-ff font-semibold">
+              {review.reviewerName || 'Anonymous'}
+            </p>
+            <span className="text-yellow-400 font-medium sec-ff">
+              ★ {review.rating}
+            </span>
+          </div>
+          {/* Comment */}
+          <p className="text-gray-700 dark:text-gray-300 sec-ff">{review.comment}</p>
+          {/* Optional date */}
+          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1m sec-ff">
+            {new Date(review.createdAt).toLocaleDateString()}
+          </p>
+        </div>
+      </li>
+    ))
+  )}
+</ul>
+
+
       </div>
     </div>
   );
