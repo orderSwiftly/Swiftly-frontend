@@ -4,6 +4,7 @@ import { useState } from 'react';
 import AcctModal from '@/components/acct-modal';
 import { Trophy, Star, Shield, Users } from 'lucide-react';
 import { motion } from 'framer-motion';
+import Link from 'next/link';
 
 export default function Introduction() {
   const [isOpenModal, setIsOpenModal] = useState(false);
@@ -110,11 +111,10 @@ export default function Introduction() {
           initial={{ opacity: 0, y: 10 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
-          onClick={handleModal}
           className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg transition-all duration-300 sec-ff font-semibold w-fit cursor-pointer
             hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110"
         >
-          Get started with Tredia
+          <Link href="/explore">Explore our products</Link>
         </motion.button>
       </section>
 
