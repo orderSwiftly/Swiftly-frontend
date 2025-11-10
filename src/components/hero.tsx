@@ -66,7 +66,6 @@ export default function FirstHero() {
             title: "Gaming Headset",
             seller: "TechGuru",
             rating: "4.8",
-            xp: "+17 XP",
             price: "₦8,999",
           },
           {
@@ -74,7 +73,6 @@ export default function FirstHero() {
             title: "Mechanical Keyboard",
             seller: "KeyMaster",
             rating: "4.9",
-            xp: "+29 XP",
             price: "₦11,999",
           },
           {
@@ -82,7 +80,6 @@ export default function FirstHero() {
             title: "RGB Mouse",
             seller: "GamerZone",
             rating: "4.7",
-            xp: "+22 XP",
             price: "₦3,599",
           },
         ].map((item, index) => (
@@ -98,9 +95,6 @@ export default function FirstHero() {
               <div className="flex items-center gap-1 text-sm text-yellow-400 sec-ff">
                 <Star size={14} fill="currentColor" />
                 {item.rating}
-              </div>
-              <div className="text-xs mt-1 text-white/60 sec-ff">
-                Review for {item.xp}
               </div>
             </div>
             <div className="text-right font-medium text-white sec-ff">
@@ -145,9 +139,6 @@ export default function FirstHero() {
           <span className="font-semibold pry-ff">Escrow Protection</span>
           <p className="text-xs text-white/70 leading-snug mt-1 sec-ff">
             <span className="text-white font-bold sec-ff">₦24,597</span> total value secured
-          </p>
-          <p className="text-xs text-white/70 leading-snug sec-ff">
-            <span className="text-green-400 font-medium">+155 XP</span> in review rewards
           </p>
         </div>
       </motion.div>

@@ -9,8 +9,8 @@ import { useUserStore } from '@/stores/userStore';
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Explore", href: "/explore" },
-  { label: "How it works", href: "/how-it-works" },
-  { label: "Leaderboard", href: "/leaderboard" },
+  { label: "About us", href: "/about" },
+  { label: "Contact", href: "/contact" },
 ];
 
 export default function Navigation() {

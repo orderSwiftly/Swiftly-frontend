@@ -20,7 +20,7 @@ export default function Waitlist() {
     },
     {
       icon: Star,
-      title: '+1000 XP for Early Users',
+      title: 'Anyone can be a Seller',
       color: 'text-purple-400',
     },
     {

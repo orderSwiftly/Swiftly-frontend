@@ -4,7 +4,6 @@ import {
   PackageCheck,
   ShieldCheck,
   GraduationCap,
-  BadgeCheck,
   Users,
   Truck,
   Undo2,
@@ -23,12 +22,6 @@ const highlights = [
     title: 'Smart Buyer Verification',
     description:
       'Every buyer is verified through student emails (or equivalent identity layers) to block burner accounts and fake purchases.',
-  },
-  {
-    icon: BadgeCheck,
-    title: 'Gamified Trust System',
-    description:
-      'Buyers and sellers earn XP, level up, and unlock perks based on verified actions — not hype.',
   },
   {
     icon: Users,

@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import AcctModal from '@/components/acct-modal';
-import { Trophy, Star, Shield, Users } from 'lucide-react';
+import { Users } from 'lucide-react';
 import { motion } from 'framer-motion';
 import Link from 'next/link';
 
@@ -11,47 +11,10 @@ export default function Introduction() {
 
   const handleModal = () => setIsOpenModal(!isOpenModal);
 
-  const badgeStyles = (border: string, bg: string) =>
-    `flex items-center gap-2 md:gap-3 px-3 py-2 rounded-full border ${border} text-[var(--txt-clr)] backdrop-blur-md ${bg}`;
-
   return (
     <>
       <section className="flex flex-col gap-6 w-full max-w-xl p-6 md:p-8">
-        {/* Badges */}
-        <motion.article
-          initial={{ opacity: 0, scale: 0.9 }}
-          whileInView={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.8, ease: 'easeOut' }}
-          className="w-auto max-w-sm flex items-center justify-between gap-2 md:gap-2 sec-ff"
-        >
-          <motion.div
-            initial={{ x: -30, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className={badgeStyles('border-purple-400', 'bg-[rgba(192,132,252,0.15)]')}
-          >
-            <Trophy size={16} />
-            <span className="text-[10px] md:text-[12px]">Level 12</span>
-          </motion.div>
-          <motion.div
-            initial={{ y: -20, opacity: 0 }}
-            whileInView={{ y: 0, opacity: 1 }}
-            transition={{ duration: 0.6 }}
-            className={badgeStyles('border-blue-400', 'bg-[rgba(96,165,250,0.15)]')}
-          >
-            <Star size={16} />
-            <span className="text-[10px] md:text-[12px]">2450 XP</span>
-          </motion.div>
-          <motion.div
-            initial={{ x: 30, opacity: 0 }}
-            whileInView={{ x: 0, opacity: 1 }}
-            transition={{ duration: 0.5 }}
-            className={badgeStyles('border-green-400', 'bg-[rgba(74,222,128,0.15)]')}
-          >
-            <Shield size={16} />
-            <span className="text-[10px] md:text-[12px]">95% Trust</span>
-          </motion.div>
-        </motion.article>
+        
 
         {/* Heading */}
         <motion.h1
@@ -83,7 +46,7 @@ export default function Introduction() {
         >
           <div className="flex items-center gap-2 md:gap-3">
             <div className="p-1 bg-purple-400 rounded-full" />
-            <span className="text-sm md:text-base text-[var(--txt-clr)]">Review for XP</span>
+            <span className="text-sm md:text-base text-[var(--txt-clr)]">University Marketplace</span>
           </div>
           <div className="flex items-center gap-2 md:gap-3">
             <div className="p-1 bg-blue-400 rounded-full" />
