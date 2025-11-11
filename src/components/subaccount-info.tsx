@@ -38,11 +38,11 @@ export default function SubaccountBannerInfo({
         
         <div className="flex-1 space-y-3">
           <h3 className="text-xl font-bold text-white pry-ff">
-            Welcome New Seller! 🎉
+            Welcome New Seller! 
           </h3>
           
           <p className="text-gray-300 sec-ff leading-relaxed">
-            Great! You`re creating your first product. To start receiving payments from buyers,
+            Great! You are creating your first product. To start receiving payments from buyers,
             you`ll need to <strong className="text-green-400">create a subaccount</strong> first.
           </p>
 
@@ -61,7 +61,7 @@ export default function SubaccountBannerInfo({
 
           <div className="flex items-center gap-3 pt-2">
             <Link
-              href="/dashboard/wallet"
+              href="/dashboard/activities"
               className="bg-[var(--acc-clr)] text-white font-semibold px-6 py-3 rounded-lg hover:opacity-90 transition sec-ff flex items-center gap-2 group"
             >
               <span>Set Up Subaccount</span>

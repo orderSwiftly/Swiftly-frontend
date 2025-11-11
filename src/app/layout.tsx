@@ -1,14 +1,14 @@
+/* eslint-disable @next/next/no-page-custom-font */
 // app/layout.tsx
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import PushNotification from "@/components/PushNotification";
 import AuthProvider from "@/components/providers/AuthProvider";
-// import Navigation from "@/components/navigation";
 
 export const metadata: Metadata = {
   title: {
-    default: "Tredia - Trust-first gamified marketplace",
+    default: "Tredia - Trust-first marketplace",
     template: "%s | Tredia",
   },
   description: "Trust-first commerce for university trade and beyond",

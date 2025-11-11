@@ -16,7 +16,7 @@ type Product = {
   stock: number;
   location: string;
   productStatus: string;
-  averageRating?: number; // ✅ newly added
+  averageRating?: number; 
 };
 
 export default function ProductList() {
