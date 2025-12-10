@@ -8,8 +8,8 @@ import AuthProvider from "@/components/providers/AuthProvider";
 
 export const metadata: Metadata = {
   title: {
-    default: "Tredia - Trust-first marketplace",
-    template: "%s | Tredia",
+    default: "Swiftly - Trust-first marketplace",
+    template: "%s | Swiftly",
   },
   description: "Trust-first commerce for university trade and beyond",
 };

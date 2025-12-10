@@ -9,8 +9,9 @@ import { useUserStore } from '@/stores/userStore';
 const NAV_ITEMS = [
   { label: "Home", href: "/" },
   { label: "Explore", href: "/explore" },
-  { label: "About us", href: "/about" },
-  { label: "Contact", href: "/contact" },
+  { label: "For Vendors", href: "/vendors" },
+  { label: "Support", href: "/support" },
+  { label: "FAQ", href: "/faq" },
 ];
 
 export default function Navigation() {
@@ -25,7 +26,7 @@ export default function Navigation() {
   const userInitial = user?.fullname?.charAt(0)?.toUpperCase() || 'U';
 
   return (
-    <nav className="fixed top-0 left-0 z-50 w-full bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-sm pry-ff">
+    <nav className="fixed top-0 left-0 z-50 w-full bg-[#006B4F]/90 backdrop-blur-md shadow-sm pry-ff">
       <div className="max-w-7xl mx-auto px-4 py-3 flex justify-between items-center">
         {/* Logo */}
         <Link href="/">
@@ -37,7 +38,7 @@ export default function Navigation() {
               height={40}
               className="w-10 h-10 object-cover"
             />
-            <span className="text-xl font-bold text-[var(--sec-clr)]">Tredia</span>
+            <span className="text-xl font-bold text-[var(--sec-clr)]">Swiftly</span>
           </div>
         </Link>
 
@@ -105,7 +106,7 @@ export default function Navigation() {
 
       {/* Mobile Nav */}
       <div
-        className={`md:hidden fixed top-14 left-0 w-full bg-[var(--bg-clr)]/90 backdrop-blur-md shadow-lg transition-transform duration-300 ease-in-out ${
+        className={`md:hidden fixed top-14 left-0 w-full bg-[#006B4F]/90 backdrop-blur-md shadow-lg transition-transform duration-300 ease-in-out ${
           isMobileMenuOpen ? 'translate-x-0' : '-translate-x-full'
         }`}
       >
