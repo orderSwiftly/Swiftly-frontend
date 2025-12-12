@@ -1,5 +1,5 @@
 /* @import url('https://fonts.cdnfonts.com/css/mona-sans');
-@import url('https://fonts.googleapis.com/css2?family=Manrope&display=swap'); */
+@import url('https://fonts.googleapis.com/css2?family=Manrope&display=swap'); // for --bg-clr:  #00050E */
 
 @import "tailwindcss";
 
@@ -13,7 +13,7 @@ body {
 
 
 :root {
-  --bg-clr: #00050E;
+  --bg-clr: #006B4F;
   --light-bg: #0A0F1A;
   --txt-clr: #FFFFFF;
   --acc-clr: #9BDD37;

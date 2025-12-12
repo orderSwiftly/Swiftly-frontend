@@ -1,86 +1,132 @@
-"use client";
+'use client';
 
-import { ResetPsw } from "@/lib/reset-psw";
+import { useState, useRef } from "react";
 import toast from "react-hot-toast";
+import { ResetPsw } from "@/lib/reset-psw";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+
+const OTP_LENGTH = 6;
 
 export default function ResetPassword() {
-  const [email, setEmail] = useState("");
-  const [otp, setOtp] = useState("");
-  const [newPassword, setNewPassword] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [step, setStep] = useState<number>(1);
+  const [email, setEmail] = useState<string>("");
+  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
+  const [pwd, setPwd] = useState<string>("");
+
+  // Typed refs correctly
+  const refs = useRef<HTMLInputElement[]>([]);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const move = (i: number, forward = true) => {
+    const next = forward ? i + 1 : i - 1;
+    const target = refs.current[next];
+    if (target) target.focus();
+  };
+
+  const handleOtp = (v: string, i: number) => {
+    const d = v.replace(/\D/g, "").slice(-1);
+    const arr = [...otp];
+    arr[i] = d;
+    setOtp(arr);
+
+    if (d && i < OTP_LENGTH - 1) move(i);
+  };
+
+  // Proper typing for submit events
+  const submitEmail = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (!email) return toast.error("Enter email");
+    toast.success("OTP sent");
+    setStep(2);
+  };
 
-    if (!email || !otp || !newPassword) {
-      toast.error("All fields are required");
-      return;
-    }
+  const verifyOtp = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (otp.join("").length !== OTP_LENGTH) return toast.error("Invalid OTP");
+    setStep(3);
+  };
 
+  const reset = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
     try {
-      setLoading(true);
-      const res = await ResetPsw(email, otp, newPassword);
-      toast.success(res?.message || "Password reset successful");
-      setEmail("");
-      setOtp("");
-      setNewPassword("");
+      await ResetPsw(email, otp.join(""), pwd);
+      toast.success("Password reset");
       router.push("/login");
-    } catch (err) {
-      console.log(err);
-      toast.error("Failed to reset password");
-    } finally {
-      setLoading(false);
+    } catch {
+      toast.error("Failed");
     }
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-[var(--light-bg)]">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg"
-      >
-        <h1 className="text-xl font-semibold text-[var(--txt-clr)] mb-4 pry-ff">
-          Reset Password
-        </h1>
-        <p className="text-sm text-[var(--acc-clr)] mb-4 sec-ff">
-          Enter your email, OTP, and a new password to reset your account.
-        </p>
+    <main className="flex items-center justify-center min-h-screen p-6 bg-[var(--light-bg)] pry-ff">
+      <div className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow">
 
-        <input
-          type="email"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
-          placeholder="Enter your email"
-          className="w-full px-4 py-2 border border-[var(--acc-clr)] rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] text-[var(--txt-clr)] bg-white/10 placeholder:text-white/70 sec-ff"
-        />
+        {step === 1 && (
+          <form onSubmit={submitEmail} className="flex flex-col gap-4">
+            <h2 className="text-lg pry-ff text-[var(--txt-clr)]">Reset Password</h2>
 
-        <input
-          type="text"
-          value={otp}
-          onChange={(e) => setOtp(e.target.value)}
-          placeholder="Enter OTP"
-          className="w-full px-4 py-2 border border-[var(--acc-clr)] rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] text-[var(--txt-clr)] bg-white/10 placeholder:text-white/70 sec-ff"
-        />
+            <input
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="p-2 rounded border bg-white/10 text-[var(--txt-clr)]"
+            />
 
-        <input
-          type="password"
-          value={newPassword}
-          onChange={(e) => setNewPassword(e.target.value)}
-          placeholder="Enter new password"
-          className="w-full px-4 py-2 border border-[var(--acc-clr)] rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] text-[var(--txt-clr)] bg-white/10 placeholder:text-white/70 sec-ff"
-        />
+            <button className="py-2 bg-[var(--acc-clr)] rounded text-[var(--bg-clr)]">
+              Send OTP
+            </button>
+          </form>
+        )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="w-full bg-[var(--acc-clr)] text-[var(--bg-clr)] py-2 px-4 rounded-lg transition disabled:opacity-50 sec-ff font-semibold cursor-pointer"
-        >
-          {loading ? "Resetting..." : "Reset Password"}
-        </button>
-      </form>
+        {step === 2 && (
+          <form onSubmit={verifyOtp} className="flex flex-col gap-4">
+            <p className="text-sm sec-ff text-[var(--acc-clr)]">Enter OTP</p>
+
+            <div className="flex justify-center gap-2">
+              {otp.map((v, i) => (
+                <input
+                  required
+                  key={i}
+                  ref={(el) => {
+                    if (el) refs.current[i] = el;
+                  }}
+                  value={v}
+                  maxLength={1}
+                  inputMode="numeric"
+                  onChange={(e) => handleOtp(e.target.value, i)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Backspace" && !otp[i] && i > 0) move(i, false);
+                  }}
+                  className="w-10 h-12 text-center rounded border bg-white/10 text-[var(--txt-clr)]"
+                />
+              ))}
+            </div>
+
+            <button className="py-2 bg-[var(--acc-clr)] rounded text-[var(--bg-clr)]">
+              Verify OTP
+            </button>
+          </form>
+        )}
+
+        {step === 3 && (
+          <form onSubmit={reset} className="flex flex-col gap-4">
+            <p className="text-sm sec-ff text-[var(--acc-clr)]">Enter New Password</p>
+
+            <input
+              type="password"
+              placeholder="New password"
+              value={pwd}
+              onChange={(e) => setPwd(e.target.value)}
+              className="p-2 rounded border bg-white/10 text-[var(--txt-clr)]"
+            />
+
+            <button className="py-2 bg-[var(--acc-clr)] rounded text-[var(--bg-clr)]">
+              Reset Password
+            </button>
+          </form>
+        )}
+
+      </div>
     </main>
   );
 }

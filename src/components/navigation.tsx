@@ -45,8 +45,13 @@ export default function Navigation() {
         {/* Desktop Nav */}
         <ul className="hidden md:flex gap-8 text-[var(--sec-clr)] font-medium items-center">
           {NAV_ITEMS.map((item) => (
-            <li key={item.label} className="hover:text-[var(--acc-clr)] transition-colors">
-              <Link href={item.href}>{item.label}</Link>
+            <li key={item.label}>
+              <Link
+                href={item.href}
+                className="relative px-1 py-1 transition-[color,background-size] duration-200 ease-out bg-gradient-to-r from-[var(--acc-clr)] to-[var(--acc-clr)] bg-no-repeat bg-[length:0%_2px] bg-bottom hover:bg-[length:100%_2px] hover:text-[var(--acc-clr)]"
+              >
+                {item.label}
+              </Link>
             </li>
           ))}
         </ul>
@@ -113,7 +118,10 @@ export default function Navigation() {
         <ul className="flex flex-col items-center py-6 space-y-6 text-[var(--sec-clr)] uppercase text-sm">
           {NAV_ITEMS.map((item) => (
             <li key={item.label} onClick={toggleMobileMenu}>
-              <Link href={item.href} className="hover:text-[var(--acc-clr)] transition-colors">
+              <Link
+                href={item.href}
+                className="relative px-1 py-1 transition-[color,background-size] duration-200 ease-out bg-gradient-to-r from-[var(--acc-clr)] to-[var(--acc-clr)] bg-no-repeat bg-[length:0%_2px] bg-bottom hover:bg-[length:100%_2px] hover:text-[var(--acc-clr)]"
+              >
                 {item.label}
               </Link>
             </li>
