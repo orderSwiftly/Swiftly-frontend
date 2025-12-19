@@ -38,10 +38,10 @@ export default function ForgotPassword() {
         onSubmit={handleSubmit}
         className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg"
       >
-        <h1 className="text-xl font-semibold text-[var(--txt-clr)] mb-4 pry-ff">
-          Forgot Password
+        <h1 className="text-xl font-semibold text-[var(--pry-clr)] mb-4 pry-ff">
+          Reset Password
         </h1>
-        <p className="text-sm text-[var(--acc-clr)] mb-4 sec-ff">
+        <p className="text-sm text-[var(--pry-clr)] mb-4 sec-ff">
           Enter your email and we’ll send you an OTP to reset your password.
         </p>
 
@@ -51,13 +51,13 @@ export default function ForgotPassword() {
           onChange={(e) => setEmail(e.target.value)}
           required
           placeholder="Enter your email"
-          className="w-full px-4 py-2 border border-[var(--acc-clr)] rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] text-[var(--txt-clr)] bg-white/10 placeholder:text-white/70 sec-ff"
+          className="w-full px-4 py-2 border border-[var(--acc-clr)] rounded-lg mb-4 focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] text-[var(--pry-clr)] placeholder:text-white/70 sec-ff"
         />
 
         <button
           type="submit"
           disabled={loading}
-          className="w-full bg-[var(--acc-clr)] text-[var(--bg-clr)] py-2 px-4 rounded-lg transition disabled:opacity-50 sec-ff font-semibold cursor-pointer flex items-center justify-center"
+          className="w-full bg-[var(--acc-clr)] text-[var(--pry-clr)] py-2 px-4 rounded-lg transition disabled:opacity-50 sec-ff font-semibold cursor-pointer flex items-center justify-center"
         >
           {loading ? <PulseLoader /> : "Send OTP"}
         </button>

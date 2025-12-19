@@ -1,54 +1,61 @@
 'use client';
 
-import { useState, useRef } from "react";
-import toast from "react-hot-toast";
+import { useState, useRef, useEffect } from 'react';
 import { ResetPsw } from "@/lib/reset-psw";
 import { useRouter } from "next/navigation";
+import { toast } from "sonner"; // or your toast library
 
 const OTP_LENGTH = 6;
 
-export default function ResetPassword() {
-  const [step, setStep] = useState<number>(1);
-  const [email, setEmail] = useState<string>("");
-  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(""));
-  const [pwd, setPwd] = useState<string>("");
-
-  // Typed refs correctly
-  const refs = useRef<HTMLInputElement[]>([]);
+export default function OTPInputUI() {
+  const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
+  const [timer, setTimer] = useState(30);
+  const inputsRef = useRef<HTMLInputElement[]>([]);
   const router = useRouter();
 
-  const move = (i: number, forward = true) => {
-    const next = forward ? i + 1 : i - 1;
-    const target = refs.current[next];
-    if (target) target.focus();
+  useEffect(() => {
+    if (timer > 0) {
+      const interval = setInterval(() => {
+        setTimer((prev) => prev - 1);
+      }, 1000);
+      return () => clearInterval(interval);
+    }
+  }, [timer]);
+
+  const focusInput = (index: number) => {
+    inputsRef.current[index]?.focus();
   };
 
-  const handleOtp = (v: string, i: number) => {
-    const d = v.replace(/\D/g, "").slice(-1);
-    const arr = [...otp];
-    arr[i] = d;
-    setOtp(arr);
-
-    if (d && i < OTP_LENGTH - 1) move(i);
+  const handleChange = (value: string, index: number) => {
+    if (!/^\d?$/.test(value)) return;
+    const next = [...otp];
+    next[index] = value;
+    setOtp(next);
+    if (value && index < OTP_LENGTH - 1) focusInput(index + 1);
   };
 
-  // Proper typing for submit events
-  const submitEmail = (e: React.FormEvent<HTMLFormElement>) => {
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === 'Backspace' && !otp[index] && index > 0) focusInput(index - 1);
+  };
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     e.preventDefault();
-    if (!email) return toast.error("Enter email");
-    toast.success("OTP sent");
-    setStep(2);
+    const pasteData = e.clipboardData.getData('text').replace(/\D/g, '').slice(0, OTP_LENGTH);
+    if (!pasteData) return;
+    const next = Array(OTP_LENGTH).fill('');
+    pasteData.split('').forEach((char, i) => (next[i] = char));
+    setOtp(next);
+    focusInput(Math.min(pasteData.length, OTP_LENGTH - 1));
   };
 
-  const verifyOtp = (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+  const verifyOtp = async () => {
     if (otp.join("").length !== OTP_LENGTH) return toast.error("Invalid OTP");
-    setStep(3);
-  };
-
-  const reset = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault();
+    
     try {
+      // Assuming email and password are passed as props or retrieved from context/store
+      const email = ""; // Get this from your form/context
+      const pwd = ""; // Get this from your form/context
+      
       await ResetPsw(email, otp.join(""), pwd);
       toast.success("Password reset");
       router.push("/login");
@@ -57,76 +64,66 @@ export default function ResetPassword() {
     }
   };
 
+  const handleResend = () => {
+    setTimer(30);
+    toast.success("OTP resent");
+    // Add your resend OTP logic here
+  };
+
+  const formatTime = (seconds: number) => {
+    const mins = Math.floor(seconds / 60);
+    const secs = seconds % 60;
+    return `${mins}:${secs.toString().padStart(2, '0')}`;
+  };
+
   return (
-    <main className="flex items-center justify-center min-h-screen p-6 bg-[var(--light-bg)] pry-ff">
-      <div className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow">
+    <div className="flex items-center justify-center min-h-screen sec-ff">
+      <div className="flex flex-col items-center gap-6 max-w-md w-full p-4">
+        <div className="text-center">
+          <h1 className="text-2xl font-bold mb-2">Enter Verification Code</h1>
+          <p className="text-gray-600 text-sm">
+            Enter the 6-digit code that we have sent via the email
+          </p>
+        </div>
 
-        {step === 1 && (
-          <form onSubmit={submitEmail} className="flex flex-col gap-4">
-            <h2 className="text-lg pry-ff text-[var(--txt-clr)]">Reset Password</h2>
-
+        <div className='flex gap-3'>
+          {otp.map((digit, i) => (
             <input
-              placeholder="Enter your email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className="p-2 rounded border bg-white/10 text-[var(--txt-clr)]"
+              key={i}
+              ref={(el) => { if (el) inputsRef.current[i] = el; }}
+              value={digit}
+              onChange={(e) => handleChange(e.target.value, i)}
+              onKeyDown={(e) => handleKeyDown(e, i)}
+              onPaste={handlePaste}
+              inputMode="numeric"
+              maxLength={1}
+              className="w-14 h-14 rounded-full border-1 border-[var(--sec-clr)] bg-[var(--txt-clr)] text-center text-xl font-bold focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] transition"
             />
+          ))}
+        </div>
 
-            <button className="py-2 bg-[var(--acc-clr)] rounded text-[var(--bg-clr)]">
-              Send OTP
+        <div className="text-center text-sm">
+          {timer > 0 ? (
+            <p className="text-gray-600">
+              Resend code in <span className="font-semibold text-[var(--pry-clr)]">{formatTime(timer)}</span>
+            </p>
+          ) : (
+            <button
+              onClick={handleResend}
+              className="text-[var(--pry-clr)] font-semibold hover:underline"
+            >
+              Resend code
             </button>
-          </form>
-        )}
+          )}
+        </div>
 
-        {step === 2 && (
-          <form onSubmit={verifyOtp} className="flex flex-col gap-4">
-            <p className="text-sm sec-ff text-[var(--acc-clr)]">Enter OTP</p>
-
-            <div className="flex justify-center gap-2">
-              {otp.map((v, i) => (
-                <input
-                  required
-                  key={i}
-                  ref={(el) => {
-                    if (el) refs.current[i] = el;
-                  }}
-                  value={v}
-                  maxLength={1}
-                  inputMode="numeric"
-                  onChange={(e) => handleOtp(e.target.value, i)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Backspace" && !otp[i] && i > 0) move(i, false);
-                  }}
-                  className="w-10 h-12 text-center rounded border bg-white/10 text-[var(--txt-clr)]"
-                />
-              ))}
-            </div>
-
-            <button className="py-2 bg-[var(--acc-clr)] rounded text-[var(--bg-clr)]">
-              Verify OTP
-            </button>
-          </form>
-        )}
-
-        {step === 3 && (
-          <form onSubmit={reset} className="flex flex-col gap-4">
-            <p className="text-sm sec-ff text-[var(--acc-clr)]">Enter New Password</p>
-
-            <input
-              type="password"
-              placeholder="New password"
-              value={pwd}
-              onChange={(e) => setPwd(e.target.value)}
-              className="p-2 rounded border bg-white/10 text-[var(--txt-clr)]"
-            />
-
-            <button className="py-2 bg-[var(--acc-clr)] rounded text-[var(--bg-clr)]">
-              Reset Password
-            </button>
-          </form>
-        )}
-
+        <button
+          onClick={verifyOtp}
+          className="w-full px-6 py-3 bg-[var(--acc-clr)] text-white rounded-lg font-semibold hover:opacity-90 transition"
+        >
+          Verify Code
+        </button>
       </div>
-    </main>
+    </div>
   );
 }

@@ -174,7 +174,7 @@ export default function SignupComp() {
           Already have an account?{' '}
           <button
             onClick={handleLoginRedirect}
-            className="text-[var(--acc-clr)] underline font-medium"
+            className="text-[var(--acc-clr)] underline font-medium cursor-pointer"
           >
             Login here
           </button>
