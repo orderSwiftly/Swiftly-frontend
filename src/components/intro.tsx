@@ -41,7 +41,7 @@ export default function Introduction() {
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8, delay: 0.4 }}
           className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg transition-all duration-300 sec-ff font-semibold w-fit cursor-pointer
-            hover:shadow-[0_0_15px_#2DCAD7] hover:brightness-110"
+            hover:shadow-[0_0_15px_#9BDD37] hover:brightness-110"
         >
           <Link href="/explore">Explore our products</Link>
         </motion.button>
