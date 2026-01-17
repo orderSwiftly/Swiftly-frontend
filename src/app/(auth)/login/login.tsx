@@ -69,7 +69,7 @@ const handleLogin = async (e: React.FormEvent) => {
       <div className="w-full max-w-md bg-[var(--txt-clr)] p-8 sm:p-10 rounded-2xl shadow-2xl text-[var(--txt-clr)] space-y-4">
         <div className="flex justify-center">
           <Link href="/">
-            <Image src="/tredia.png" alt="Tredia Logo" width={80} height={80} className="rounded-full" priority />
+            <Image src="/swiftly.png" alt="Swiftly Logo" width={80} height={80} className="rounded-full" priority />
           </Link>
         </div>
 

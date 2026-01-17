@@ -32,6 +32,9 @@ export default function RootLayout({
           href="https://fonts.googleapis.com/css2?family=Manrope&display=swap"
           rel="stylesheet"
         />
+
+        {/* Plus Jakarta Sans Google Fonts link */}
+        <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital@0;1&display=swap" rel="stylesheet" />
       </head>
       <body>
         <AuthProvider>

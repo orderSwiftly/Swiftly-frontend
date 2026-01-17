@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { motion } from 'framer-motion';
+import Image from 'next/image';
 
 type Props = {
   onFinish: () => void;
@@ -17,7 +18,7 @@ export default function WelcomeScreen({ onFinish }: Readonly<Props>) {
   }, [onFinish]);
 
   return (
-    <main className="w-screen h-screen flex items-center justify-center bg-[#119a7d] overflow-hidden fixed inset-0 z-[999] pry-ff">
+    <main className="w-screen h-screen flex items-center justify-center bg-white overflow-hidden fixed inset-0 z-[999] pry-ff">
 
       {/* Hills / Curves */}
       <div className="absolute bottom-0 left-0 w-full h-[40%] bg-[#5f7f1a] rounded-t-[100%] opacity-80" />
@@ -30,14 +31,13 @@ export default function WelcomeScreen({ onFinish }: Readonly<Props>) {
         transition={{ duration: 1 }}
         className="z-10"
       >
-        <motion.h1
-          initial={{ letterSpacing: '0.6em' }}
-          animate={{ letterSpacing: '0.15em' }}
-          transition={{ duration: 1.5 }}
-          className="text-white text-3xl md:text-4xl font-bold tracking-[0.15em] pry-ff"
-        >
-          SWIFTLY
-        </motion.h1>
+        <Image
+          src="/swiftly.png"   // <-- your logo path
+          alt="Swifly Logo"
+          width={120}          // adjust size as needed
+          height={120}
+          className="mx-auto"
+        />
       </motion.div>
     </main>
   );

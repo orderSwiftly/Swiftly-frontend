@@ -19,11 +19,12 @@ body {
   --bg-clr: #006B4F;
   --pry-clr: #0A0F1A;
   --txt-clr: #FFFFFF;
+  --prof-clr: #669917;
   --acc-clr: #9BDD37;
   --sec-clr: #cccccc;
   --dark-bg: #0f172a;
 
-  --pry-ff: 'Mona-Sans', sans-serif;
+  --pry-ff: "Plus Jakarta Sans", sans-serif;
   --sec-ff: "Manrope", sans-serif;
   --radius: 0.625rem;
   --background: oklch(1 0 0);

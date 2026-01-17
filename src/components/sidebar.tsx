@@ -47,16 +47,16 @@ export default function Sidebar() {
         } bg-[var(--bg-clr)] text-white flex-col z-40 transition-all duration-300`}
       >
         {/* Logo and Toggle */}
-        <div className="p-2 border-b border-gray-700 pry-ff flex items-center justify-between">
+        <div className="p-4 border-b border-gray-700 pry-ff flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
             <Image
-              src="/tredia-logo.png"
-              alt="Tredia Logo"
+              src="/swiftly.png"
+              alt="Swiftly Logo"
               width={40}
               height={40}
               className="w-10 h-10 object-cover"
             />
-            {!collapsed && <span className="text-xl font-bold">Tredia</span>}
+            {!collapsed && <span className="text-xl font-bold">Swiftly</span>}
           </Link>
           <button onClick={() => setCollapsed(!collapsed)}>
             {collapsed ? (
@@ -155,16 +155,16 @@ export default function Sidebar() {
       </nav>
 
       {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] px-4 py-3 flex items-center justify-between z-50">
+      {/* <div className="md:hidden fixed top-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] px-4 py-3 flex items-center justify-between z-50">
         <Link href="/" className="flex items-center space-x-2">
           <Image
-            src="/tredia-logo.png"
-            alt="Tredia Logo"
+            src="/swiftly.png"
+            alt="Swiftly Logo"
             width={32}
             height={32}
             className="w-8 h-8 object-cover"
           />
-          <span className="text-lg font-bold pry-ff">Tredia</span>
+          <span className="text-lg font-bold pry-ff">Swiftly</span>
         </Link>
 
         <div className="flex items-center space-x-2">
@@ -183,7 +183,7 @@ export default function Sidebar() {
           </div>
           <span className="text-sm sec-ff">{isLoading ? 'Loading...' : userFullname}</span>
         </div>
-      </div>
+      </div> */}
 
       {/* Mobile Spacers */}
       <div className="md:hidden h-16"></div> {/* Top spacer */}

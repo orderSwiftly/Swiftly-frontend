@@ -32,13 +32,12 @@ export default function Navigation() {
         <Link href="/">
           <div className="flex items-center gap-2">
             <Image
-              src="/tredia-logo.png"
-              alt="Tredia Logo"
-              width={40}
-              height={40}
+              src="/swiftly.png"
+              alt="Swiftly Logo"
+              width={60}
+              height={60}
               className="w-10 h-10 object-cover"
             />
-            <span className="text-xl font-bold text-[var(--sec-clr)]">Swiftly</span>
           </div>
         </Link>
 
