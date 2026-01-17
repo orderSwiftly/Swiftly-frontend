@@ -9,7 +9,7 @@ import Link from 'next/link';
 
 const actions = [
     {
-        link: '/dashboard/order',
+        link: '/dashboard/my-orders',
         label: 'My Orders',
         icon: ShoppingBag,
     },

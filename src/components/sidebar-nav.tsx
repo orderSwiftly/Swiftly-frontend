@@ -11,8 +11,6 @@ export default function SidebarNav() {
 
     useEffect(() => {
         if (!user) fetchUser();
-        console.log('USER OBJECT:', user);
-        console.log('USER PHOTO:', user?.photo);
     }, [user, fetchUser]);
 
     const userInitial = user?.fullname?.charAt(0)?.toUpperCase() || 'U';

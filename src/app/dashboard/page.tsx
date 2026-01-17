@@ -1,14 +1,10 @@
 'use client';
-
-import Image from 'next/image';
-import SidebarNav from '@/components/sidebar-nav';
 import { Search, Bell } from 'lucide-react';
 
 export default function DashboardPage() {
   return (
     <main className="min-h-screen bg-gray-50 pb-24">
 
-      <SidebarNav />
       {/* Search */}
       <div className="px-4 mt-4">
         <div className="relative">

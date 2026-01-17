@@ -48,7 +48,7 @@ export default function Sidebar() {
       >
         {/* Logo and Toggle */}
         <div className="p-4 border-b border-gray-700 pry-ff flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/dashboard" className="flex items-center space-x-2">
             <Image
               src="/swiftly.png"
               alt="Swiftly Logo"
