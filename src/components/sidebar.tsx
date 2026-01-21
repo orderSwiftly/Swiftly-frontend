@@ -6,21 +6,21 @@ import { usePathname } from 'next/navigation';
 import {
   Package,
   ShoppingBag,
-  LayoutDashboard,
+  HomeIcon,
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Clock,
+  UserCircle,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from './sidebar-context';
 
 const navItems = [
-  { label: 'Dashboard', href: '/dashboard', icon: LayoutDashboard },
+  { label: 'Home', href: '/', icon: HomeIcon },
   { label: 'Products', href: '/dashboard/my-products', icon: Package },
   { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
-  { label: 'Activities', href: '/dashboard/activities', icon: Clock },
+  { label: 'Profile', href: '/dashboard/profile', icon: UserCircle },
 ];
 
 export default function Sidebar() {
@@ -44,11 +44,11 @@ export default function Sidebar() {
       <aside
         className={`hidden md:flex fixed top-0 left-0 h-screen ${
           collapsed ? 'w-20' : 'w-64'
-        } bg-[var(--bg-clr)] text-white flex-col z-40 transition-all duration-300`}
+        } bg-[var(--txt-clr)] text-[var(--pry-clr)] flex-col z-40 transition-all duration-300`}
       >
         {/* Logo and Toggle */}
         <div className="p-4 border-b border-gray-700 pry-ff flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center space-x-2">
+          <Link href="/" className="flex items-center space-x-2">
             <Image
               src="/swiftly.png"
               alt="Swiftly Logo"
@@ -80,8 +80,8 @@ export default function Sidebar() {
                       collapsed ? 'justify-center' : 'space-x-3'
                     } px-4 py-3 rounded-lg transition-colors duration-200 ${
                       isActive
-                        ? 'bg-gray-800 text-[var(--sec-clr)]'
-                        : 'text-gray-300 hover:bg-gray-800 hover:text-white'
+                      ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)]'
+                        : 'text-[var(--pry-clr)] hover:bg-[var(--acc-clr)] hover:text-[var(--txt-clr)]'
                     }`}
                   >
                     <Icon className="w-5 h-5" />
@@ -132,7 +132,7 @@ export default function Sidebar() {
       </aside>
 
       {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] border-t border-gray-700 z-50">
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--txt-clr)] text-[var(--pry-clr)] border rounded-tr-3 z-50">
         <div className="flex justify-around items-center py-2">
           {navItems.slice(0, 4).map(({ label, href, icon: Icon }) => {
             const isActive = pathname === href;
@@ -142,8 +142,8 @@ export default function Sidebar() {
                 href={href}
                 className={`flex flex-col items-center py-2 px-3 min-w-0 rounded-md transition-colors duration-200 ${
                   isActive
-                    ? 'bg-gray-800 text-[var(--acc-clr)]'
-                    : 'text-gray-400 hover:text-[var(--acc-clr)]'
+                    ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)]'
+                    : 'text-[var(--pry-clr)] hover:text-[var(--acc-clr)]'
                 }`}
               >
                 <Icon className="w-5 h-5 mb-1" />

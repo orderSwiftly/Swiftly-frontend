@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Navigation from '@/components/navigation';
 import LandingPage from '@/components/landing-page';
+import DashboardPage from '@/components/dashboard-page';
 import ComplaintButton from '@/components/complaint-btn';
 import ComplaintModal from '@/components/complaint-modal';
 import WelcomeScreen from '@/components/welcome-screen';
@@ -24,7 +25,7 @@ export default function Home() {
 
     if (!token) {
       if (!seenWelcome) setShowWelcome(true);
-      else router.push('/dashboard');
+      else router.push('/');
     } else {
       if (!seenWelcome) setShowWelcome(true);
       else if (!seenOnboarding) setShowOnboarding(true);
@@ -43,8 +44,8 @@ export default function Home() {
 
       if (!seenOnboarding) setShowOnboarding(true);
       else if (!selectedCampus) setShowCampus(true);
-      else router.push('/dashboard');
-    } else router.push('/dashboard');
+      else router.push('/');
+    } else router.push('/');
   };
 
   const closeOnboarding = () => {
@@ -55,19 +56,18 @@ export default function Home() {
 
   const closeCampus = () => {
     setShowCampus(false);
-    router.push('/dashboard');
+    router.push('/');
   };
 
   return (
-    <main className="min-h-screen w-full bg-[#006B4F] flex flex-col items-center justify-start relative">
+    <main className="min-h-screen w-full bg-(--txt-clr) flex flex-col items-center justify-start relative">
       {showWelcome && <WelcomeScreen onFinish={closeWelcome} />}
       {!showWelcome && showOnboarding && <Onboarding onFinish={closeOnboarding} />}
       {!showWelcome && !showOnboarding && showCampus && <SelectCampus onFinish={closeCampus} />}
 
       {!showWelcome && !showOnboarding && !showCampus && (
         <>
-          <Navigation />
-          <LandingPage />
+          <DashboardPage />
           <ComplaintButton onClick={() => setShowComplaint(true)} />
           {showComplaint && <ComplaintModal onClose={() => setShowComplaint(false)} />}
         </>
