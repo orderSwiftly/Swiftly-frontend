@@ -14,11 +14,7 @@ export const metadata: Metadata = {
   description: "Trust-first commerce for university trade and beyond",
 };
 
-export default function RootLayout({
-  children,
-}: {
-  readonly children: React.ReactNode;
-}) {
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en">
       <head>
@@ -28,11 +24,8 @@ export default function RootLayout({
       </head>
       <body>
         <AuthProvider>
-          <AppShell>
-            {children}
-          </AppShell>
-
-          <Toaster position="top-center" reverseOrder={false} />
+          {children}
+          <Toaster position="top-center" />
           <PushNotification />
         </AuthProvider>
       </body>

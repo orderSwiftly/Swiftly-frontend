@@ -18,9 +18,9 @@ import { useSidebar } from './sidebar-context';
 
 const navItems = [
   { label: 'Home', href: '/', icon: HomeIcon },
-  { label: 'Products', href: '/dashboard/my-products', icon: Package },
-  { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
-  { label: 'Profile', href: '/dashboard/profile', icon: UserCircle },
+  { label: 'Products', href: '/my-products', icon: Package },
+  { label: 'Orders', href: '/my-orders', icon: ShoppingBag },
+  { label: 'Profile', href: '/profile', icon: UserCircle },
 ];
 
 export default function Sidebar() {
@@ -42,7 +42,7 @@ export default function Sidebar() {
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex fixed top-0 left-0 h-screen ${
+        className={`hidden md:flex fixed top-0 left-0 h-screen shadow ${
           collapsed ? 'w-20' : 'w-64'
         } bg-[var(--txt-clr)] text-[var(--pry-clr)] flex-col z-40 transition-all duration-300`}
       >
@@ -50,7 +50,7 @@ export default function Sidebar() {
         <div className="p-4 border-b border-gray-700 pry-ff flex items-center justify-between">
           <Link href="/" className="flex items-center space-x-2">
             <Image
-              src="/swiftly.png"
+              src="/brand-logo.png"
               alt="Swiftly Logo"
               width={40}
               height={40}
@@ -96,7 +96,7 @@ export default function Sidebar() {
         {/* User Section */}
         <div className="p-4 border-t border-gray-700 sec-ff">
           <div className="flex items-center space-x-3 mb-4">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-[var(--bg-clr)]">
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-[var(--sec-clr)]">
               {user?.photo ? (
                 <Image
                   width={40}
@@ -112,7 +112,7 @@ export default function Sidebar() {
 
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[var(--sec-clr)] truncate">
+                <p className="text-sm font-medium text-[var(--pry-clr)] truncate">
                   {isLoading ? 'Loading...' : userFullname}
                 </p>
               </div>
@@ -123,7 +123,7 @@ export default function Sidebar() {
             onClick={logout}
             className={`flex items-center ${
               collapsed ? 'justify-center' : 'space-x-3'
-            } w-full px-4 py-2 text-gray-300 hover:bg-gray-800 hover:text-[var(--sec-clr)] rounded-lg transition-colors duration-200 cursor-pointer`}
+            } w-full px-4 py-2 text-[var(--pry-clr)] hover:bg-gray-800 hover:text-[var(--sec-clr)] rounded-lg transition-colors duration-200 cursor-pointer`}
           >
             <LogOut className="w-5 h-5" />
             {!collapsed && <span>Logout</span>}

@@ -1,4 +1,4 @@
-import GetOrders from '@/app/dashboard/my-orders/get-orders/page';
+import GetOrders from '@/app/(dashboard)/my-orders/get-orders/page';
 
 export default function MyOrdersPage() {
   return (

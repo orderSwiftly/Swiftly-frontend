@@ -16,14 +16,14 @@ export default function SidebarNav() {
     const userInitial = user?.fullname?.charAt(0)?.toUpperCase() || 'U';
 
     return (
-        <header className="flex items-center justify-between px-4 pt-4 bg-white">
+        <header className="flex items-center justify-between md:px-12 pt-4 px-4 bg-white">
             {/* Logo */}
             <div className="flex items-center gap-2">
                 <Image
-                    src="/swiftly.png"
+                    src="/text-logo.png"
                     alt="Swiftly Logo"
-                    width={32}
-                    height={32}
+                    width={80}
+                    height={80}
                 />
             </div>
 
