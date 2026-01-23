@@ -85,6 +85,7 @@ export default function ExplorePage() {
         router.push('/signup');
         return;
       }
+
       const res = await fetch(`${api_url}/api/v1/cart/add/${product._id}`, {
         method: 'POST',
         headers: {
@@ -93,12 +94,21 @@ export default function ExplorePage() {
         },
         body: JSON.stringify({ quantity: 1 }),
       });
+
       const data = await res.json();
-      if (res.ok && data.status === 'success') toast.success(`${product.title} added to cart`);
+
+      if (res.ok && data.status === 'success') {
+        toast.success(`${product.title} added to cart`);
+      } else {
+        // Show backend error message in toast
+        toast.error(data?.message || 'Failed to add to cart');
+      }
     } catch (error) {
+      console.error(error);
       toast.error('Something went wrong!');
     }
   };
+
 
   let content: React.ReactNode;
 
