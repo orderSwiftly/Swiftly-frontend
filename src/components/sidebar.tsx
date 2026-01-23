@@ -7,6 +7,7 @@ import {
   Package,
   ShoppingBag,
   HomeIcon,
+  ShoppingCartIcon,
   LogOut,
   ChevronLeft,
   ChevronRight,
@@ -18,7 +19,7 @@ import { useSidebar } from './sidebar-context';
 
 const navItems = [
   { label: 'Home', href: '/', icon: HomeIcon },
-  { label: 'Products', href: '/my-products', icon: Package },
+  { label: 'Cart', href: '/cart', icon: ShoppingCartIcon },
   { label: 'Orders', href: '/my-orders', icon: ShoppingBag },
   { label: 'Profile', href: '/profile', icon: UserCircle },
 ];
