@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
+
 import DashboardPage from '@/components/dashboard-page';
 import ComplaintButton from '@/components/complaint-btn';
 import ComplaintModal from '@/components/complaint-modal';
@@ -9,12 +10,16 @@ import WelcomeScreen from '@/components/welcome-screen';
 import Onboarding from '@/components/onboarding';
 import SelectCampus from '@/components/select-campus';
 
+import { useUIStore } from '@/stores/campusStore';
+
 export default function DashboardHome() {
     const router = useRouter();
+
+    const { showCampus, openCampus, closeCampus } = useUIStore();
+
     const [showComplaint, setShowComplaint] = useState(false);
     const [showWelcome, setShowWelcome] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
-    const [showCampus, setShowCampus] = useState(false);
 
     useEffect(() => {
         const token = localStorage.getItem('token');
@@ -27,22 +32,56 @@ export default function DashboardHome() {
             return;
         }
 
-        if (!seenWelcome) setShowWelcome(true);
-        else if (!seenOnboarding) setShowOnboarding(true);
-        else if (!selectedCampus) setShowCampus(true);
-    }, []);
+        if (!seenWelcome) {
+            setShowWelcome(true);
+            return;
+        }
+
+        if (!seenOnboarding) {
+            setShowOnboarding(true);
+            return;
+        }
+
+        if (!selectedCampus) {
+            openCampus();
+        }
+    }, [router, openCampus]);
 
     return (
         <>
-            {showWelcome && <WelcomeScreen onFinish={() => setShowWelcome(false)} />}
-            {!showWelcome && showOnboarding && <Onboarding onFinish={() => setShowOnboarding(false)} />}
-            {!showWelcome && !showOnboarding && showCampus && <SelectCampus onFinish={() => setShowCampus(false)} />}
+            {showWelcome && (
+                <WelcomeScreen
+                    onFinish={() => {
+                        sessionStorage.setItem('seen-welcome', 'true');
+                        setShowWelcome(false);
+                    }}
+                />
+            )}
+
+            {!showWelcome && showOnboarding && (
+                <Onboarding
+                    onFinish={() => {
+                        localStorage.setItem('seen-onboarding', 'true');
+                        setShowOnboarding(false);
+                    }}
+                />
+            )}
+
+            {showCampus && (
+                <SelectCampus
+                    onFinish={() => {
+                        closeCampus();
+                    }}
+                />
+            )}
 
             {!showWelcome && !showOnboarding && !showCampus && (
                 <>
                     <DashboardPage />
                     <ComplaintButton onClick={() => setShowComplaint(true)} />
-                    {showComplaint && <ComplaintModal onClose={() => setShowComplaint(false)} />}
+                    {showComplaint && (
+                        <ComplaintModal onClose={() => setShowComplaint(false)} />
+                    )}
                 </>
             )}
         </>
