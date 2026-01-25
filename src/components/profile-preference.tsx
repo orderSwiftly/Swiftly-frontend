@@ -3,65 +3,122 @@
 import {
     Bell,
     HelpCircle,
-    LinkIcon,
+    Copy,
     ChevronRight,
-    LogOutIcon
+    LogOut
 } from 'lucide-react';
+import { useState } from 'react';
+import LogoutModal from './logout-modal';
 import { useUserStore } from '@/stores/userStore';
 import Link from 'next/link';
 
-
-const actions = [
-    {
-        link: '/dashboard/profile/notifications',
-        label: 'Push Notifications',
-        icon: Bell,
-    },
-    {
-        link: '/dashboard/profile/support',
-        label: 'Help & Support',
-        icon: HelpCircle,
-    },
-    {
-        label: 'Copy referral code',
-        icon: LinkIcon,
-    },
-    {
-        label: 'Logout',
-        icon: LogOutIcon,
-    }
-];
-
 export default function ProfilePreference() {
     const { logout } = useUserStore();
+    const [showLogoutModal, setShowLogoutModal] = useState(false);
+    const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+    const [copiedCode, setCopiedCode] = useState(false);
+
+    const handleCopyReferralCode = () => {
+        const referralCode = 'SWIFT12345';
+        navigator.clipboard.writeText(referralCode);
+        setCopiedCode(true);
+        setTimeout(() => setCopiedCode(false), 2000);
+    };
+
+    const handleLogoutClick = () => {
+        setShowLogoutModal(true);
+    };
     
     return (
-        <section className="px-4 mt-4 w-full">
-            <h3 className="text-sm font-semibold text-gray-700 mb-2">
-                Preferences
-            </h3>
+        <>
+            <section className="px-4 mt-4 w-full pb-24 md:pb-10">
+                <h3 className="text-sm font-semibold text-gray-700 mb-2">
+                    Preferences
+                </h3>
 
-            <div className="bg-white rounded-xl border border-gray-200 divide-y">
-                {actions.map(({ label, icon: Icon, link }) => (
+                <div className="bg-white rounded-xl border border-gray-200 divide-y">
+                    <div className="w-full flex items-center justify-between px-4 py-3">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
+                                <Bell className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800">
+                                Push Notifications
+                            </span>
+                        </div>
+
+                        <button
+                            onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+                            className={`relative w-12 h-6 rounded-full transition-colors ${
+                                notificationsEnabled ? 'bg-green-600' : 'bg-gray-300'
+                            }`}
+                        >
+                            <span
+                                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                                    notificationsEnabled ? 'translate-x-6' : 'translate-x-0'
+                                }`}
+                            />
+                        </button>
+                    </div>
+
                     <Link
-                        onClick={label === 'Logout' ? logout : undefined}
-                        href={link || '#'}
-                        key={label}
+                        href="/dashboard/profile/support"
                         className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
                     >
                         <div className="flex items-center gap-3">
                             <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                                <Icon className="w-5 h-5 text-white" />
+                                <HelpCircle className="w-5 h-5 text-white" />
                             </div>
                             <span className="text-sm font-medium text-gray-800">
-                                {label}
+                                Contact support
                             </span>
                         </div>
 
                         <ChevronRight className="w-4 h-4 text-gray-400" />
                     </Link>
-                ))}
-            </div>
-        </section>
+
+                    <button
+                        onClick={handleCopyReferralCode}
+                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
+                                <Copy className="w-5 h-5 text-white" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800">
+                                Copy Referral Code
+                            </span>
+                        </div>
+
+                        <Copy className={`w-4 h-4 ${
+                            copiedCode ? 'text-green-600' : 'text-gray-400'
+                        }`} />
+                    </button>
+
+                    <button
+                        onClick={handleLogoutClick}
+                        className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
+                    >
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-lg bg-red-100 flex items-center justify-center">
+                                <LogOut className="w-5 h-5 text-red-600" />
+                            </div>
+                            <span className="text-sm font-medium text-gray-800">
+                                Log Out
+                            </span>
+                        </div>
+
+                        <ChevronRight className="w-4 h-4 text-gray-400" />
+                    </button>
+                </div>
+            </section>
+
+            {showLogoutModal && (
+                <LogoutModal
+                    onClose={() => setShowLogoutModal(false)}
+                    onLogout={logout}
+                />
+            )}
+        </>
     );
 }
