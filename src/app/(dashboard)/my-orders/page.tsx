@@ -6,6 +6,9 @@ import CartOrderItem, { CartItem } from "./components/cart-order-item";
 import ActiveOrderItemCard, {
   ActiveOrderItem,
 } from "./components/active-order-item";
+import PassiveOrderItemCard, {
+  PassiveOrderItem,
+} from "./components/passive-order-item";
 import EmptyOrdersState from "./components/empty-orders-state";
 import DeleteOrderModal from "./components/delete-order-modal";
 import PaymentMethodModal from "./components/payment-method-modal";
@@ -87,7 +90,41 @@ export default function MyOrdersPage() {
     },
   ]);
 
-  const [passiveOrders] = useState<any[]>([]); // Empty for now
+  const [passiveOrders] = useState<PassiveOrderItem[]>([
+    {
+      _id: "p1",
+      productId: "p1",
+      title: "Jollof spaghetti (1 Egg & 2 Sausages)",
+      quantity: 3,
+      price: 7000,
+      productImg: ["/placeholder-food.jpg"],
+      date: "23/06/26",
+      paymentMethod: "Transfer",
+      status: "completed",
+    },
+    {
+      _id: "p2",
+      productId: "p2",
+      title: "Jollof spaghetti (1 Egg & 2 Sausages)",
+      quantity: 3,
+      price: 7000,
+      productImg: ["/placeholder-food.jpg"],
+      date: "23/06/26",
+      paymentMethod: "Cash",
+      status: "canceled",
+    },
+    {
+      _id: "p3",
+      productId: "p3",
+      title: "Jollof spaghetti (1 Egg & 2 Sausages)",
+      quantity: 3,
+      price: 7000,
+      productImg: ["/placeholder-food.jpg"],
+      date: "23/06/26",
+      paymentMethod: "Card",
+      status: "completed",
+    },
+  ]);
 
   const subtotal = cartItems.reduce(
     (sum, item) => sum + item.price * item.quantity,
@@ -222,11 +259,19 @@ export default function MyOrdersPage() {
         )}
 
         {activeTab === "passive" && (
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-2xl mx-auto p-4 space-y-4">
             {passiveOrders.length === 0 ? (
               <EmptyOrdersState />
             ) : (
-              <div className="p-4 space-y-4"></div>
+              passiveOrders.map((order) => (
+                <PassiveOrderItemCard
+                  key={order._id}
+                  order={order}
+                  onClick={() => {
+                    console.log("Passive order clicked:", order._id);
+                  }}
+                />
+              ))
             )}
           </div>
         )}

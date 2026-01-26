@@ -1,39 +1,31 @@
 "use client";
 
 import Image from "next/image";
-import { ChevronRight } from "lucide-react";
 
-export interface ActiveOrderItem {
+export interface PassiveOrderItem {
   _id: string;
   productId: string;
   title: string;
   quantity: number;
   price: number;
   productImg?: string[];
-  estimatedTime: string;
+  date: string;
   paymentMethod: string;
-  status: string;
-  riderName?: string;
-  riderPhone?: string;
+  status: "completed" | "canceled";
 }
 
-interface ActiveOrderItemProps {
-  order: ActiveOrderItem;
+interface PassiveOrderItemProps {
+  order: PassiveOrderItem;
   onClick?: () => void;
 }
 
-export default function ActiveOrderItemCard({
+export default function PassiveOrderItemCard({
   order,
   onClick,
-}: ActiveOrderItemProps) {
-  const getProgressSegments = (status: string) => {
-    if (status.includes("accepted")) return 1;
-    if (status.includes("waiting")) return 2;
-    if (status.includes("Prepared") || status.includes("preparing")) return 3;
-    return 1;
-  };
-
-  const activeSegments = getProgressSegments(order.status);
+}: PassiveOrderItemProps) {
+  const isCompleted = order.status === "completed";
+  const progressColor = isCompleted ? "bg-[#4D770D]" : "bg-red-600";
+  const statusText = isCompleted ? "Order completed" : "Order canceled";
 
   return (
     <div
@@ -55,20 +47,20 @@ export default function ActiveOrderItemCard({
         </div>
 
         <div className="flex flex-row justify-between w-full items-center">
-          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
+          <h3 className="font-bold text-gray-900 line-clamp-2">
             {order.title}
           </h3>
-          <p className="text-sm font-semibold text-gray-900 mt-1">
+          <p className="font-semibold text-gray-900 mt-1">
             ₦{order.price.toLocaleString()}
           </p>
         </div>
       </div>
 
       <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mb-3">
-        <span className="border border-gray-300 rounded-xs px-2">{order.quantity}</span>
-        <span className="text-[#669917] font-bold">
-          {order.estimatedTime}
+        <span className="border border-gray-300 rounded-xs px-2">
+          {order.quantity}
         </span>
+        <span className="text-[#669917] font-bold">{order.date}</span>
         <div className="flex items-center gap-1">
           <span>Payment:</span>
           <span className="font-medium">{order.paymentMethod}</span>
@@ -82,27 +74,14 @@ export default function ActiveOrderItemCard({
         {[1, 2, 3, 4, 5, 6].map((segment) => (
           <div
             key={segment}
-            className={`h-1 flex-1 rounded-full ${
-              segment <= activeSegments ? "bg-[#4D770D]" : "bg-gray-200"
-            }`}
+            className={`h-1 flex-1 rounded-full ${progressColor}`}
           />
         ))}
       </div>
 
-      <p className="text-xs text-gray-700 text-center">{order.status}</p>
-
-      {order.riderName && order.riderPhone && (
-        <div className="mt-3 pt-3 border-t border-gray-100 flex items-center justify-between text-xs">
-          <div>
-            <p className="text-gray-500">Rider Name:</p>
-            <p className="font-medium text-gray-900">{order.riderName}</p>
-          </div>
-          <div>
-            <p className="text-gray-500">Rider Number:</p>
-            <p className="font-medium text-green-600">{order.riderPhone}</p>
-          </div>
-        </div>
-      )}
+      <p className="text-sm font-medium text-[#0C0C0C] text-center">
+        {statusText}
+      </p>
     </div>
   );
 }
