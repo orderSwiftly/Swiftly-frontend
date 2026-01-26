@@ -1,6 +1,6 @@
 // stores/userStore.ts
-import { create } from 'zustand';
-import { persist, createJSONStorage } from 'zustand/middleware';
+import { create } from "zustand";
+import { persist, createJSONStorage } from "zustand/middleware";
 
 export interface User {
   _id: string;
@@ -10,6 +10,7 @@ export interface User {
   photo?: string;
   university?: string;
   role?: string;
+  referralCode?: string;
 }
 
 interface UserState {
@@ -36,8 +37,8 @@ export const useUserStore = create<UserState>()(
 
       clearUser: () => {
         set({ user: null, isAuthenticated: false, isLoading: false });
-        if (typeof window !== 'undefined') {
-          localStorage.removeItem('token');
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("token");
         }
       },
 
@@ -46,9 +47,9 @@ export const useUserStore = create<UserState>()(
       },
 
       fetchUser: async () => {
-        if (typeof window === 'undefined') return;
-        
-        const token = localStorage.getItem('token');
+        if (typeof window === "undefined") return;
+
+        const token = localStorage.getItem("token");
         const api_url = process.env.NEXT_PUBLIC_API_URL;
 
         if (!token || !api_url) {
@@ -60,10 +61,10 @@ export const useUserStore = create<UserState>()(
           set({ isLoading: true });
 
           const res = await fetch(`${api_url}/api/v1/user/me`, {
-            method: 'GET',
+            method: "GET",
             headers: {
               Authorization: `Bearer ${token}`,
-              'Content-Type': 'application/json',
+              "Content-Type": "application/json",
             },
           });
 
@@ -74,13 +75,13 @@ export const useUserStore = create<UserState>()(
 
           const data = await res.json();
 
-          if (data.status === 'success') {
+          if (data.status === "success") {
             get().setUser(data.data.user);
           } else {
             get().clearUser();
           }
         } catch (err) {
-          console.error('Fetch user error:', err);
+          console.error("Fetch user error:", err);
           get().clearUser();
         } finally {
           set({ isLoading: false });
@@ -90,35 +91,35 @@ export const useUserStore = create<UserState>()(
       logout: async () => {
         try {
           const api_url = process.env.NEXT_PUBLIC_API_URL;
-          const token = localStorage.getItem('token');
+          const token = localStorage.getItem("token");
 
           if (token && api_url) {
             await fetch(`${api_url}/api/v1/auth/user/logout`, {
-              method: 'POST',
+              method: "POST",
               headers: {
                 Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
+                "Content-Type": "application/json",
               },
             });
           }
         } catch (err) {
-          console.error('Logout error:', err);
+          console.error("Logout error:", err);
         } finally {
           // Clear token and user state from localStorage or zustand
-          localStorage.removeItem('token');
+          localStorage.removeItem("token");
           get().clearUser();
-          window.location.href = '/login'; // redirect
+          window.location.href = "/login";
         }
       },
     }),
     {
-      name: 'user-storage',
+      name: "user-storage",
       storage: createJSONStorage(() => localStorage),
       partialize: (state) => ({
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
       skipHydration: false,
-    }
-  )
+    },
+  ),
 );
