@@ -13,14 +13,14 @@ export default function AddToCart({ quantity, onIncrement, onDecrement }: Props)
       <button
         onClick={onDecrement}
         disabled={quantity <= 1}
-        className="p-1 bg-white/10 rounded-full text-white hover:bg-white/20 disabled:opacity-50 cursor-pointer"
+        className="p-1 bg-[var(--bg-clr)] rounded-full text-[var(--txt-clr)] disabled:opacity-50 cursor-pointer"
       >
         <Minus size={16} />
       </button>
-      <p className="font-semibold text-[var(--txt-clr)] sec-ff">{quantity}</p>
+      <p className="font-semibold text-[var(--sec-clr)] sec-ff">{quantity}</p>
       <button
         onClick={onIncrement}
-        className="p-1 bg-white/10 rounded-full text-white hover:bg-white/20 cursor-pointer"
+        className="p-1 bg-[var(--bg-clr)] rounded-full text-[var(--txt-clr)] cursor-pointer"
       >
         <Plus size={16} />
       </button>
