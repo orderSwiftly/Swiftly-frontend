@@ -1,4 +1,3 @@
-import { link } from "fs";
 import { ShoppingBag, Signpost, Heart, ChevronRight } from "lucide-react";
 import Link from "next/link";
 

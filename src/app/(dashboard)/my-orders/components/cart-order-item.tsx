@@ -16,14 +16,22 @@ export interface CartItem {
 interface CartOrderItemProps {
   item: CartItem;
   onDelete: (itemId: string) => void;
+  onQuantityChange?: (itemId: string, quantity: number) => void;
 }
 
-export default function CartOrderItem({ item, onDelete }: CartOrderItemProps) {
+export default function CartOrderItem({
+  item,
+  onDelete,
+  onQuantityChange,
+}: CartOrderItemProps) {
   const [quantity, setQuantity] = useState(item.quantity);
 
   const handleQuantityChange = (newQty: number) => {
     if (newQty >= 1) {
       setQuantity(newQty);
+      if (onQuantityChange) {
+        onQuantityChange(item._id, newQty);
+      }
     }
   };
 

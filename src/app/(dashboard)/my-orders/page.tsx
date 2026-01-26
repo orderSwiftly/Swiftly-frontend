@@ -24,6 +24,7 @@ export default function MyOrdersPage() {
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [selectedItem, setSelectedItem] = useState<string>("");
+  const [isProcessingPayment, setIsProcessingPayment] = useState(false);
 
   const [cartItems, setCartItems] = useState<CartItem[]>([
     {
@@ -135,8 +136,17 @@ export default function MyOrdersPage() {
   const total = subtotal + shippingHandling + tax;
 
   const handleDeleteItem = (itemId: string) => {
+    const item = cartItems.find((i) => i._id === itemId);
     setSelectedItem(itemId);
     setShowDeleteModal(true);
+  };
+
+  const handleQuantityChange = (itemId: string, newQuantity: number) => {
+    setCartItems(
+      cartItems.map((item) =>
+        item._id === itemId ? { ...item, quantity: newQuantity } : item,
+      ),
+    );
   };
 
   const confirmDelete = () => {
@@ -146,20 +156,25 @@ export default function MyOrdersPage() {
   };
 
   const handleCheckout = () => {
+    if (cartItems.length === 0) {
+      return;
+    }
     setShowPaymentModal(true);
   };
 
   const handlePaymentConfirm = (method: "card" | "transfer" | "cash") => {
     setShowPaymentModal(false);
+    setIsProcessingPayment(true);
 
     setTimeout(() => {
+      setIsProcessingPayment(false);
       const success = Math.random() > 0.3;
       if (success) {
         setShowSuccessModal(true);
       } else {
         setShowErrorModal(true);
       }
-    }, 1000);
+    }, 1500);
   };
 
   const handleSuccessClose = () => {
@@ -185,6 +200,7 @@ export default function MyOrdersPage() {
                       key={item._id}
                       item={item}
                       onDelete={handleDeleteItem}
+                      onQuantityChange={handleQuantityChange}
                     />
                   ))}
                 </div>
@@ -214,25 +230,27 @@ export default function MyOrdersPage() {
 
                 <div className="p-4">
                   <button
-                    onClick={handleCheckout}
-                    className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2"
+                    disabled={isProcessingPayment || cartItems.length === 0}
+                    className="w-full py-3 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
-                    Checkout
-                    <svg
-                      width="20"
-                      height="20"
-                      viewBox="0 0 20 20"
-                      fill="none"
-                      xmlns="http://www.w3.org/2000/svg"
-                    >
-                      <path
-                        d="M7 10L13 10M13 10L10 7M13 10L10 13"
-                        stroke="currentColor"
-                        strokeWidth="2"
-                        strokeLinecap="round"
-                        strokeLinejoin="round"
-                      />
-                    </svg>
+                    {isProcessingPayment ? "Processing..." : "Checkout"}
+                    {!isProcessingPayment && (
+                      <svg
+                        width="20"
+                        height="20"
+                        viewBox="0 0 20 20"
+                        fill="none"
+                        xmlns="http://www.w3.org/2000/svg"
+                      >
+                        <path
+                          d="M7 10L13 10M13 10L10 7M13 10L10 13"
+                          stroke="currentColor"
+                          strokeWidth="2"
+                          strokeLinecap="round"
+                          strokeLinejoin="round"
+                        />
+                      </svg>
+                    )}
                   </button>
                 </div>
               </div>
