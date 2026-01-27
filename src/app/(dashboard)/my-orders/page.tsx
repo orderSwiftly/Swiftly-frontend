@@ -184,7 +184,7 @@ export default function MyOrdersPage() {
   };
 
   return (
-    <div className="min-h-screen w-full bg-gray-50">
+    <div className="min-h-screen w-full bg-gray-50 pry-ff">
       <OrdersHeader activeTab={activeTab} onTabChange={setActiveTab} />
 
       <main className="pb-32">
