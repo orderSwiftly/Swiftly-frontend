@@ -55,20 +55,20 @@ export default function ActiveOrderItemCard({
         </div>
 
         <div className="flex flex-row justify-between w-full items-center">
-          <h3 className="text-sm font-semibold text-gray-900 line-clamp-2">
+          <h3 className="font-bold text-gray-900 line-clamp-2">
             {order.title}
           </h3>
-          <p className="text-sm font-semibold text-gray-900 mt-1">
+          <p className="font-semibold text-gray-900 mt-1">
             ₦{order.price.toLocaleString()}
           </p>
         </div>
       </div>
 
       <div className="flex items-center justify-center gap-4 text-xs text-gray-600 mb-3">
-        <span className="border border-gray-300 rounded-xs px-2">{order.quantity}</span>
-        <span className="text-[#669917] font-bold">
-          {order.estimatedTime}
+        <span className="border border-gray-300 rounded-xs px-2">
+          {order.quantity}
         </span>
+        <span className="text-[#669917] font-bold">{order.estimatedTime}</span>
         <div className="flex items-center gap-1">
           <span>Payment:</span>
           <span className="font-medium">{order.paymentMethod}</span>
