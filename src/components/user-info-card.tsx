@@ -25,7 +25,7 @@ export default function UserInfoCard() {
         <p className="text-xs text-[#7A7A7A]">{maskPhone(user?.phone)}</p>
       </div>
 
-      <div className="flex items-center justify-between bg-[#E1E1E1] rounded-xl px-3 py-2.5 mx-4">
+      <div className="flex items-center justify-between bg-[#E1E1E1] rounded-xl px-3 py-2.5">
         <span className="text-sm text-gray-700">
           {user?.university || "University of Lagos"}
         </span>
