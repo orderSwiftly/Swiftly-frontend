@@ -18,10 +18,10 @@ import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from './sidebar-context';
 
 const navItems = [
-  { label: 'Home', href: '/', icon: HomeIcon },
-  { label: 'Cart', href: '/cart', icon: ShoppingCartIcon },
-  { label: 'Orders', href: '/my-orders', icon: ShoppingBag },
-  { label: 'Profile', href: '/profile', icon: UserCircle },
+  { label: 'Home', href: '/dashboard', icon: HomeIcon },
+  { label: 'Cart', href: '/dashboard/cart', icon: ShoppingCartIcon },
+  { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
+  { label: 'Profile', href: '/dashboard/profile', icon: UserCircle },
 ];
 
 export default function Sidebar() {
@@ -49,7 +49,7 @@ export default function Sidebar() {
       >
         {/* Logo and Toggle */}
         <div className="p-4 border-b border-gray-700 pry-ff flex items-center justify-between">
-          <Link href="/" className="flex items-center space-x-2">
+          <Link href="/dashboard" className="flex items-center space-x-2">
             <Image
               src="/brand-logo.png"
               alt="Swiftly Logo"

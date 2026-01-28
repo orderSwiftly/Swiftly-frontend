@@ -45,7 +45,7 @@ const handleLogin = async (e: React.FormEvent) => {
 
     // Redirect
     setTimeout(() => {
-      router.push('/');
+      router.push('/dashboard');
     }, 200);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Login failed';

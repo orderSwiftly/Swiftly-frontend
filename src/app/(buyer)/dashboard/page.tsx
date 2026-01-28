@@ -28,7 +28,7 @@ export default function DashboardHome() {
         const selectedCampus = localStorage.getItem('selected-campus');
 
         if (!token) {
-            router.push('/login');
+            router.push('/dashboard/login');
             return;
         }
 

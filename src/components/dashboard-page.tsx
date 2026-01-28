@@ -12,7 +12,7 @@ import {
     LayoutGrid,
 } from 'lucide-react';
 
-import ExplorePage from '@/app/explore/exploreComp';
+import ExplorePage from '@/app/(buyer)/explore/exploreComp';
 
 export default function DashboardPage() {
     const Categories = [
