@@ -1,6 +1,6 @@
 "use client";
 
-import no_orders from "../../../../../public/no_orders.png";
+import no_orders from "../../../../../../public/no_orders.png";
 
 export default function EmptyOrdersState() {
   return (

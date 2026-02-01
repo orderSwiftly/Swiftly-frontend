@@ -6,7 +6,7 @@ import Image from 'next/image';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import PulseLoader from '@/components/pulse-loader';
-import ExploreReview from '@/app/explore/product/[id]/review/explore-rev';
+import ExploreReview from '@/app/(buyer)/explore/product/[id]/review/explore-rev';
 
 type Product = {
   _id: string;

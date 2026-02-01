@@ -1,6 +1,6 @@
 "use client";
 
-import successImage from "../../../../../public/payment_success.png";
+import successImage from "../../../../../../public/payment_success.png";
 
 interface PaymentSuccessModalProps {
   onClose: () => void;
