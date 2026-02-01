@@ -78,8 +78,8 @@ export default function Navigation() {
                 <Image
                   width={32}
                   height={32}
-                  src={user.photo}
-                  alt={user.fullname}
+                  src={user.photo || user.logo || '/default-user.png'}
+                  alt={user.fullname || user.businessName || 'User'}
                   className="w-8 h-8 rounded-full object-cover"
                 />
               ) : (
@@ -87,7 +87,7 @@ export default function Navigation() {
                   {userInitial}
                 </div>
               )}
-              <span>Hi, {user.fullname}</span>
+              <span>Hi, {user.fullname || user.businessName}</span>
             </Link>
           ) : (
             <Link
@@ -153,8 +153,8 @@ export default function Navigation() {
                   <Image
                     width={32}
                     height={32}
-                    src={user.photo}
-                    alt={user.fullname}
+                    src={user.photo || user.logo || '/default-user.png'}
+                    alt={user.fullname || user.businessName || 'User'}
                     className="w-8 h-8 rounded-full object-cover"
                   />
                 ) : (

@@ -102,8 +102,8 @@ export default function Sidebar() {
                 <Image
                   width={40}
                   height={40}
-                  src={user.photo}
-                  alt={user.fullname}
+                  src={user.photo || '/default-user.png'}
+                  alt={user.fullname || 'User'}
                   className="w-10 h-10 object-cover"
                 />
               ) : (

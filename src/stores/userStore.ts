@@ -2,26 +2,41 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
+export type UserRole = "buyer" | "seller";
+
 export interface User {
   _id: string;
-  fullname: string;
+  role: UserRole;
   email: string;
   phone?: string;
+  referralCode?: string;
+
+  // Buyer-specific
+  fullname?: string;
   photo?: string;
   university?: string;
-  role?: string;
-  referralCode?: string;
+
+  // Seller-specific
+  businessName?: string;
+  logo?: string;
+  institution?: any;
 }
 
 interface UserState {
   user: User | null;
   isLoading: boolean;
   isAuthenticated: boolean;
+
+  // Actions
   setUser: (user: User) => void;
   clearUser: () => void;
   setLoading: (loading: boolean) => void;
   fetchUser: () => Promise<void>;
   logout: () => void;
+
+  // Computed helpers
+  getDisplayName: () => string;
+  getAvatar: () => string;
 }
 
 export const useUserStore = create<UserState>()(
@@ -37,14 +52,10 @@ export const useUserStore = create<UserState>()(
 
       clearUser: () => {
         set({ user: null, isAuthenticated: false, isLoading: false });
-        if (typeof window !== "undefined") {
-          localStorage.removeItem("token");
-        }
+        if (typeof window !== "undefined") localStorage.removeItem("token");
       },
 
-      setLoading: (loading: boolean) => {
-        set({ isLoading: loading });
-      },
+      setLoading: (loading: boolean) => set({ isLoading: loading }),
 
       fetchUser: async () => {
         if (typeof window === "undefined") return;
@@ -90,8 +101,8 @@ export const useUserStore = create<UserState>()(
 
       logout: async () => {
         try {
-          const api_url = process.env.NEXT_PUBLIC_API_URL;
           const token = localStorage.getItem("token");
+          const api_url = process.env.NEXT_PUBLIC_API_URL;
 
           if (token && api_url) {
             await fetch(`${api_url}/api/v1/auth/user/logout`, {
@@ -105,11 +116,23 @@ export const useUserStore = create<UserState>()(
         } catch (err) {
           console.error("Logout error:", err);
         } finally {
-          // Clear token and user state from localStorage or zustand
           localStorage.removeItem("token");
           get().clearUser();
           window.location.href = "/login";
         }
+      },
+
+      // Helpers to get role-specific display values
+      getDisplayName: () => {
+        const user = get().user;
+        if (!user) return "";
+        return user.role === "seller" ? user.businessName || "" : user.fullname || "";
+      },
+
+      getAvatar: () => {
+        const user = get().user;
+        if (!user) return "";
+        return user.role === "seller" ? user.logo || "" : user.photo || "";
       },
     }),
     {
@@ -120,6 +143,6 @@ export const useUserStore = create<UserState>()(
         isAuthenticated: state.isAuthenticated,
       }),
       skipHydration: false,
-    },
-  ),
+    }
+  )
 );

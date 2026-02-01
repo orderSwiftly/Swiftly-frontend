@@ -45,7 +45,7 @@ const handleLogin = async (e: React.FormEvent) => {
 
     // Redirect
     setTimeout(() => {
-      router.push('/dashboard');
+      router.push('/role-gate'); // go to role gate for role-based routing
     }, 200);
   } catch (err) {
     const message = err instanceof Error ? err.message : 'Login failed';

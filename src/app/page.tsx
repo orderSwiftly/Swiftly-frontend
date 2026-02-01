@@ -2,5 +2,5 @@
 import { redirect } from 'next/navigation';
 
 export default function Home() {
-    redirect('/dashboard'); // or '/buyer/dashboard' if you want full path
+    redirect('/role-gate'); // go to the role gate
 }
