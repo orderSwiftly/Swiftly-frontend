@@ -1,32 +1,61 @@
-import { Order } from '@/types/order';
+// src/lib/order-utils.ts
+import { Order } from "@/types/order";
 
-export const checkCanShipOrder = (order: Order, currentUserId: string | null): boolean => {
+/**
+ * Check if the current user owns any item in the order (can ship)
+ */
+export const checkCanShipOrder = (
+  order: Order,
+  currentUserId: string | null
+): boolean => {
   if (!currentUserId) return false;
-  return order.items.some(item => item.productOwnerId === currentUserId);
+  return order.items.some((item) => item.productOwnerId === currentUserId);
 };
 
-export const filterOrdersByStatus = (
-  status: string,
+/**
+ * Filter orders based on tab
+ * ordersTab = 'orders' | 'active' | 'passive'
+ */
+export const filterOrdersByTab = (
+  ordersTab: "orders" | "active" | "passive",
   orders: Order[],
   currentUserId?: string | null
 ): Order[] => {
-  if (status === 'ready-to-ship' && currentUserId) {
-    return orders.filter(order =>
-      order.orderStatus === 'confirmed' && checkCanShipOrder(order, currentUserId)
-    );
+  switch (ordersTab) {
+    case "orders":
+      // pending orders
+      return orders.filter((o) => o.orderStatus === "pending");
+
+    case "active":
+      // confirmed or shipped
+      return orders.filter(
+        (o) =>
+          o.orderStatus === "confirmed" ||
+          o.orderStatus === "shipped"
+      );
+
+    case "passive":
+      // delivered, cancelled, returned
+      return orders.filter(
+        (o) =>
+          o.orderStatus === "delivered" ||
+          o.orderStatus === "cancelled" ||
+          o.orderStatus === "returned"
+      );
+
+    default:
+      return orders;
   }
-  return orders.filter(order => order.orderStatus === status);
 };
 
-export const getEmptyMessage = (status: string) => {
+/**
+ * Get empty message for a tab
+ */
+export const getEmptyMessageByTab = (ordersTab: string): string => {
   const messages: Record<string, string> = {
-    pending: 'You have no pending orders.',
-    cancelled: 'You have no cancelled orders.',
-    confirmed: 'You have no confirmed orders.',
-    'ready-to-ship': 'You have no orders ready to ship.',
-    shipped: 'You have no shipped orders.',
-    delivered: 'You have no delivered orders.',
-    returned: 'You have no returned orders.'
+    orders: "You have no pending orders.",
+    active: "You have no active orders.",
+    passive: "You have no passive orders.",
   };
-  return messages[status] || 'No orders found.';
+  return messages[ordersTab] || "No orders found.";
 };

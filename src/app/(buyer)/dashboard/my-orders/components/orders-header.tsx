@@ -1,8 +1,5 @@
 // src/app/(buyer)/dashboard/my-orders/components/orders-header.tsx
-
 "use client";
-
-import { useState } from "react";
 
 interface OrdersHeaderProps {
   activeTab: "orders" | "active" | "passive";
@@ -16,7 +13,7 @@ export default function OrdersHeader({
   return (
     <div className="bg-white border-b border-gray-200">
       <div className="px-4 pt-6 pb-4">
-        <h1 className="text-2xl text-center font-bold text-[#0A0A0A]">
+        <h1 className="text-2xl text-center font-bold text-[var(--bg-clr)]">
           Orders
         </h1>
       </div>
@@ -24,31 +21,28 @@ export default function OrdersHeader({
       <div className="flex items-center px-4">
         <button
           onClick={() => onTabChange("orders")}
-          className={`flex-1 py-3 border-b-2 transition-colors ${
-            activeTab === "orders"
+          className={`flex-1 py-3 border-b-2 transition-colors ${activeTab === "orders"
               ? "border-[#355505] text-[#355505]"
               : "border-transparent text-[#9C9C9C] hover:text-gray-700"
-          }`}
+            }`}
         >
           Orders
         </button>
         <button
           onClick={() => onTabChange("active")}
-          className={`flex-1 py-3 border-b-2 transition-colors ${
-            activeTab === "active"
+          className={`flex-1 py-3 border-b-2 transition-colors ${activeTab === "active"
               ? "border-[#355505] text-[#355505]"
               : "border-transparent text-[#9C9C9C] hover:text-gray-700"
-          }`}
+            }`}
         >
           Active Orders
         </button>
         <button
           onClick={() => onTabChange("passive")}
-          className={`flex-1 py-3 border-b-2 transition-colors ${
-            activeTab === "passive"
+          className={`flex-1 py-3 border-b-2 transition-colors ${activeTab === "passive"
               ? "border-[#355505] text-[#355505]"
               : "border-transparent text-[#9C9C9C] hover:text-gray-700"
-          }`}
+            }`}
         >
           Passive Orders
         </button>
