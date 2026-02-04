@@ -5,6 +5,7 @@ import Image from 'next/image';
 import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 import AddToCart from './add-to-cart';
+import Link from 'next/link';
 
 type Product = {
   title: string;
@@ -170,9 +171,11 @@ export default function GetCartComp() {
       <div className="mt-8 flex justify-end">
         <div className="w-full sm:w-[60%] md:w-[45%] lg:w-[35%] p-6 bg-white rounded-lg border border-gray-200">
           <p className="text-lg font-semibold">Subtotal: ₦{subtotal.toLocaleString()}</p>
-          <button className="w-full mt-4 py-3 rounded-lg bg-green-600 text-white font-semibold hover:opacity-90 transition">
-            Check Out
-          </button>
+          <Link href="/order" className="w-full mt-4 py-3 rounded-lg bg-green-600 text-white font-semibold hover:opacity-90 transition">
+            <button className="w-full mt-4 py-3 rounded-lg bg-green-600 text-white font-semibold hover:opacity-90 transition cursor-pointer">
+              Check Out
+            </button>
+          </Link>
         </div>
       </div>
     </div>
