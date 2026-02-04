@@ -160,6 +160,9 @@ export default function ExplorePage() {
                   <p className="text-lg font-bold text-gray-900">
                     ₦{product.price.toLocaleString()}
                   </p>
+                  <p className="text-lg text-gray-900">
+                    ({product.stock})
+                  </p>
                 </div>
 
                 {/* Action Buttons (Keeping your original functionality) */}
