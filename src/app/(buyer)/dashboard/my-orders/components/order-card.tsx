@@ -1,8 +1,10 @@
+// src/app/(buyer)/dashboard/my-orders/components/order-card.tsx
+
 'use client';
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Truck } from 'lucide-react';
+import { ArrowRight, Truck, Trash2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Order } from '@/types/order';
 
@@ -26,8 +28,19 @@ export default function OrderCard({
   );
 
   // --- SAFE TOTALS ---
+  const computedTotalPrice = Array.isArray(order.items)
+    ? order.items.reduce((sum, item) => {
+      const price = typeof item.price === 'number' ? item.price : 0;
+      const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
+      return sum + price * quantity;
+    }, 0)
+    : 0;
+
   const safeTotalPrice =
-    typeof order.totalPrice === 'number' ? order.totalPrice : 0;
+    typeof order.totalPrice === 'number' && order.totalPrice > 0
+      ? order.totalPrice
+      : computedTotalPrice;
+
 
   const shippingAddress = order.shippingAddress || {
     addressLine1: 'N/A',
@@ -58,9 +71,10 @@ export default function OrderCard({
           return (
             <div
               key={index}
-              className="flex items-center gap-4 border border-white/10 bg-white/10 rounded-md p-3"
+              className="flex items-center gap-4 border border-white/10 bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors"
             >
-              <div className="w-20 h-20 sm:w-24 sm:h-24 relative overflow-hidden rounded-md bg-gray-100">
+              {/* Product Image */}
+              <div className="w-20 h-20 relative overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
                 <Image
                   src={item.productImg?.[0] || '/fallback.jpg'}
                   alt={item.title ?? 'Product'}
@@ -68,80 +82,100 @@ export default function OrderCard({
                   className="object-cover"
                 />
               </div>
-              <div className="flex-1">
-                <p className="text-sm font-semibold text-[var(--txt-clr)] pry-ff line-clamp-1">
+
+              {/* Product Details */}
+              <div className="flex-1 min-w-0">
+                <h3 className="text-base font-semibold text-white pry-ff line-clamp-2 mb-2">
                   {item.title ?? 'Untitled'}
-                </p>
-                <p className="text-xs text-gray-400 sec-ff mt-1">
-                  ₦{price.toLocaleString()} × {quantity}
-                </p>
+                </h3>
+                <div className="flex items-center gap-3 text-sm">
+                  <span className="text-gray-400 sec-ff">
+                    ₦{price.toLocaleString()}
+                  </span>
+                  <span className="text-gray-500">×</span>
+                  <span className="text-gray-300 sec-ff font-medium">
+                    Qty: {quantity}
+                  </span>
+                </div>
               </div>
-              <p className="text-sm font-bold text-[var(--txt-clr)] sec-ff whitespace-nowrap">
-                ₦{total.toLocaleString()}
-              </p>
+
+              {/* Price and Actions */}
+              <div className="flex items-center gap-4">
+                <p className="text-lg font-bold text-white sec-ff whitespace-nowrap">
+                  ₦{total.toLocaleString()}
+                </p>
+                <button
+                  className="text-gray-400 hover:text-red-400 transition-colors p-2 rounded-lg hover:bg-white/5"
+                  aria-label="Remove item"
+                >
+                  <Trash2 size={18} />
+                </button>
+              </div>
             </div>
           );
         })}
       </div>
 
-      {/* Shipping Address */}
-      <div className="flex items-start justify-between p-2">
-        <p className="text-gray-400 sec-ff text-sm">
-          Shipping to: {shippingAddress.addressLine1}, {shippingAddress.city},{' '}
-          {shippingAddress.state}
-        </p>
-        <p className="text-sm font-bold text-[var(--acc-clr)] sec-ff">
-          Total: ₦{safeTotalPrice.toLocaleString()}
-        </p>
+      {/* Shipping Address & Total */}
+      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
+        <div>
+          <p className="text-xs text-gray-500 sec-ff mb-1">Shipping to:</p>
+          <p className="text-sm text-gray-300 sec-ff">
+            {shippingAddress.addressLine1}, {shippingAddress.city},{' '}
+            {shippingAddress.state}
+          </p>
+        </div>
+        <div className="text-right">
+          <p className="text-xs text-gray-500 sec-ff mb-1">Order Total</p>
+          <p className="text-xl font-bold text-[var(--acc-clr)] sec-ff">
+            ₦{safeTotalPrice.toLocaleString()}
+          </p>
+        </div>
       </div>
 
-      {/* Footer */}
-      <div className="flex items-center pt-2">
-        <div className="flex items-center gap-4 justify-between w-full">
-          <Link
-            className="text-[var(--acc-clr)] sec-ff flex items-center gap-1 group"
-            href={`/dashboard/my-orders/get-orders/${order._id}`}
-          >
-            <span className="hover:underline">View Order</span>
-            <ArrowRight
-              size={16}
-              className="transition-transform duration-150 group-hover:translate-x-1"
-            />
-          </Link>
+      {/* Footer Actions */}
+      <div className="flex items-center justify-between pt-2 gap-4">
+        <Link
+          className="text-[var(--acc-clr)] sec-ff flex items-center gap-1 group hover:gap-2 transition-all"
+          href={`/dashboard/my-orders/get-orders/${order._id}`}
+        >
+          <span className="hover:underline">View Order Details</span>
+          <ArrowRight
+            size={16}
+            className="transition-transform duration-150"
+          />
+        </Link>
 
-          <div className="flex items-center gap-2">
-            {order.orderStatus === 'confirmed' && isOwner && (
-              <button
-                onClick={() => handleShipOrder(order._id)}
-                disabled={shippingLoading === order._id}
-                className="text-[var(--bg-clr)] sec-ff flex items-center gap-1 group bg-[var(--acc-clr)] px-4 py-2 rounded-lg border border-[var(--acc-clr)] hover:bg-[var(--acc-clr)]/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
-              >
-                {shippingLoading === order._id ? (
-                  <>
-                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Shipping...</span>
-                  </>
-                ) : (
-                  <>
-                    <Truck size={16} />
-                    <span>Ship Order</span>
-                  </>
-                )}
-              </button>
-            )}
-          </div>
-        </div>
+        <div className="flex items-center gap-3">
+          {order.orderStatus === 'confirmed' && isOwner && (
+            <button
+              onClick={() => handleShipOrder(order._id)}
+              disabled={shippingLoading === order._id}
+              className="text-white sec-ff flex items-center gap-2 bg-[var(--acc-clr)] px-5 py-2.5 rounded-lg hover:bg-[var(--acc-clr)]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+            >
+              {shippingLoading === order._id ? (
+                <>
+                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                  <span>Shipping...</span>
+                </>
+              ) : (
+                <>
+                  <Truck size={18} />
+                  <span>Ship Order</span>
+                </>
+              )}
+            </button>
+          )}
 
-        {order.paymentStatus !== 'paid' && !isOwner && (
-          <div>
+          {order.paymentStatus !== 'paid' && !isOwner && (
             <button
               onClick={() => router.push(`/order/${order._id}/payment`)}
-              className="bg-[var(--acc-clr)] !text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
+              className="bg-[var(--acc-clr)] text-white font-semibold capitalize px-6 py-2.5 rounded-lg hover:bg-[var(--acc-clr)]/90 sec-ff cursor-pointer transition-all"
             >
-              Checkout
+              Proceed to Checkout
             </button>
-          </div>
-        )}
+          )}
+        </div>
       </div>
     </div>
   );
