@@ -65,6 +65,11 @@ body {
   border: 1px solid var(--bg-clr);
 }
 
+.pry-clr {
+  color: var(--pry-clr);
+  border: 1px solid var(--pry-clr);
+}
+
 .acc-clr {
   color: var(--acc-clr);
   background-color: var(--acc-clr);

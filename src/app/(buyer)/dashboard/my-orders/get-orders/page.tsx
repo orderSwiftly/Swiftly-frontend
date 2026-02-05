@@ -15,7 +15,7 @@ interface Props {
 }
 
 export default function GetOrders({
-  orders,
+  orders = [],
   currentUserId,
   shippingLoading,
   handleShipOrder,
