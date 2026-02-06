@@ -49,7 +49,7 @@ export default function OrderCard({
   };
 
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5">
+    <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-2">
         <p className="text-sm text-gray-400 sec-ff">
