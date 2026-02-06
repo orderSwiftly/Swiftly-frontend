@@ -1,12 +1,14 @@
 // src/app/(buyer)/dashboard/my-orders/components/order-card.tsx
 
-'use client';
+"use client";
 
-import Image from 'next/image';
-import Link from 'next/link';
-import { ArrowRight, Truck, Trash2 } from 'lucide-react';
-import { useRouter } from 'next/navigation';
-import { Order } from '@/types/order';
+import Image from "next/image";
+import Link from "next/link";
+import { ArrowRight, Truck, Trash2 } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { Order } from "@/types/order";
+import OrderProgress from "../components/order-progress";
+import { ORDER_PROGRESS_MAP } from "@/lib/order-progress";
 
 interface Props {
   readonly order: Order;
@@ -27,156 +29,132 @@ export default function OrderCard({
     (item) => item.productOwnerId === currentUserId
   );
 
-  // --- SAFE TOTALS ---
+  // --- SAFE TOTAL ---
   const computedTotalPrice = Array.isArray(order.items)
     ? order.items.reduce((sum, item) => {
-      const price = typeof item.price === 'number' ? item.price : 0;
-      const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
+      const price = typeof item.price === "number" ? item.price : 0;
+      const quantity = typeof item.quantity === "number" ? item.quantity : 0;
       return sum + price * quantity;
     }, 0)
     : 0;
 
   const safeTotalPrice =
-    typeof order.totalPrice === 'number' && order.totalPrice > 0
+    typeof order.totalPrice === "number" && order.totalPrice > 0
       ? order.totalPrice
       : computedTotalPrice;
 
-
   const shippingAddress = order.shippingAddress || {
-    addressLine1: 'N/A',
-    city: 'N/A',
-    state: 'N/A',
+    addressLine1: "N/A",
+    city: "N/A",
+    state: "N/A",
   };
 
+  const progress =
+    ORDER_PROGRESS_MAP[order.orderStatus ?? ""] ?? 0;
+
   return (
-    <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5 shadow-sm hover:shadow-md transition-shadow">
+    <section className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5 pry-ff shadow-sm">
       {/* Header */}
-      <div className="flex flex-col sm:flex-row justify-between gap-2">
-        <p className="text-sm text-gray-400 sec-ff">
-          <span className="font-medium text-white">Order ID:</span>{' '}
-          {order._id ?? '—'}
+      <div className="flex justify-between">
+        <p className="text-sm text-gray-400">
+          <span className="font-medium text-white">Order ID:</span>{" "}
+          {order._id ?? "—"}
         </p>
-        <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize sec-ff">
-          {order.orderStatus ?? 'pending'}
+        <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize">
+          {order.orderStatus ?? "pending"}
         </p>
       </div>
 
       {/* Items */}
       <div className="space-y-4">
         {order.items?.map((item, index) => {
-          const price = typeof item.price === 'number' ? item.price : 0;
-          const quantity = typeof item.quantity === 'number' ? item.quantity : 0;
+          const price = item.price ?? 0;
+          const quantity = item.quantity ?? 0;
           const total = price * quantity;
 
           return (
             <div
               key={index}
-              className="flex items-center gap-4 border border-white/10 bg-white/5 rounded-lg p-4 hover:bg-white/10 transition-colors"
+              className="flex items-center gap-4 border border-white/10 bg-white/5 rounded-lg p-4"
             >
-              {/* Product Image */}
-              <div className="w-20 h-20 relative overflow-hidden rounded-lg bg-gray-100 flex-shrink-0">
+              <div className="w-20 h-20 relative overflow-hidden rounded-lg">
                 <Image
-                  src={item.productImg?.[0] || '/fallback.jpg'}
-                  alt={item.title ?? 'Product'}
+                  src={item.productImg?.[0] || "/fallback.jpg"}
+                  alt={item.title ?? "Product"}
                   fill
                   className="object-cover"
                 />
               </div>
 
-              {/* Product Details */}
-              <div className="flex-1 min-w-0">
-                <h3 className="text-base font-semibold text-white pry-ff line-clamp-2 mb-2">
-                  {item.title ?? 'Untitled'}
+              <div className="flex-1">
+                <h3 className="font-semibold text-white">
+                  {item.title}
                 </h3>
-                <div className="flex items-center gap-3 text-sm">
-                  <span className="text-gray-400 sec-ff">
-                    ₦{price.toLocaleString()}
-                  </span>
-                  <span className="text-gray-500">×</span>
-                  <span className="text-gray-300 sec-ff font-medium">
-                    Qty: {quantity}
-                  </span>
-                </div>
+                <p className="text-sm text-gray-400">
+                  ₦{price.toLocaleString()} × {quantity}
+                </p>
               </div>
 
-              {/* Price and Actions */}
-              <div className="flex items-center gap-4">
-                <p className="text-lg font-bold text-white sec-ff whitespace-nowrap">
-                  ₦{total.toLocaleString()}
-                </p>
-                <button
-                  className="text-gray-400 hover:text-red-400 transition-colors p-2 rounded-lg hover:bg-white/5"
-                  aria-label="Remove item"
-                >
-                  <Trash2 size={18} />
-                </button>
-              </div>
+              <p className="font-bold text-white">
+                ₦{total.toLocaleString()}
+              </p>
+
+              <Trash2 className="text-gray-400 hover:text-red-400 cursor-pointer" />
             </div>
           );
         })}
       </div>
 
-      {/* Shipping Address & Total */}
+      {/* ✅ SHIPPING ADDRESS & TOTAL (RESTORED) */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
         <div>
-          <p className="text-xs text-gray-500 sec-ff mb-1">Shipping to:</p>
-          <p className="text-sm text-gray-300 sec-ff">
-            {shippingAddress.addressLine1}, {shippingAddress.city},{' '}
+          <p className="text-xs text-gray-500 mb-1">Shipping to:</p>
+          <p className="text-sm text-gray-300">
+            {shippingAddress.addressLine1}, {shippingAddress.city},{" "}
             {shippingAddress.state}
           </p>
         </div>
         <div className="text-right">
-          <p className="text-xs text-gray-500 sec-ff mb-1">Order Total</p>
-          <p className="text-xl font-bold text-[var(--acc-clr)] sec-ff">
+          <p className="text-xs text-gray-500 mb-1">Order Total</p>
+          <p className="text-xl font-bold text-[var(--acc-clr)]">
             ₦{safeTotalPrice.toLocaleString()}
           </p>
         </div>
       </div>
 
       {/* Footer Actions */}
-      <div className="flex items-center justify-between pt-2 gap-4">
+      <div className="flex justify-between items-start gap-4">
         <Link
-          className="text-[var(--acc-clr)] sec-ff flex items-center gap-1 group hover:gap-2 transition-all"
           href={`/dashboard/my-orders/get-orders/${order._id}`}
+          className="text-[var(--acc-clr)] flex items-center gap-1"
         >
-          <span className="hover:underline">View Order Details</span>
-          <ArrowRight
-            size={16}
-            className="transition-transform duration-150"
-          />
+          View Order <ArrowRight size={16} />
         </Link>
 
-        <div className="flex items-center gap-3">
-          {order.orderStatus === 'confirmed' && isOwner && (
+        <div className="flex flex-col items-stretch gap-2 w-full max-w-xs">
+          {order.paymentStatus !== "paid" && !isOwner && (
+            <>
+              <button
+                onClick={() => router.push(`/order/${order._id}/payment`)}
+                className="bg-[var(--acc-clr)] text-white px-5 py-2 rounded-lg cursor-pointer"
+              >
+                Proceed to Checkout
+              </button>
+            </>
+          )}
+
+          {order.orderStatus === "confirmed" && isOwner && (
             <button
               onClick={() => handleShipOrder(order._id)}
               disabled={shippingLoading === order._id}
-              className="text-white sec-ff flex items-center gap-2 bg-[var(--acc-clr)] px-5 py-2.5 rounded-lg hover:bg-[var(--acc-clr)]/90 transition-all disabled:opacity-50 disabled:cursor-not-allowed font-medium"
+              className="bg-green-600 text-white px-4 py-2 rounded-lg"
             >
-              {shippingLoading === order._id ? (
-                <>
-                  <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                  <span>Shipping...</span>
-                </>
-              ) : (
-                <>
-                  <Truck size={18} />
-                  <span>Ship Order</span>
-                </>
-              )}
-            </button>
-          )}
-
-          {order.paymentStatus !== 'paid' && !isOwner && (
-            <button
-              onClick={() => router.push(`/order/${order._id}/payment`)}
-              className="bg-[var(--acc-clr)] text-white font-semibold capitalize px-6 py-2.5 rounded-lg hover:bg-[var(--acc-clr)]/90 sec-ff cursor-pointer transition-all"
-            >
-              Proceed to Checkout
+              {shippingLoading === order._id ? "Shipping..." : "Ship Order"}
             </button>
           )}
         </div>
       </div>
-    </div>
+      <OrderProgress filled={progress} />
+    </section>
   );
 }

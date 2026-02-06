@@ -30,7 +30,9 @@ export default function GetOrders({
         return orders.filter((o) => o.orderStatus === "pending");
       case "active":
         return orders.filter(
-          (o) => o.orderStatus === "confirmed" || o.orderStatus === "shipped"
+          (o) =>
+            o.orderStatus === "confirmed" ||
+            o.orderStatus === "shipped"
         );
       case "passive":
         return orders.filter(

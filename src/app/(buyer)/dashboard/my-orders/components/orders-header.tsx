@@ -19,33 +19,22 @@ export default function OrdersHeader({
       </div>
 
       <div className="flex items-center px-4">
-        <button
-          onClick={() => onTabChange("orders")}
-          className={`flex-1 py-3 border-b-2 transition-colors cursor-pointer ${activeTab === "orders"
-              ? "border-[var(--acc-clr)] text-[var(--prof-clr)]"
-              : "border-transparent text-[var(--bg-clr)] hover:text-gray-700"
-            }`}
-        >
-          Orders
-        </button>
-        <button
-          onClick={() => onTabChange("active")}
-          className={`flex-1 py-3 border-b-2 transition-colors cursor-pointer ${activeTab === "active"
-              ? "border-[var(--acc-clr)] text-[var(--prof-clr)]"
-              : "border-transparent text-[var(--bg-clr)] hover:text-gray-700"
-            }`}
-        >
-          Active Orders
-        </button>
-        <button
-          onClick={() => onTabChange("passive")}
-          className={`flex-1 py-3 border-b-2 transition-colors cursor-pointer ${activeTab === "passive"
-              ? "border-[var(--acc-clr)] text-[var(--prof-clr)]"
-              : "border-transparent text-[var(--bg-clr)] hover:text-gray-700"
-            }`}
-        >
-          Passive Orders
-        </button>
+        {["orders", "active", "passive"].map((tab) => (
+          <button
+            key={tab}
+            onClick={() => onTabChange(tab as any)}
+            className={`flex-1 py-3 border-b-2 transition-colors ${activeTab === tab
+                ? "border-[var(--acc-clr)] text-[var(--prof-clr)]"
+                : "border-transparent text-[var(--bg-clr)]"
+              }`}
+          >
+            {tab === "orders"
+              ? "Orders"
+              : tab === "active"
+                ? "Active Orders"
+                : "Passive Orders"}
+          </button>
+        ))}
       </div>
     </div>
   );
