@@ -18,7 +18,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
     business_name: '',
     bank_code: '',
     account_number: '',
-    percentage_charge: 10,
+    // percentage_charge: 10,
   });
 
   const [banks, setBanks] = useState<Bank[]>([]);
@@ -89,7 +89,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
         business_name: '',
         bank_code: '',
         account_number: '',
-        percentage_charge: 10,
+        // percentage_charge: 10,
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
@@ -107,7 +107,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
     <div className="max-w-xl mx-auto w-full">
       <form onSubmit={handleSubmit} className="grid gap-5 sec-ff w-full">
         <div>
-          <label htmlFor="business_name" className="text-sm mb-1 block text-[var(--txt-clr)]">Business Name</label>
+          <label htmlFor="business_name" className="text-sm mb-1 block text-[var(--pry-clr)]">Business Name</label>
           <input
             name="business_name"
             id="business_name"
@@ -116,14 +116,14 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
             onChange={handleChange}
             required
             placeholder="ACME Stores Ltd."
-            className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] placeholder-gray-400 focus:outline-none"
+            className="w-full px-4 py-3 rounded-md bg-[var(--txt-clr)] border border-[var(--prof-clr)] text-[var(--pry-clr)] placeholder-gray-400 focus:outline-none"
           />
         </div>
 
         <div>
-          <label htmlFor="bank_code" className="text-sm mb-1 block text-[var(--txt-clr)]">Bank</label>
+          <label htmlFor="bank_code" className="text-sm mb-1 block text-[var(--pry-clr)]">Bank</label>
           {bankLoading ? (
-            <p className="text-gray-400">Loading banks...</p>
+            <p className="text-gray-700">Loading banks...</p>
           ) : (
             <select
               name="bank_code"
@@ -131,7 +131,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
               value={form.bank_code}
               onChange={handleChange}
               required
-              className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)] focus:outline-none"
+              className="w-full px-4 py-3 rounded-md bg-[var(--txt-clr)] border border-[var(--prof-clr)] text-[var(--pry-clr)] focus:outline-none"
             >
               <option value="" disabled>Select a bank</option>
               {uniqueBanks.map((bank) => (
@@ -144,7 +144,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
         </div>
 
         <div>
-          <label htmlFor="account_number" className="text-sm mb-1 block text-[var(--txt-clr)]">Account Number</label>
+          <label htmlFor="account_number" className="text-sm mb-1 block text-[var(--pry-clr)]">Account Number</label>
           <input
             name="account_number"
             id="account_number"
@@ -154,21 +154,21 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
             required
             maxLength={10}
             placeholder="0123456789"
-            className="w-full px-4 py-3 rounded-md bg-white/5 border border-white/10 text-[var(--txt-clr)]"
+            className="w-full px-4 py-3 rounded-md bg-[var(--txt-clr)] border border-[var(--prof-clr)] text-[var(--pry-clr)]"
           />
         </div>
 
-        <div>
-          <label htmlFor="percentage_charge" className="text-sm mb-1 block text-[var(--txt-clr)]">Platform Charge (%)</label>
+        {/* <div>
+          <label htmlFor="percentage_charge" className="text-sm mb-1 block text-[var(--pry-clr)]">Platform Charge (%)</label>
           <input
             name="percentage_charge"
             id="percentage_charge"
             type="number"
             value={form.percentage_charge}
             readOnly
-            className="w-full px-4 py-3 rounded-md bg-white/10 border border-white/10 text-[var(--txt-clr)] opacity-60 cursor-not-allowed"
+            className="w-full px-4 py-3 rounded-md bg-[var(--txt-clr)] border border-[var(--pry-clr)] text-[var(--pry-clr)] opacity-60 cursor-not-allowed"
           />
-        </div>
+        </div> */}
 
         <button
           type="submit"
@@ -181,7 +181,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
 
       {/* Display the created codes */}
       {createdCodes && (
-        <div className="mt-6 p-4 bg-white/10 rounded-md border border-white/10 text-[var(--txt-clr)]">
+        <div className="mt-6 p-4 bg-[var(--sec-clr)] rounded-md border border-[var(--prof-clr)] text-[var(--pry-clr)]">
           <p><strong>Subaccount Code:</strong> {createdCodes.subaccount_code}</p>
           <p><strong>Recipient Code:</strong> {createdCodes.recipient_code}</p>
         </div>

@@ -17,10 +17,10 @@ import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from '../sidebar-context';
 
 const navItems = [
-    { label: 'Home', href: '/dashboard', icon: HomeIcon },
-    { label: 'Product', href: '/dashboard/product', icon: Package },
-    { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
-    { label: 'Profile', href: '/dashboard/profile', icon: UserCircle },
+    { label: 'Home', href: '/seller/dashboard', icon: HomeIcon },
+    { label: 'Product', href: '/seller/dashboard/my-products', icon: Package },
+    { label: 'Orders', href: '/seller/dashboard/my-orders', icon: ShoppingBag },
+    { label: 'Profile', href: '/seller/dashboard/profile', icon: UserCircle },
 ];
 
 export default function Sidebar() {

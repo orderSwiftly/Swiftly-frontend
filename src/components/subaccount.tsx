@@ -87,10 +87,10 @@ export default function SubaccountPage() {
   };
 
   return (
-    <main className="min-h-screen w-full bg-[var(--light-bg)] pt-[20px] flex justify-start flex-col px-2 space-y-10">
+    <main className="min-h-screen w-full bg-[var(--txt-clr)] pt-[20px] flex justify-start flex-col px-2 space-y-10">
       {/* Header */}
-      <section className="flex items-center justify-between w-full max-w-5xl bg-white/20 backdrop-blur-lg p-4 rounded shadow-md">
-        <h1 className="text-2xl font-bold text-[var(--txt-clr)] pry-ff">Account Management</h1>
+      <section className="flex items-center justify-between w-full max-w-5xl bg-white/20 backdrop-blur-lg p-4">
+        <h1 className="text-2xl font-bold text-[var(--prof-clr)] pry-ff">Account Management</h1>
         <button
           onClick={() => setIsModalOpen(true)}
           className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-4 py-2 rounded font-semibold hover:opacity-90 transition sec-ff cursor-pointer"
@@ -113,7 +113,7 @@ export default function SubaccountPage() {
             <p className="text-gray-500 sec-ff mb-4">No account exists for this user yet.</p>
             <button
               onClick={() => setIsModalOpen(true)}
-              className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition"
+              className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-6 py-3 rounded-lg font-semibold hover:opacity-90 transition pry-ff cursor-pointer"
             >
               Add your Bank Account
             </button>
@@ -123,7 +123,7 @@ export default function SubaccountPage() {
 
       {/* Modal */}
       {isModalOpen && (
-        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[1000]">
+        <div className="fixed inset-0 bg-black/40 backdrop-blur-sm flex items-center justify-center z-[1000] pry-ff">
           <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-lg relative">
             <button
               onClick={() => setIsModalOpen(false)}
@@ -131,7 +131,7 @@ export default function SubaccountPage() {
             >
               &times;
             </button>
-            <h2 className="text-xl font-semibold text-[var(--txt-clr)] mb-4">
+            <h2 className="text-xl font-semibold text-[var(--bg-clr)] mb-4">
               {subaccountCode ? 'Account Details' : 'Add Account'}
             </h2>
             {subaccountCode ? (

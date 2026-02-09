@@ -85,7 +85,7 @@ export default function SidebarNav() {
                         {user?.logo ? (
                             <Image
                                 src={user.logo}
-                                alt={user.fullname || 'User'}
+                                alt={user.businessName || 'User'}
                                 width={32}
                                 height={32}
                                 className="w-full h-full object-cover"

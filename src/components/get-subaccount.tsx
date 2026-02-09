@@ -86,20 +86,20 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
           <PulseLoader />
         </div>
       ) : (
-        <section className="max-w-xl mx-auto bg-white dark:bg-gray-800 shadow rounded p-6">
-          <h1 className="text-xl font-bold mb-4 text-[var(--acc-clr)] pry-ff">Account Details</h1>
+        <section className="max-w-xl mx-auto bg-[var(--txt-clr)] dark:bg-gray-500 shadow-md rounded p-6">
+          <h1 className="text-xl font-bold mb-4 text-[var(--bg-clr)] pry-ff">Account Details</h1>
 
           {subaccount ? (
-            <div className="space-y-2 text-[var(--txt-clr)] sec-ff">
-              <p><strong className='text-[var(--acc-clr)]'>Business Name:</strong> {subaccount.business_name || 'N/A'}</p>
-              <p><strong className='text-[var(--acc-clr)]'>Account Name:</strong> {subaccount.account_name || 'N/A'}</p>
-              <p><strong className='text-[var(--acc-clr)]'>Account Number:</strong> {subaccount.account_number || 'N/A'}</p>
-              <p><strong className='text-[var(--acc-clr)]'>Settlement Bank:</strong> {subaccount.settlement_bank || 'N/A'}</p>
-              <p><strong className='text-[var(--acc-clr)]'>Currency:</strong> {subaccount.currency || 'NGN'}</p>
-              <p><strong className='text-[var(--acc-clr)]'>Percentage Charge:</strong> {subaccount.percentage_charge}%</p>
-              <p><strong className='text-[var(--acc-clr)]'>Recipient Code:</strong> {subaccount.recipient_code || 'N/A'}</p>
+            <div className="space-y-2 text-[var(--prof-clr)] sec-ff">
+              <p><strong className='text-[var(--pry-clr)]'>Business Name:</strong> {subaccount.business_name || 'N/A'}</p>
+              <p><strong className='text-[var(--pry-clr)]'>Account Name:</strong> {subaccount.account_name || 'N/A'}</p>
+              <p><strong className='text-[var(--pry-clr)]'>Account Number:</strong> {subaccount.account_number || 'N/A'}</p>
+              <p><strong className='text-[var(--pry-clr)]'>Settlement Bank:</strong> {subaccount.settlement_bank || 'N/A'}</p>
+              <p><strong className='text-[var(--pry-clr)]'>Currency:</strong> {subaccount.currency || 'NGN'}</p>
+              {/* <p><strong className='text-[var(--pry-clr)]'>Percentage Charge:</strong> {subaccount.percentage_charge}%</p> */}
+              <p><strong className='text-[var(--pry-clr)]'>Recipient Code:</strong> {subaccount.recipient_code || 'N/A'}</p>
               <p>
-                <strong className='text-[var(--acc-clr)]'>Status:</strong>{' '}
+                <strong className='text-[var(--pry-clr)]'>Status:</strong>{' '}
                 <span
                   className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
                     subaccount.is_verified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'

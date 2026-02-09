@@ -1,26 +1,26 @@
-import { ShoppingBag, Signpost, Heart, ChevronRight, Wallet } from "lucide-react";
+import { ShoppingBag, Signpost, ChevronRight, Wallet, User, UserCircle } from "lucide-react";
 import Link from "next/link";
 
 const actions = [
   {
-    link: "/dashboard/profile/account",
+    link: "/seller/dashboard/settings",
+    label: "Account Settings",
+    icon: UserCircle,
+  },
+  {
+    link: "/seller/dashboard/profile/account",
     label: "My Account",
     icon: Wallet,
   },
   {
-    link: "/my-orders",
+    link: "/seller/dashboard/orders",
     label: "My Orders",
     icon: ShoppingBag,
   },
   {
-    link: "/profile/address",
+    link: "/seller/dashboard/addresses",
     label: "My Addresses",
     icon: Signpost,
-  },
-  {
-    link: "/profile/favorites",
-    label: "Favorites",
-    icon: Heart,
   },
 ];
 
