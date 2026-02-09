@@ -16,7 +16,6 @@ type Product = {
   productImg: string[];
   stock: number;
   location: string;
-  productStatus: string;
 };
 
 export default function ProductDetails() {
@@ -74,8 +73,6 @@ export default function ProductDetails() {
 
   return (
     <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)] min-h-screen">
-      <Link href="/explore" className="text-[var(--acc-clr)] underline mb-4 block">← Back to Explore</Link>
-
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 pry-ff">{product.title}</h1>
 
       {/* Main Image */}
@@ -115,20 +112,6 @@ export default function ProductDetails() {
           <p><span className="font-medium">Price:</span> ₦{product.price.toLocaleString()}</p>
           <p><span className="font-medium">Stock:</span> {product.stock}</p>
           <p><span className="font-medium">Location:</span> {product.location}</p>
-          <p>
-            <span className="font-medium">Status:</span>{' '}
-            <span
-              className={`capitalize font-semibold ${
-                product.productStatus === 'approved'
-                  ? 'text-green-500'
-                  : product.productStatus === 'pending'
-                  ? 'text-yellow-500'
-                  : 'text-red-500'
-              }`}
-            >
-              {product.productStatus}
-            </span>
-          </p>
         </div>
       </div>
 

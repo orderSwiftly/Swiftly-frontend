@@ -7,6 +7,11 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 
+type Category = {
+  _id: string;
+  name: string;
+};
+
 type Product = {
   _id: string;
   title: string;
@@ -16,7 +21,8 @@ type Product = {
   stock: number;
   location: string;
   productStatus: string;
-  averageRating?: number; 
+  averageRating?: number;
+  category?: Category; // ✅ THIS WAS MISSING
 };
 
 export default function ProductList() {
@@ -118,7 +124,7 @@ export default function ProductList() {
               <div>
                 {/* Title & Rating */}
                 <div className="mb-1">
-                  <h4 className="text-lg font-semibold text-[var(--txt-clr)] pry-ff">
+                  <h4 className="text-lg font-semibold text-[var(--prof-clr)] pry-ff">
                     {product.title}
                   </h4>
                   {typeof product.averageRating === 'number' && (
@@ -134,8 +140,15 @@ export default function ProductList() {
                   {product.description}
                 </p>
 
+                {product.category?.name && (
+                  <span className="inline-block text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md mb-1 sec-ff">
+                    {product.category.name}
+                  </span>
+                )}
+
+
                 {/* Price */}
-                <p className="text-xl font-bold text-[var(--txt-clr)] mt-auto sec-ff mb-2">
+                <p className="text-xl font-bold text-[var(--pry-clr)] mt-auto sec-ff mb-2">
                   ₦{product.price.toLocaleString()}
                 </p>
 
@@ -162,8 +175,8 @@ export default function ProductList() {
                   {/* View Details */}
                   <button className="bg-transparent border-none p-0 m-0">
                     <Link
-                      href={`/dashboard/my-products/${product._id}`}
-                      className="group flex items-center gap-2 sec-ff font-normal text-[var(--acc-clr)]"
+                      href={`/seller/dashboard/my-products/${product._id}`}
+                      className="group flex items-center gap-2 sec-ff font-normal text-[var(--prof-clr)]"
                     >
                       <span>View Details</span>
                       <ArrowRight

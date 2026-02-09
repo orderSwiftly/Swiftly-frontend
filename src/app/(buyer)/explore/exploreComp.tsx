@@ -8,6 +8,11 @@ import Link from 'next/link';
 import { ArrowRight, ShoppingCart, Star } from 'lucide-react'; // Added Star
 import { useRouter } from 'next/navigation';
 
+type Category = {
+  _id: string;
+  name: string;
+};
+
 type Product = {
   _id: string;
   title: string;
@@ -16,8 +21,8 @@ type Product = {
   productImg: string[];
   stock: number;
   location: string;
-  productStatus: 'approve' | 'decline' | 'pending';
   averageRating?: number;
+  category?: Category;
 };
 
 export default function ExplorePage() {
@@ -165,8 +170,16 @@ export default function ExplorePage() {
                   </p>
                 </div>
 
+                <div>
+                  {product.category?.name && (
+                    <span className="inline-block text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md mb-1 sec-ff">
+                      {product.category.name}
+                    </span>
+                  )}
+                </div>
+
                 {/* Action Buttons (Keeping your original functionality) */}
-                <div className="mt-2 flex items-center justify-between pt-2 border-t border-gray-50">
+                <div className="flex items-center justify-between border-t border-gray-50">
                   <Link
                     href={`/explore/product/${product._id}`}
                     className="text-sm font-medium text-green-600 flex items-center gap-1"

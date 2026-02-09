@@ -14,6 +14,11 @@ type Review = {
   createdAt: string;
 };
 
+type Category = {
+  _id: string;
+  name: string;
+};
+
 type Product = {
   _id: string;
   title: string;
@@ -24,6 +29,7 @@ type Product = {
   location: string;
   productStatus: string;
   averageRating?: number;
+  category?: Category;
 };
 
 export default function ProductDetails() {
@@ -117,6 +123,13 @@ export default function ProductDetails() {
         <p className="text-gray-700 dark:text-gray-300 mb-4 sec-ff leading-relaxed">
           {product.description}
         </p>
+
+        {product.category?.name && (
+          <span className="inline-block text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md mb-1">
+            {product.category.name}
+          </span>
+        )}
+
 
         {typeof product.averageRating === 'number' && (
           <div className="text-yellow-500 text-sm mb-4 sec-ff">
