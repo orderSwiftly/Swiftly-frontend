@@ -123,7 +123,7 @@ export default function PaymentCallbackPage() {
           Payment Verified!
         </h1>
         <p className="text-lg text-green-600 font-medium sec-ff">
-          ✅ Transaction Successful
+          Transaction Successful
         </p>
       </div>
 
@@ -160,7 +160,7 @@ export default function PaymentCallbackPage() {
 
       <div className="flex flex-col sm:flex-row gap-4 mt-8">
         <Link
-          href="/dashboard/my-orders/get-orders"
+          href="/dashboard/my-orders"
           className="px-8 py-3 rounded-lg bg-[var(--acc-clr)] text-[var(--bg-clr)] font-medium sec-ff hover:opacity-90 transition-opacity cursor-pointer"
         >
           View My Orders

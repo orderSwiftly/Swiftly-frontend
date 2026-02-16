@@ -7,6 +7,7 @@ import PulseLoader from '@/components/pulse-loader';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import calculateTotals from '@/lib/cartTotals';
+import { initPayment } from '@/lib/payment';
 
 interface Product {
   title: string;
@@ -43,13 +44,13 @@ export default function NewOrder() {
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
-  // 🔢 Subtotal from cart
+  // Subtotal from cart
   const subtotal = cartItems.reduce(
     (acc, item) => acc + (item.price ?? 0) * (item.quantity ?? 0),
     0
   );
 
-  // 💰 Frontend preview totals
+  // Frontend preview totals
   const totals = calculateTotals(subtotal);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -103,8 +104,11 @@ export default function NewOrder() {
         throw new Error(data.message || 'Checkout failed');
       }
 
-      toast.success('Order placed successfully');
-      router.push('/order/success');
+      // 🔑 Use data.data.orderId instead of data.order._id
+      const orderId = data.data.orderId;
+      const { authorization_url } = await initPayment(orderId);
+      window.location.href = authorization_url;
+
     } catch (err) {
       console.error(err);
       toast.error('Checkout failed');
@@ -113,6 +117,7 @@ export default function NewOrder() {
       setSubmitting(false);
     }
   };
+
 
   useEffect(() => {
     fetchCart();

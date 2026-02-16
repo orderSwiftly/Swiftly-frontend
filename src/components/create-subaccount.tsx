@@ -18,14 +18,14 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
     business_name: '',
     bank_code: '',
     account_number: '',
-    // percentage_charge: 10,
+    percentage_charge: 0, // ✅ Required by Paystack, set to 0
   });
 
   const [banks, setBanks] = useState<Bank[]>([]);
   const [loading, setLoading] = useState(false);
   const [bankLoading, setBankLoading] = useState(true);
 
-  // New state to show the created codes
+  // State to show created codes after success
   const [createdCodes, setCreatedCodes] = useState<{ subaccount_code: string; recipient_code: string } | null>(null);
 
   useEffect(() => {
@@ -68,18 +68,18 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authorization': `Bearer ${token}`,
+          Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify(form),
+        body: JSON.stringify(form), // ✅ includes percentage_charge: 0
       });
 
       const data = await res.json();
-      if (!res.ok || data.status !== true) throw new Error(data.message || 'Failed to create sub‑account');
+      if (!res.ok || data.status !== true) throw new Error(data.message || 'Failed to create subaccount');
 
       toast.success('Subaccount & recipient created successfully 🎉');
       onSubaccountCreated?.();
 
-      // Store the returned codes
+      // Store the returned codes to show to the user
       setCreatedCodes({
         subaccount_code: data.data.subaccount_code,
         recipient_code: data.data.recipient_code,
@@ -89,7 +89,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
         business_name: '',
         bank_code: '',
         account_number: '',
-        // percentage_charge: 10,
+        percentage_charge: 0, // reset to 0
       });
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
@@ -99,9 +99,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
     }
   };
 
-  const uniqueBanks = Array.from(
-    new Map(banks.map(bank => [`${bank.code}-${bank.name}`, bank])).values()
-  );
+  const uniqueBanks = Array.from(new Map(banks.map(bank => [`${bank.code}-${bank.name}`, bank])).values());
 
   return (
     <div className="max-w-xl mx-auto w-full">
@@ -158,18 +156,6 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
           />
         </div>
 
-        {/* <div>
-          <label htmlFor="percentage_charge" className="text-sm mb-1 block text-[var(--pry-clr)]">Platform Charge (%)</label>
-          <input
-            name="percentage_charge"
-            id="percentage_charge"
-            type="number"
-            value={form.percentage_charge}
-            readOnly
-            className="w-full px-4 py-3 rounded-md bg-[var(--txt-clr)] border border-[var(--pry-clr)] text-[var(--pry-clr)] opacity-60 cursor-not-allowed"
-          />
-        </div> */}
-
         <button
           type="submit"
           disabled={loading}
@@ -179,7 +165,6 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
         </button>
       </form>
 
-      {/* Display the created codes */}
       {createdCodes && (
         <div className="mt-6 p-4 bg-[var(--sec-clr)] rounded-md border border-[var(--prof-clr)] text-[var(--pry-clr)]">
           <p><strong>Subaccount Code:</strong> {createdCodes.subaccount_code}</p>
