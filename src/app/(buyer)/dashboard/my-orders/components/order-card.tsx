@@ -1,5 +1,4 @@
 // src/app/(buyer)/dashboard/my-orders/components/order-card.tsx
-
 "use client";
 
 import Image from "next/image";
@@ -12,7 +11,7 @@ import { ORDER_PROGRESS_MAP } from "@/lib/order-progress";
 
 interface Props {
   readonly order: Order;
-  readonly currentUserId: string;
+  readonly currentUserId: string | null;
   readonly shippingLoading: string | null;
   readonly handleShipOrder: (orderId: string) => void;
 }
@@ -25,11 +24,15 @@ export default function OrderCard({
 }: Props) {
   const router = useRouter();
 
+  // ✅ Determine if the current user owns any item in this order
   const isOwner = order.items?.some(
-    (item) => item.productOwnerId === currentUserId
+    (item) =>
+      (typeof item.productOwnerId === "string"
+        ? item.productOwnerId
+        : item.productOwnerId?.$oid) === currentUserId
   );
 
-  // --- SAFE TOTAL ---
+  // --- SAFE TOTAL PRICE ---
   const computedTotalPrice = Array.isArray(order.items)
     ? order.items.reduce((sum, item) => {
       const price = typeof item.price === "number" ? item.price : 0;
@@ -39,8 +42,8 @@ export default function OrderCard({
     : 0;
 
   const safeTotalPrice =
-    typeof order.totalPrice === "number" && order.totalPrice > 0
-      ? order.totalPrice
+    typeof order.total === "number" && order.total > 0
+      ? order.total
       : computedTotalPrice;
 
   const shippingAddress = order.shippingAddress || {
@@ -49,8 +52,7 @@ export default function OrderCard({
     state: "N/A",
   };
 
-  const progress =
-    ORDER_PROGRESS_MAP[order.orderStatus ?? ""] ?? 0;
+  const progress = ORDER_PROGRESS_MAP[order.orderStatus ?? ""] ?? 0;
 
   return (
     <section className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5 pry-ff shadow-sm">
@@ -58,7 +60,7 @@ export default function OrderCard({
       <div className="flex justify-between">
         <p className="text-sm text-gray-400">
           <span className="font-medium text-white">Order ID:</span>{" "}
-          {order._id ?? "—"}
+          {order._id?.$oid ?? "—"}
         </p>
         <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize">
           {order.orderStatus ?? "pending"}
@@ -87,17 +89,13 @@ export default function OrderCard({
               </div>
 
               <div className="flex-1">
-                <h3 className="font-semibold text-white">
-                  {item.title}
-                </h3>
+                <h3 className="font-semibold text-white">{item.title}</h3>
                 <p className="text-sm text-gray-400">
                   ₦{price.toLocaleString()} × {quantity}
                 </p>
               </div>
 
-              <p className="font-bold text-white">
-                ₦{total.toLocaleString()}
-              </p>
+              <p className="font-bold text-white">₦{total.toLocaleString()}</p>
 
               <Trash2 className="text-gray-400 hover:text-red-400 cursor-pointer" />
             </div>
@@ -105,7 +103,7 @@ export default function OrderCard({
         })}
       </div>
 
-      {/* ✅ SHIPPING ADDRESS & TOTAL (RESTORED) */}
+      {/* Shipping Address & Total */}
       <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
         <div>
           <p className="text-xs text-gray-500 mb-1">Shipping to:</p>
@@ -125,7 +123,7 @@ export default function OrderCard({
       {/* Footer Actions */}
       <div className="flex justify-between items-start gap-4">
         <Link
-          href={`/dashboard/my-orders/get-orders/${order._id}`}
+          href={`/dashboard/my-orders/get-orders/${order._id?.$oid}`}
           className="text-[var(--acc-clr)] flex items-center gap-1"
         >
           View Order <ArrowRight size={16} />
@@ -133,27 +131,28 @@ export default function OrderCard({
 
         <div className="flex flex-col items-stretch gap-2 w-full max-w-xs">
           {order.paymentStatus !== "paid" && !isOwner && (
-            <>
-              <button
-                onClick={() => router.push(`/order/${order._id}/payment`)}
-                className="bg-[var(--acc-clr)] text-white px-5 py-2 rounded-lg cursor-pointer"
-              >
-                Proceed to Checkout
-              </button>
-            </>
+            <button
+              onClick={() =>
+                router.push(`/order/${order._id?.$oid}/payment`)
+              }
+              className="bg-[var(--acc-clr)] text-white px-5 py-2 rounded-lg cursor-pointer"
+            >
+              Proceed to Checkout
+            </button>
           )}
 
           {order.orderStatus === "confirmed" && isOwner && (
             <button
-              onClick={() => handleShipOrder(order._id)}
-              disabled={shippingLoading === order._id}
+              onClick={() => handleShipOrder(order._id?.$oid ?? "")}
+              disabled={shippingLoading === order._id?.$oid}
               className="bg-green-600 text-white px-4 py-2 rounded-lg"
             >
-              {shippingLoading === order._id ? "Shipping..." : "Ship Order"}
+              {shippingLoading === order._id?.$oid ? "Shipping..." : "Ship Order"}
             </button>
           )}
         </div>
       </div>
+
       <OrderProgress filled={progress} />
     </section>
   );

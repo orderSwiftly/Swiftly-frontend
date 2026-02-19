@@ -1,11 +1,12 @@
-// types/order.ts
+// src/types/order.ts
 export interface OrderItem {
-  productId: string;
+  productId: { $oid: string };
   title: string;
   quantity: number;
   price: number;
   productImg?: string[];
-  productOwnerId?: string;
+  productOwnerId?: { $oid: string };
+  lineTotal?: number;
 }
 
 export interface ShippingAddress {
@@ -16,13 +17,31 @@ export interface ShippingAddress {
   country: string;
 }
 
+export interface OrderPricing {
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  total: number;
+}
+
 export interface Order {
-  _id: string;
+  _id: { $oid: string };
+  userId: { $oid: string };
   items: OrderItem[];
-  totalPrice: number;
+  pricing: OrderPricing;
+  shippingAddress: ShippingAddress;
   orderStatus: string;
   paymentStatus: string;
-  createdAt: string;
-  shippingAddress: ShippingAddress;
-  canShip?: boolean;
+  createdAt: { $date: string };
+  confirmed: boolean;
+  escrowStatus?: string;
+  paystackAccessCode?: string;
+  paystackReference?: string;
+  paymentConfirmedAt?: { $date: string };
+  deliveryCode?: number;
+
+  // convenience fields after transformation
+  total?: number;
+  id?: string;
+  created?: string;
 }

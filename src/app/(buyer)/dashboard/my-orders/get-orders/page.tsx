@@ -57,9 +57,9 @@ export default function GetOrders({
           {getEmptyMessageByTab(activeTab)}
         </p>
       ) : (
-        filteredOrders.map((order) => (
+        filteredOrders.map((order, index) => (
           <OrderCard
-            key={order._id}
+            key={order._id.$oid ?? index}
             order={order}
             currentUserId={currentUserId || ""}
             shippingLoading={shippingLoading}

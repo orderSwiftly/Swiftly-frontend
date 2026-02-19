@@ -29,7 +29,7 @@ export default function OrderSuccessPage() {
           View My Orders
         </Link>
         <Link
-          href="/explore"
+          href="/dashboard"
           className="px-6 py-3 rounded-lg border border-[var(--acc-clr)] text-[var(--acc-clr)] font-medium sec-ff hover:bg-[var(--acc-clr)] hover:text-[var(--bg-clr)] transition"
         >
           Continue Shopping

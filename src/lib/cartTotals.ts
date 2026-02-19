@@ -1,6 +1,6 @@
 // src/lib/cartTotals.ts
 
-const DELIVERY_FEE = 300;
+const DELIVERY_FEE = 500;
 
 function calculateVAT(subtotal: number): number {
   if (subtotal <= 1000) return 0;

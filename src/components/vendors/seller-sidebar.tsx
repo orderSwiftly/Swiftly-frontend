@@ -19,7 +19,7 @@ import { useSidebar } from '../sidebar-context';
 const navItems = [
     { label: 'Home', href: '/seller/dashboard', icon: HomeIcon },
     { label: 'Product', href: '/seller/dashboard/my-products', icon: Package },
-    { label: 'Orders', href: '/seller/dashboard/my-orders', icon: ShoppingBag },
+    { label: 'Orders', href: '/seller/dashboard/orders', icon: ShoppingBag },
     { label: 'Profile', href: '/seller/dashboard/profile', icon: UserCircle },
 ];
 

@@ -20,18 +20,20 @@ const ErrorBlock = ({ title, message }: ErrorBlockProps) => (
     </div>
     <h2 className="text-2xl font-bold text-red-600 pry-ff">{title}</h2>
     <p className="sec-ff text-sm text-gray-500">{message}</p>
-    <Link href="/explore" className="text-[var(--acc-clr)] underline sec-ff">Back to Shop</Link>
+    <Link href="/dashboard" className="text-[var(--acc-clr)] underline sec-ff">
+      Back to Dashboard
+    </Link>
   </div>
 );
 
 export default function PaymentCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'timeout' | 'missing'>('loading');
   const [message, setMessage] = useState('');
+
   type OrderData = {
     _id?: string;
-    totalPrice?: number;
+    total?: number;
     deliveryCode?: string;
-    // Add other fields as needed
   };
 
   const [orderData, setOrderData] = useState<OrderData | null>(null);
@@ -50,18 +52,14 @@ export default function PaymentCallbackPage() {
       controller.abort();
       setStatus('timeout');
       setMessage('Payment verification took too long. Please try again or contact support.');
-    }, 15000); // Increased timeout to 15 seconds
+    }, 15000);
 
     async function verifyPayment() {
       try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;
-        
-        // Use the new verify endpoint instead of callback
         const res = await fetch(`${api_url}/api/v1/paystack/verify?reference=${reference}`, {
           method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           signal: controller.signal,
         });
 
@@ -71,14 +69,17 @@ export default function PaymentCallbackPage() {
         if (res.ok && data.status === 'success') {
           setStatus('success');
           setMessage(data.message || 'Payment confirmed successfully!');
-          setOrderData(data.data?.order);
+          setOrderData({
+            _id: data.data?.order?._id,
+            total: data.data?.order?.total ?? 0, // <-- Use order.total here
+            deliveryCode: data.data?.order?.deliveryCode,
+          });
         } else {
           setStatus('error');
           setMessage(data.message || 'Payment verification failed. Please contact support.');
         }
       } catch (err) {
         if ((err as Error)?.name === 'AbortError') return;
-        
         clearTimeout(timeoutId);
         console.error('Payment verification error:', err);
         setStatus('error');
@@ -98,12 +99,8 @@ export default function PaymentCallbackPage() {
     return (
       <div className="min-h-screen flex items-center justify-center flex-col text-center space-y-4">
         <div className="w-16 h-16 border-4 border-[var(--acc-clr)] border-t-transparent rounded-full animate-spin"></div>
-        <p className="text-xl font-semibold text-[var(--acc-clr)] sec-ff">
-          Verifying payment...
-        </p>
-        <p className="text-sm text-gray-500 sec-ff">
-          Please wait while we confirm your payment
-        </p>
+        <p className="text-xl font-semibold text-[var(--acc-clr)] sec-ff">Verifying payment...</p>
+        <p className="text-sm text-gray-500 sec-ff">Please wait while we confirm your payment</p>
       </div>
     );
   }
@@ -117,14 +114,10 @@ export default function PaymentCallbackPage() {
       <div className="w-32 h-32 relative">
         <Lottie animationData={successAnimation} loop={false} />
       </div>
-      
+
       <div className="space-y-2">
-        <h1 className="text-3xl md:text-4xl font-bold text-[var(--acc-clr)] pry-ff">
-          Payment Verified!
-        </h1>
-        <p className="text-lg text-green-600 font-medium sec-ff">
-          Transaction Successful
-        </p>
+        <h1 className="text-3xl md:text-4xl font-bold text-[var(--acc-clr)] pry-ff">Payment Verified!</h1>
+        <p className="text-lg text-green-600 font-medium sec-ff">Transaction Successful</p>
       </div>
 
       <div className="bg-white rounded-lg p-6 max-w-md w-full shadow-lg border">
@@ -133,27 +126,28 @@ export default function PaymentCallbackPage() {
         {orderData && (
           <div className="text-sm text-gray-600 sec-ff space-y-2">
             <div className="flex justify-between">
-              <span className='font-bold'>Order ID:</span>
+              <span className="font-bold">Order ID:</span>
               <span className="font-mono">{orderData._id?.slice(-8)}</span>
             </div>
+
             <div className="flex justify-between">
-              <span className='font-bold'>Total Amount:</span>
-              <span className="font-semibold">₦{orderData.totalPrice?.toLocaleString()}</span>
+              <span className="font-bold">Total Amount:</span>
+              <span className="font-semibold">₦{orderData.total?.toLocaleString()}</span>
             </div>
+
             <div className="flex justify-between">
-              <span className='font-bold'>Delivery Code:</span>
+              <span className="font-bold">Delivery Code:</span>
               <span className="font-mono bg-gray-100 px-2 py-1 rounded">{orderData.deliveryCode}</span>
             </div>
 
             <div className="pt-4">
               <ReceiptButton
                 orderId={orderData._id ?? 'Unknown'}
-                amount={orderData.totalPrice ?? 0}
+                amount={orderData.total ?? 0}
                 deliveryCode={orderData.deliveryCode ?? 'N/A'}
-                fullname="Customer" // You can dynamically pass user's name if available
+                fullname="Customer"
               />
             </div>
-            
           </div>
         )}
       </div>
@@ -166,7 +160,7 @@ export default function PaymentCallbackPage() {
           View My Orders
         </Link>
         <Link
-          href="/explore"
+          href="/dashboard"
           className="px-8 py-3 rounded-lg border border-[var(--acc-clr)] text-[var(--acc-clr)] font-medium sec-ff hover:bg-[var(--acc-clr)] hover:text-[var(--bg-clr)] transition-colors"
         >
           Continue Shopping

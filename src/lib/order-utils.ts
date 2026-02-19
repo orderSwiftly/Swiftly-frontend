@@ -1,61 +1,92 @@
-// src/lib/order-utils.ts
 import { Order } from "@/types/order";
 
 /**
- * Check if the current user owns any item in the order (can ship)
+ * Normalize order status coming from backend
+ */
+const normalizeStatus = (status?: string): string =>
+  status?.toLowerCase().trim() ?? "";
+
+/**
+ * Check if the current user owns any item in the order
+ * (Mongo ObjectId-safe comparison)
  */
 export const checkCanShipOrder = (
   order: Order,
   currentUserId: string | null
 ): boolean => {
   if (!currentUserId) return false;
-  return order.items.some((item) => item.productOwnerId === currentUserId);
+
+  return (
+    order.items?.some(
+      (item) =>
+        String(item.productOwnerId) === String(currentUserId)
+    ) ?? false
+  );
 };
 
 /**
  * Filter orders based on tab
- * ordersTab = 'orders' | 'active' | 'passive'
+ * SINGLE SOURCE OF TRUTH for buyer & seller dashboards
  */
 export const filterOrdersByTab = (
   ordersTab: "orders" | "active" | "passive",
   orders: Order[],
   currentUserId?: string | null
 ): Order[] => {
-  switch (ordersTab) {
-    case "orders":
-      // pending orders
-      return orders.filter((o) => o.orderStatus === "pending");
+  if (!Array.isArray(orders)) return [];
 
-    case "active":
-      // confirmed or shipped
-      return orders.filter(
-        (o) =>
-          o.orderStatus === "confirmed" ||
-          o.orderStatus === "shipped"
-      );
+  return orders.filter((order) => {
+    // 🔒 Seller-only visibility
+    if (currentUserId) {
+      const isSellerOrder =
+        order.items?.some(
+          (item) =>
+            String(item.productOwnerId) ===
+            String(currentUserId)
+        ) ?? false;
 
-    case "passive":
-      // delivered, cancelled, returned
-      return orders.filter(
-        (o) =>
-          o.orderStatus === "delivered" ||
-          o.orderStatus === "cancelled" ||
-          o.orderStatus === "returned"
-      );
+      if (!isSellerOrder) return false;
+    }
 
-    default:
-      return orders;
-  }
+    const status = normalizeStatus(order.orderStatus);
+
+    switch (ordersTab) {
+      case "orders":
+        // New orders awaiting seller action
+        return status === "pending";
+
+      case "active":
+        // Seller is actively processing these
+        return (
+          status === "confirmed" ||
+          status === "shipped"
+        );
+
+      case "passive":
+        // Completed or terminated orders
+        return (
+          status === "delivered" ||
+          status === "cancelled" ||
+          status === "returned"
+        );
+
+      default:
+        return false;
+    }
+  });
 };
 
 /**
- * Get empty message for a tab
+ * Empty-state messages per tab
  */
-export const getEmptyMessageByTab = (ordersTab: string): string => {
-  const messages: Record<string, string> = {
+export const getEmptyMessageByTab = (
+  ordersTab: "orders" | "active" | "passive"
+): string => {
+  const messages: Record<typeof ordersTab, string> = {
     orders: "You have no pending orders.",
     active: "You have no active orders.",
     passive: "You have no passive orders.",
   };
-  return messages[ordersTab] || "No orders found.";
+
+  return messages[ordersTab];
 };

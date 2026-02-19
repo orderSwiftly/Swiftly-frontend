@@ -29,7 +29,7 @@ export default function OrderFailedPage() {
           Retry Payment
         </Link>
         <Link
-          href="/explore"
+          href="/dashboard"
           className="px-6 py-3 rounded-lg border border-red-600 text-red-600 font-medium sec-ff hover:bg-red-600 hover:text-white transition cursor-pointer"
         >
           Continue Shopping
