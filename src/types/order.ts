@@ -1,4 +1,3 @@
-// src/types/order.ts
 export interface OrderItem {
   productId: { $oid: string };
   title: string;
@@ -7,6 +6,8 @@ export interface OrderItem {
   productImg?: string[];
   productOwnerId?: { $oid: string };
   lineTotal?: number;
+  itemStatus?: string;
+  shippedAt?: string;
 }
 
 export interface ShippingAddress {
@@ -39,6 +40,7 @@ export interface Order {
   paystackReference?: string;
   paymentConfirmedAt?: { $date: string };
   deliveryCode?: number;
+  shippedAt?: { $date: string };
 
   // convenience fields after transformation
   total?: number;

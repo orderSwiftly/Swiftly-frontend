@@ -1,33 +1,36 @@
 import { Order } from "@/types/order";
 
-/**
- * Normalize order status coming from backend
- */
 const normalizeStatus = (status?: string): string =>
   status?.toLowerCase().trim() ?? "";
 
-/**
- * Check if the current user owns any item in the order
- * (Mongo ObjectId-safe comparison)
- */
-export const checkCanShipOrder = (
-  order: Order,
-  currentUserId: string | null
-): boolean => {
-  if (!currentUserId) return false;
-
-  return (
-    order.items?.some(
-      (item) =>
-        String(item.productOwnerId) === String(currentUserId)
-    ) ?? false
-  );
+const toStringId = (id: unknown): string => {
+  if (!id) return "";
+  if (typeof id === "string") return id;
+  if (typeof id === "object" && id !== null && "$oid" in id) {
+    return (id as { $oid: string }).$oid;
+  }
+  return String(id);
 };
 
 /**
- * Filter orders based on tab
- * SINGLE SOURCE OF TRUTH for buyer & seller dashboards
+ * Check if the current seller owns any item in the order
+ * AND that item hasn't been shipped yet.
+ * If ALL of the seller's items are shipped → canShip = false → button disabled.
  */
+export function checkCanShipOrder(order: Order, sellerId: string): boolean {
+  const status = normalizeStatus(order.orderStatus);
+
+  // Order must be confirmed to allow shipping
+  if (status !== "confirmed") return false;
+
+  // Seller must own at least one item that is NOT yet shipped
+  return order.items.some(
+    (item) =>
+      toStringId(item.productOwnerId) === sellerId &&
+      item.itemStatus !== "shipped"
+  );
+}
+
 export const filterOrdersByTab = (
   ordersTab: "orders" | "active" | "passive",
   orders: Order[],
@@ -36,13 +39,10 @@ export const filterOrdersByTab = (
   if (!Array.isArray(orders)) return [];
 
   return orders.filter((order) => {
-    // 🔒 Seller-only visibility
     if (currentUserId) {
       const isSellerOrder =
         order.items?.some(
-          (item) =>
-            String(item.productOwnerId) ===
-            String(currentUserId)
+          (item) => toStringId(item.productOwnerId) === toStringId(currentUserId)
         ) ?? false;
 
       if (!isSellerOrder) return false;
@@ -52,33 +52,21 @@ export const filterOrdersByTab = (
 
     switch (ordersTab) {
       case "orders":
-        // New orders awaiting seller action
         return status === "pending";
-
       case "active":
-        // Seller is actively processing these
-        return (
-          status === "confirmed" ||
-          status === "shipped"
-        );
-
+        return status === "confirmed" || status === "shipped";
       case "passive":
-        // Completed or terminated orders
         return (
           status === "delivered" ||
           status === "cancelled" ||
           status === "returned"
         );
-
       default:
         return false;
     }
   });
 };
 
-/**
- * Empty-state messages per tab
- */
 export const getEmptyMessageByTab = (
   ordersTab: "orders" | "active" | "passive"
 ): string => {
