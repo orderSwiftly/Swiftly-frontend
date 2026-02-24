@@ -11,13 +11,14 @@ import {
     ChevronLeft,
     ChevronRight,
     UserCircle,
+    Store,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from '../sidebar-context';
 
 const navItems = [
-    { label: 'Home', href: '/seller/dashboard', icon: HomeIcon },
+    { label: 'Store', href: '/seller/dashboard', icon: Store },
     { label: 'Product', href: '/seller/dashboard/my-products', icon: Package },
     { label: 'Orders', href: '/seller/dashboard/orders', icon: ShoppingBag },
     { label: 'Profile', href: '/seller/dashboard/profile', icon: UserCircle },
