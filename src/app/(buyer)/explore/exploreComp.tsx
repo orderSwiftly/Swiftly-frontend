@@ -5,7 +5,7 @@ import Image from 'next/image';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { ArrowRight, ShoppingCart, Star } from 'lucide-react'; // Added Star
+import { ArrowRight, ShoppingCart, Star, Store } from 'lucide-react'; // Added Star
 import { useRouter } from 'next/navigation';
 
 type Category = {
@@ -15,6 +15,12 @@ type Category = {
 
 type Product = {
   _id: string;
+  seller?: {
+    _id: string;
+    businessName: string;
+    logo: string;
+    institutionId: string;
+  };
   title: string;
   description: string;
   price: number;
@@ -170,11 +176,23 @@ export default function ExplorePage() {
                   </p>
                 </div>
 
-                <div>
+                <div className="flex flex-col gap-2 max-w-full">
                   {product.category?.name && (
-                    <span className="inline-block text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md mb-1 sec-ff">
+                    <span className="inline-flex max-w-fit text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md sec-ff truncate">
                       {product.category.name}
                     </span>
+                  )}
+
+                  {product.seller?.businessName && (
+                    <Link href={`/explore/seller/${product.seller._id}`} className="flex items-center">
+                      <Store size={16} className="text-gray-500" />
+                      <span
+                        className="inline-flex max-w-[140px] text-xs font-medium text-[var(--bg-clr)] px-2 py-1 rounded-md sec-ff truncate"
+                        title={product.seller.businessName}
+                      >
+                        {product.seller.businessName}
+                      </span>
+                    </Link>
                   )}
                 </div>
 
