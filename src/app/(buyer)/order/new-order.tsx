@@ -70,11 +70,23 @@ export default function NewOrder() {
 
       const data = await res.json();
       if (res.ok && data.status === 'success') {
-        // Ensure each item has a 'product' object
-        const cartWithProducts = (data.cart ?? []).map((item: any) => ({
+        const cart = data.cart ?? {};
+
+        // Flatten grouped object into a single array
+        const flatItems: CartItem[] = Array.isArray(cart)
+          ? cart
+          : (Object.values(cart) as CartItem[][]).flat();
+
+        const cartWithProducts = flatItems.map((item) => ({
           ...item,
-          product: item.product || { title: 'Unknown', productImg: ['/fallback.jpg'], price: item.price ?? 0 },
+          product: item.product || {
+            title: 'Unknown',
+            productImg: ['/fallback.jpg'],
+            price: item.price ?? 0,
+            stock: 0,
+          },
         }));
+
         setCartItems(cartWithProducts);
       }
     } catch (err) {

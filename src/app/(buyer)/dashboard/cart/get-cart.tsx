@@ -16,14 +16,17 @@ type Product = {
 
 type CartItem = {
   productId: string;
+  sellerId: string;
   quantity: number;
   price: number;
   addedAt: string;
   product: Product;
 };
 
+type GroupedCart = Record<string, CartItem[]>;
+
 export default function GetCartComp() {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
+  const [groupedCart, setGroupedCart] = useState<GroupedCart>({});
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
 
@@ -31,21 +34,28 @@ export default function GetCartComp() {
     try {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
       const token = localStorage.getItem('token');
-      if (!token) throw new Error("No token found");
+      if (!token) throw new Error('No token found');
 
       const res = await fetch(`${api_url}/api/v1/cart/get`, {
-        method: "GET",
+        method: 'GET',
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data?.message ?? "Failed to load cart");
+      if (!res.ok) throw new Error(data?.message ?? 'Failed to load cart');
 
-      setCartItems(data.cart ?? []);
+      // Handle both flat array (empty) and grouped object
+      const cart = data.cart ?? {};
+      if (Array.isArray(cart)) {
+        setGroupedCart({});
+      } else {
+        setGroupedCart(cart as GroupedCart);
+      }
+
       setError('');
     } catch (err) {
       console.error(err);
-      toast.error("Error refreshing cart");
-      setError("Failed to load cart.");
+      toast.error('Error refreshing cart');
+      setError('Failed to load cart.');
     }
   };
 
@@ -66,7 +76,7 @@ export default function GetCartComp() {
 
       const res = await fetch(`${api_url}/api/v1/cart/update/${productId}`, {
         method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', 'Authorization': `Bearer ${token}` },
+        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
         body: JSON.stringify({ action }),
       });
       const data = await res.json();
@@ -101,20 +111,16 @@ export default function GetCartComp() {
     }
   };
 
-  const subtotal = cartItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  const allItems = Object.values(groupedCart).flat();
+  const subtotal = allItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
+  const isEmpty = allItems.length === 0;
 
   if (loading) return <p className="text-center mt-8 pry-ff">Loading...</p>;
   if (error) return <p className="text-red-500 text-center mt-8 pry-ff">{error}</p>;
-  if (cartItems.length === 0) {
+  if (isEmpty) {
     return (
       <div className="text-center mt-8 pry-ff flex flex-col items-center text-[var(--sec-clr)]">
-        <Image
-          src="/cart.png"
-          alt="Empty Cart"
-          width={150}
-          height={150}
-          className="mx-auto mb-4"
-        />
+        <Image src="/cart.png" alt="Empty Cart" width={150} height={150} className="mx-auto mb-4" />
         Your cart is empty
       </div>
     );
@@ -124,54 +130,72 @@ export default function GetCartComp() {
     <div className="p-4 md:p-8 bg-gray-50 min-h-screen pry-ff">
       <h1 className="text-2xl font-bold mb-6">Your Cart</h1>
 
-      <div className="space-y-4">
-        {cartItems.map((item) => (
-          <div
-            key={item.productId}
-            className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 bg-white p-4 rounded-lg border border-gray-200"
-          >
-            {/* Product Image */}
-            <div className="w-28 h-28 relative rounded-lg overflow-hidden flex-shrink-0">
-              <Image
-                src={item.product.productImg?.[0] || '/fallback.jpg'}
-                alt={item.product.title}
-                fill
-                className="object-cover"
-              />
+      <div className="space-y-8">
+        {Object.entries(groupedCart).map(([sellerId, items]) => (
+          <div key={sellerId}>
+            {/* Seller Group Header */}
+            <div className="flex items-center gap-2 mb-3">
+              <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                Seller
+              </span>
+              <span className="text-xs text-gray-500 font-mono">{sellerId}</span>
             </div>
 
-            {/* Title & Quantity */}
-            <div className="flex-1 flex flex-col justify-between w-full mt-2 sm:mt-0">
-              <div>
-                <h4 className="font-semibold text-gray-800 truncate">{item.product.title}</h4>
-                <p className="text-gray-500 text-sm mt-1">₦{item.price.toLocaleString()}</p>
-              </div>
-
-              <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
-                <AddToCart
-                  quantity={item.quantity}
-                  onIncrement={() => handleQuantityChange(item.productId, 'increment')}
-                  onDecrement={() => handleQuantityChange(item.productId, 'decrement')}
-                />
-
-                {/* Remove button */}
-                <button
-                  onClick={() => handleRemove(item.productId)}
-                  className="p-2 rounded-full hover:bg-gray-200 text-gray-600 cursor-pointer mt-2 sm:mt-0"
+            <div className="space-y-4">
+              {items.map((item) => (
+                <div
+                  key={item.productId}
+                  className="flex flex-col sm:flex-row items-center sm:items-start justify-between gap-4 bg-white p-4 rounded-lg border border-gray-200"
                 >
-                  <Trash2 size={20} />
-                </button>
-              </div>
+                  {/* Product Image */}
+                  <div className="w-28 h-28 relative rounded-lg overflow-hidden flex-shrink-0">
+                    <Image
+                      src={item.product.productImg?.[0] || '/fallback.jpg'}
+                      alt={item.product.title}
+                      fill
+                      className="object-cover"
+                    />
+                  </div>
+
+                  {/* Title & Quantity */}
+                  <div className="flex-1 flex flex-col justify-between w-full mt-2 sm:mt-0">
+                    <div>
+                      <h4 className="font-semibold text-gray-800 truncate">{item.product.title}</h4>
+                      <p className="text-gray-500 text-sm mt-1">₦{item.price.toLocaleString()}</p>
+                    </div>
+
+                    <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mt-2">
+                      <AddToCart
+                        quantity={item.quantity}
+                        onIncrement={() => handleQuantityChange(item.productId, 'increment')}
+                        onDecrement={() => handleQuantityChange(item.productId, 'decrement')}
+                      />
+                      <button
+                        onClick={() => handleRemove(item.productId)}
+                        className="p-2 rounded-full hover:bg-gray-200 text-gray-600 cursor-pointer mt-2 sm:mt-0"
+                      >
+                        <Trash2 size={20} />
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ))}
             </div>
+
+            {/* Per-seller subtotal */}
+            <p className="text-right text-sm text-gray-500 mt-2">
+              Seller subtotal: ₦
+              {items.reduce((acc, item) => acc + item.quantity * item.price, 0).toLocaleString()}
+            </p>
           </div>
         ))}
       </div>
 
-      {/* Subtotal & Checkout */}
+      {/* Overall Subtotal & Checkout */}
       <div className="mt-8 flex justify-end">
         <div className="w-full sm:w-[60%] md:w-[45%] lg:w-[35%] p-6 bg-white rounded-lg border border-gray-200">
           <p className="text-lg font-semibold">Subtotal: ₦{subtotal.toLocaleString()}</p>
-          <Link href="/order" className="w-full mt-4 py-3 rounded-lg bg-green-600 text-white font-semibold hover:opacity-90 transition">
+          <Link href="/order">
             <button className="w-full mt-4 py-3 rounded-lg bg-green-600 text-white font-semibold hover:opacity-90 transition cursor-pointer">
               Check Out
             </button>
