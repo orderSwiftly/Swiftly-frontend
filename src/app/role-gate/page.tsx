@@ -24,9 +24,15 @@ export default function DashboardRouter() {
             return;
         }
 
-        // Role-based redirect
+        // Role-based redirect for seller
         if (user.role === 'seller') {
             router.replace('/seller/dashboard');
+            return;
+        }
+
+        // Rider role redirect
+        if (user.role === 'rider') {
+            router.replace('/rider/dashboard');
             return;
         }
 

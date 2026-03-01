@@ -4,23 +4,21 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-    Package,
-    ShoppingBag,
     LogOut,
     ChevronLeft,
     ChevronRight,
     UserCircle,
-    Store,
+    Bike,
+    HomeIcon,
 } from 'lucide-react';
 import Image from 'next/image';
 import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from '../sidebar-context';
 
 const navItems = [
-    { label: 'Store', href: '/seller/dashboard', icon: Store },
-    { label: 'Products', href: '/seller/dashboard/my-products', icon: Package },
-    { label: 'Orders', href: '/seller/dashboard/orders', icon: ShoppingBag },
-    { label: 'Profile', href: '/seller/dashboard/profile', icon: UserCircle },
+    { label: 'Home', href: '/rider/dashboard/home', icon: HomeIcon },
+    { label: 'Deliveries', href: '/rider/dashboard/deliveries', icon: Bike },
+    { label: 'Profile', href: '/rider/dashboard/profile', icon: UserCircle },
 ];
 
 export default function Sidebar() {
@@ -37,13 +35,12 @@ export default function Sidebar() {
     }, []);
 
     const userInitial =
-        user?.businessName?.charAt(0).toUpperCase() ||
         user?.fullname?.charAt(0).toUpperCase() ||
         user?.email?.charAt(0).toUpperCase() ||
-        'S';
+        'R';
 
-    const displayName = user?.businessName || user?.fullname || 'Seller';
-    const userAvatar = user?.logo || user?.photo || null;
+    const displayName = user?.fullname || 'Rider';
+    const userAvatar = user?.photo || null;
 
     return (
         <>
@@ -55,7 +52,7 @@ export default function Sidebar() {
                 {/* Logo + Toggle */}
                 <div className={`flex items-center ${collapsed ? 'justify-center px-4' : 'justify-between px-5'} py-5 border-b border-[var(--sec-clr)]`}>
                     {!collapsed && (
-                        <Link href="/seller/dashboard" className="flex items-center gap-2 pry-ff">
+                        <Link href="/rider/dashboard/home" className="flex items-center gap-2 pry-ff">
                             <Image
                                 src="/brand-logo.png"
                                 alt="Swiftly Logo"
@@ -112,7 +109,7 @@ export default function Sidebar() {
                 </nav>
 
                 {/* User Section */}
-                <div className="p-3 border-t border-[var(--sec-clr)] pry-ff">
+                <div className="p-3 border-t border-[var(--sec-clr)]">
                     <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-2'} py-2 mb-1`}>
                         <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--acc-clr)] flex items-center justify-center font-bold text-[var(--pry-clr)] shrink-0">
                             {userAvatar ? (
@@ -145,13 +142,13 @@ export default function Sidebar() {
                             } w-full py-2.5 rounded-xl text-[var(--pry-clr)] hover:bg-red-100 hover:text-red-600 transition-all duration-200 cursor-pointer`}
                     >
                         <LogOut className="w-4 h-4 shrink-0" />
-                        {!collapsed && <span className="text-sm font-medium sec-ff">Logout</span>}
+                        {!collapsed && <span className="text-sm font-medium">Logout</span>}
                     </button>
                 </div>
             </aside>
 
             {/* Mobile Bottom Nav */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)] pry-ff">
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)]">
                 <div className="flex justify-around items-center py-2 px-4">
                     {navItems.map(({ label, href, icon: Icon }) => {
                         const isActive = pathname === href;
@@ -159,15 +156,15 @@ export default function Sidebar() {
                             <Link
                                 key={href}
                                 href={href}
-                                className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 ${isActive
-                                    ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
-                                    : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
-                                }`}
+                                className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all duration-200 ${isActive
+                                        ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
+                                        : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
+                                    }`}
                             >
                                 <div className="p-1.5 rounded-lg transition-all">
                                     <Icon className="w-5 h-5" />
                                 </div>
-                                <span className="text-xs font-medium sec-ff">{label.split(' ')[0]}</span>
+                                <span className="text-xs font-medium">{label}</span>
                             </Link>
                         );
                     })}

@@ -4,7 +4,6 @@ import { useEffect } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
-  Package,
   ShoppingBag,
   HomeIcon,
   ShoppingCartIcon,
@@ -29,92 +28,110 @@ export default function Sidebar() {
   const pathname = usePathname();
   const { user, isLoading, fetchUser, logout } = useUserStore();
 
-  // Fetch user on mount if not loaded
   useEffect(() => {
-    if (!user) {
+    if (typeof window === 'undefined') return;
+    const token = localStorage.getItem('token');
+    if (token && !user && !isLoading) {
       fetchUser();
     }
-  }, [user, fetchUser]);
+  }, []);
 
-  const userInitial = user?.fullname?.charAt(0)?.toUpperCase() || 'U';
-  const userFullname = user?.fullname || 'User';
+  const userInitial =
+    user?.fullname?.charAt(0)?.toUpperCase() ||
+    user?.email?.charAt(0)?.toUpperCase() ||
+    'U';
+
+  const displayName = user?.fullname || 'User';
 
   return (
     <>
       {/* Desktop Sidebar */}
       <aside
-        className={`hidden md:flex fixed top-0 left-0 h-screen shadow ${
-          collapsed ? 'w-20' : 'w-64'
-        } bg-[var(--txt-clr)] text-[var(--pry-clr)] flex-col z-40 transition-all duration-300`}
+        className={`hidden md:flex fixed top-0 left-0 h-screen ${collapsed ? 'w-20' : 'w-64'
+          } bg-[var(--txt-clr)] text-[var(--pry-clr)] flex-col z-40 transition-all duration-300 border-r border-[var(--sec-clr)]`}
       >
-        {/* Logo and Toggle */}
-        <div className="p-4 border-b border-gray-700 pry-ff flex items-center justify-between">
-          <Link href="/dashboard" className="flex items-center space-x-2">
+        {/* Logo + Toggle */}
+        <div className={`flex items-center ${collapsed ? 'justify-center px-4' : 'justify-between px-5'} py-5 border-b border-[var(--sec-clr)]`}>
+          {!collapsed && (
+            <Link href="/dashboard" className="flex items-center gap-2 pry-ff">
+              <Image
+                src="/brand-logo.png"
+                alt="Swiftly Logo"
+                width={36}
+                height={36}
+                className="w-9 h-9 object-cover rounded-lg"
+              />
+              <span className="text-lg font-bold text-[var(--pry-clr)]">Swiftly</span>
+            </Link>
+          )}
+          {collapsed && (
             <Image
               src="/brand-logo.png"
               alt="Swiftly Logo"
-              width={40}
-              height={40}
-              className="w-10 h-10 object-cover"
+              width={36}
+              height={36}
+              className="w-9 h-9 object-cover rounded-lg mb-2"
             />
-            {!collapsed && <span className="text-xl font-bold">Swiftly</span>}
-          </Link>
-          <button onClick={() => setCollapsed(!collapsed)}>
-            {collapsed ? (
-              <ChevronRight className="w-5 h-5" />
-            ) : (
-              <ChevronLeft className="w-5 h-5" />
-            )}
+          )}
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            className="w-8 h-8 rounded-lg bg-[var(--acc-clr)]/10 hover:bg-[var(--acc-clr)]/20 flex items-center justify-center transition-colors text-[var(--pry-clr)]"
+          >
+            {collapsed ? <ChevronRight className="w-4 h-4" /> : <ChevronLeft className="w-4 h-4" />}
           </button>
         </div>
 
-        {/* Navigation */}
-        <nav className="flex-1 px-2 py-6 sec-ff">
-          <ul className="space-y-2">
-            {navItems.map(({ label, href, icon: Icon }) => {
-              const isActive = pathname === href;
-              return (
-                <li key={href}>
-                  <Link
-                    href={href}
-                    className={`flex items-center ${
-                      collapsed ? 'justify-center' : 'space-x-3'
-                    } px-4 py-3 rounded-lg transition-colors duration-200 ${
-                      isActive
-                      ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)]'
-                        : 'text-[var(--pry-clr)] hover:bg-[var(--acc-clr)] hover:text-[var(--txt-clr)]'
-                    }`}
-                  >
-                    <Icon className="w-5 h-5" />
-                    {!collapsed && <span>{label}</span>}
-                  </Link>
-                </li>
-              );
-            })}
-          </ul>
+        {/* Nav Items */}
+        <nav className="flex-1 px-3 py-6 space-y-1 sec-ff">
+          {navItems.map(({ label, href, icon: Icon }) => {
+            const isActive = pathname === href;
+            return (
+              <Link
+                key={href}
+                href={href}
+                className={`flex items-center ${collapsed ? 'justify-center px-0' : 'gap-3 px-4'
+                  } py-3 rounded-xl transition-all duration-200 group relative ${isActive
+                    ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)]'
+                    : 'text-[var(--pry-clr)] hover:bg-[var(--acc-clr)] hover:text-[var(--pry-clr)]'
+                  }`}
+              >
+                <Icon className="w-5 h-5 shrink-0" />
+                {!collapsed && (
+                  <span className="text-sm font-medium">{label}</span>
+                )}
+                {collapsed && (
+                  <div className="absolute left-full ml-3 px-2 py-1 bg-[var(--pry-clr)] text-[var(--txt-clr)] text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
+                    {label}
+                  </div>
+                )}
+              </Link>
+            );
+          })}
         </nav>
 
         {/* User Section */}
-        <div className="p-4 border-t border-gray-700 sec-ff">
-          <div className="flex items-center space-x-3 mb-4">
-            <div className="w-10 h-10 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-[var(--sec-clr)]">
+        <div className="p-3 border-t border-[var(--sec-clr)] pry-ff">
+          <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-2'} py-2 mb-1`}>
+            <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--acc-clr)] flex items-center justify-center font-bold text-[var(--pry-clr)] shrink-0">
               {user?.photo ? (
                 <Image
                   width={40}
                   height={40}
-                  src={user.photo || '/default-user.png'}
-                  alt={user.fullname || 'User'}
-                  className="w-10 h-10 object-cover"
+                  src={user.photo}
+                  alt={displayName}
+                  className="w-full h-full object-cover"
                 />
               ) : (
-                userInitial
+                <span className="text-sm">{userInitial}</span>
               )}
             </div>
-
             {!collapsed && (
               <div className="flex-1 min-w-0">
-                <p className="text-sm font-medium text-[var(--pry-clr)] truncate">
-                  {isLoading ? 'Loading...' : userFullname}
+                <p className="text-sm font-semibold text-[var(--pry-clr)] truncate">
+                  {isLoading ? 'Loading...' : displayName}
+                </p>
+                <p className="text-xs text-[var(--sec-clr)] truncate">
+                  {user?.email || ''}
                 </p>
               </div>
             )}
@@ -122,73 +139,41 @@ export default function Sidebar() {
 
           <button
             onClick={logout}
-            className={`flex items-center ${
-              collapsed ? 'justify-center' : 'space-x-3'
-            } w-full px-4 py-2 text-[var(--pry-clr)] hover:bg-gray-800 hover:text-[var(--sec-clr)] rounded-lg transition-colors duration-200 cursor-pointer`}
+            className={`flex items-center ${collapsed ? 'justify-center px-0' : 'gap-3 px-4'
+              } w-full py-2.5 rounded-xl text-[var(--pry-clr)] hover:bg-red-100 hover:text-red-600 transition-all duration-200 cursor-pointer`}
           >
-            <LogOut className="w-5 h-5" />
-            {!collapsed && <span>Logout</span>}
+            <LogOut className="w-4 h-4 shrink-0" />
+            {!collapsed && <span className="text-sm font-medium sec-ff">Logout</span>}
           </button>
         </div>
       </aside>
 
-      {/* Mobile Bottom Navigation */}
-      <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-[var(--txt-clr)] text-[var(--pry-clr)] border rounded-tr-3 z-50">
-        <div className="flex justify-around items-center py-2">
-          {navItems.slice(0, 4).map(({ label, href, icon: Icon }) => {
+      {/* Mobile Bottom Nav */}
+      <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)]">
+        <div className="flex justify-around items-center py-2 px-4">
+          {navItems.map(({ label, href, icon: Icon }) => {
             const isActive = pathname === href;
             return (
               <Link
                 key={href}
                 href={href}
-                className={`flex flex-col items-center py-2 px-3 min-w-0 rounded-md transition-colors duration-200 ${
-                  isActive
-                    ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)]'
-                    : 'text-[var(--pry-clr)] hover:text-[var(--acc-clr)]'
+                className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 ${isActive
+                  ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
+                  : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
                 }`}
               >
-                <Icon className="w-5 h-5 mb-1" />
-                <span className="text-xs truncate">{label.split(' ')[0]}</span>
+                <div className="p-1.5 rounded-lg transition-all">
+                  <Icon className="w-5 h-5" />
+                </div>
+                <span className="text-xs font-medium sec-ff">{label.split(' ')[0]}</span>
               </Link>
             );
           })}
         </div>
       </nav>
 
-      {/* Mobile Top Bar */}
-      {/* <div className="md:hidden fixed top-0 left-0 right-0 bg-gray-900 text-[var(--sec-clr)] px-4 py-3 flex items-center justify-between z-50">
-        <Link href="/" className="flex items-center space-x-2">
-          <Image
-            src="/swiftly.png"
-            alt="Swiftly Logo"
-            width={32}
-            height={32}
-            className="w-8 h-8 object-cover"
-          />
-          <span className="text-lg font-bold pry-ff">Swiftly</span>
-        </Link>
-
-        <div className="flex items-center space-x-2">
-          <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-[var(--bg-clr)]">
-            {user?.photo ? (
-              <Image
-                width={32}
-                height={32}
-                src={user.photo}
-                alt={user.fullname}
-                className="w-8 h-8 object-cover"
-              />
-            ) : (
-              userInitial
-            )}
-          </div>
-          <span className="text-sm sec-ff">{isLoading ? 'Loading...' : userFullname}</span>
-        </div>
-      </div> */}
-
-      {/* Mobile Spacers */}
-      <div className="md:hidden h-16"></div> {/* Top spacer */}
-      <div className="md:hidden h-16"></div> {/* Bottom spacer */}
+      {/* Mobile spacer */}
+      <div className="md:hidden h-20" />
     </>
   );
 }

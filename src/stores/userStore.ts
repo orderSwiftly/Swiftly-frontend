@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-export type UserRole = "buyer" | "seller";
+export type UserRole = "buyer" | "seller" | "rider";
 
 export interface User {
   _id: string;
@@ -11,7 +11,7 @@ export interface User {
   phone?: string;
   referralCode?: string;
 
-  // Buyer-specific
+  // Buyer & Seller
   fullname?: string;
   photo?: string;
   university?: string;
@@ -20,6 +20,9 @@ export interface User {
   businessName?: string;
   logo?: string;
   institution?: any;
+
+  // Rider-specific (API returns "name" not "fullname")
+  name?: string;
 }
 
 interface UserState {
@@ -27,16 +30,23 @@ interface UserState {
   isLoading: boolean;
   isAuthenticated: boolean;
 
-  // Actions
-  setUser: (user: User) => void;
+  setUser: (user: User, token?: string) => void;
   clearUser: () => void;
   setLoading: (loading: boolean) => void;
   fetchUser: () => Promise<void>;
   logout: () => void;
 
-  // Computed helpers
   getDisplayName: () => string;
   getAvatar: () => string;
+}
+
+function getRoleFromToken(token: string): UserRole | null {
+  try {
+    const payload = JSON.parse(atob(token.split('.')[1]));
+    return (payload.role as UserRole) || null;
+  } catch {
+    return null;
+  }
 }
 
 export const useUserStore = create<UserState>()(
@@ -46,13 +56,18 @@ export const useUserStore = create<UserState>()(
       isLoading: false,
       isAuthenticated: false,
 
-      setUser: (user: User) => {
+      setUser: (user: User, token?: string) => {
+        if (token && typeof window !== "undefined") {
+          localStorage.setItem("token", token);
+        }
         set({ user, isAuthenticated: true, isLoading: false });
       },
 
       clearUser: () => {
         set({ user: null, isAuthenticated: false, isLoading: false });
-        if (typeof window !== "undefined") localStorage.removeItem("token");
+        if (typeof window !== "undefined") {
+          localStorage.removeItem("token");
+        }
       },
 
       setLoading: (loading: boolean) => set({ isLoading: loading }),
@@ -63,11 +78,62 @@ export const useUserStore = create<UserState>()(
         const token = localStorage.getItem("token");
         const api_url = process.env.NEXT_PUBLIC_API_URL;
 
-        if (!token || !api_url) {
+        if (!token) {
+          console.warn("No token — user not authenticated");
           get().clearUser();
           return;
         }
 
+        if (!api_url) {
+          console.error("NEXT_PUBLIC_API_URL is not set");
+          return;
+        }
+
+        // Determine role from store (hydrated) or JWT (fresh refresh)
+        const currentRole = get().user?.role || getRoleFromToken(token);
+
+        // ✅ Rider has no /me endpoint — rely on persisted store data only
+        // If rider user is already in store, do nothing
+        if (currentRole === "rider") {
+          const existingUser = get().user;
+          if (existingUser) {
+            set({ isAuthenticated: true });
+            return;
+          }
+          // Rider user lost from store (e.g. storage cleared) — fetch from /api/v1/rider
+          try {
+            set({ isLoading: true });
+            const res = await fetch(`${api_url}/api/v1/rider`, {
+              method: "GET",
+              headers: {
+                Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json",
+              },
+            });
+
+            if (!res.ok) {
+              if (res.status === 401 || res.status === 403) {
+                get().clearUser();
+              }
+              return;
+            }
+
+            const data = await res.json();
+            if (data.status === "success") {
+              get().setUser(data.data.user ?? data.data ?? data);
+            } else {
+              get().clearUser();
+            }
+          } catch (err) {
+            console.error("Fetch rider error:", err);
+            get().clearUser();
+          } finally {
+            set({ isLoading: false });
+          }
+          return;
+        }
+
+        // ✅ Buyer / Seller — use /api/v1/user/me
         try {
           set({ isLoading: true });
 
@@ -80,7 +146,10 @@ export const useUserStore = create<UserState>()(
           });
 
           if (!res.ok) {
-            get().clearUser();
+            if (res.status === 401 || res.status === 403) {
+              console.warn("Token invalid or expired — clearing user");
+              get().clearUser();
+            }
             return;
           }
 
@@ -103,8 +172,10 @@ export const useUserStore = create<UserState>()(
         try {
           const token = localStorage.getItem("token");
           const api_url = process.env.NEXT_PUBLIC_API_URL;
+          const currentRole = get().user?.role || getRoleFromToken(token ?? "");
 
-          if (token && api_url) {
+          // Riders have no logout endpoint — skip the API call
+          if (token && api_url && currentRole !== "rider") {
             await fetch(`${api_url}/api/v1/auth/user/logout`, {
               method: "POST",
               headers: {
@@ -122,11 +193,12 @@ export const useUserStore = create<UserState>()(
         }
       },
 
-      // Helpers to get role-specific display values
       getDisplayName: () => {
         const user = get().user;
         if (!user) return "";
-        return user.role === "seller" ? user.businessName || "" : user.fullname || "";
+        if (user.role === "seller") return user.businessName || "";
+        if (user.role === "rider") return user.name || user.fullname || "";
+        return user.fullname || "";
       },
 
       getAvatar: () => {
@@ -142,7 +214,6 @@ export const useUserStore = create<UserState>()(
         user: state.user,
         isAuthenticated: state.isAuthenticated,
       }),
-      skipHydration: false,
     }
   )
 );

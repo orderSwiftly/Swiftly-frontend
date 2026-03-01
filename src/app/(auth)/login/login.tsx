@@ -22,41 +22,49 @@ export default function Login() {
 
 const { setUser } = useUserStore();
 
-const handleLogin = async (e: React.FormEvent) => {
-  e.preventDefault();
-  setLoading(true);
+  const handleLogin = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
 
-  try {
-    const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/user/login`, {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
-    });
+    try {
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/user/login`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password }),
+      });
 
-    const data = await res.json();
+      const data = await res.json();
 
-    if (!res.ok || data.status !== 'success') {
-      throw new Error(data.message || 'Login failed');
+      if (!res.ok || data.status !== 'success') {
+        throw new Error(data.message || 'Login failed');
+      }
+
+      const token =
+        data.token ||
+        data.data?.token ||
+        data.data?.user?.token;
+
+      if (!token) throw new Error('No token received from server');
+
+      const userObj = { ...data.data.user };
+      delete userObj.token;
+
+      // Normalize rider "name" → "fullname" so all UI is consistent
+      if (userObj.name && !userObj.fullname) {
+        userObj.fullname = userObj.name;
+        delete userObj.name;
+      }
+
+      localStorage.setItem('token', token);
+      setUser(userObj, token);
+      router.push('/role-gate');
+
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Login failed';
+      toast.error(message);
+    } finally {
+      setLoading(false);
     }
-
-    // Save token and sync Zustand
-    localStorage.setItem('token', data.data.user.token);
-    setUser(data.data.user); // 👈 instant state update
-
-    // Redirect
-    setTimeout(() => {
-      router.push('/role-gate'); // go to role gate for role-based routing
-    }, 200);
-  } catch (err) {
-    const message = err instanceof Error ? err.message : 'Login failed';
-    toast.error(message);
-  } finally {
-    setLoading(false);
-  }
-  };
-  
-  const handleGoogleSignin = () => {
-    toast('Redirecting to social auth...');
   };
 
   const inputBase =
@@ -134,25 +142,6 @@ const handleLogin = async (e: React.FormEvent) => {
             Sign up
           </a>
         </p>
-
-        {/* SOCIAL BUTTONS */}
-              <div className="flex gap-3 sec-ff">
-                <button
-                  onClick={handleGoogleSignin}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[var(--sec-clr)] text-[var(--pry-clr)] py-2.5 rounded-lg font-medium text-xs cursor-pointer"
-                >
-                  <FcGoogle size={20} />
-                  Sign in with Google
-                </button>
-      
-                <button
-                  onClick={handleGoogleSignin}
-                  className="flex-1 flex items-center justify-center gap-2 bg-[var(--pry-clr)] text-[var(--txt-clr)] py-2.5 rounded-lg font-medium cursor-pointer text-xs"
-                >
-                  <FaApple size={18} />
-                  Sign in with Apple
-                </button>
-              </div>
       </div>
 
       
