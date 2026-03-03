@@ -2,7 +2,6 @@
 
 import { Headphones, MessageSquareWarning, Clock, CheckCircle } from "lucide-react";
 import ComplaintForm from "@/components/complaint-modal";
-import ComplaintButton from "@/components/complaint-btn";
 
 const stats = [
     { label: "Avg. Response", value: "< 2hrs", icon: Clock },
@@ -61,8 +60,6 @@ export default function SupportPage() {
                     <ComplaintForm />
                 </div>
             </div>
-
-            <ComplaintButton onClick={scrollToForm} />
         </main>
     );
 }

@@ -4,8 +4,6 @@ import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
 import DashboardPage from '@/components/dashboard-page';
-import ComplaintButton from '@/components/complaint-btn';
-import ComplaintModal from '@/components/complaint-modal';
 import WelcomeScreen from '@/components/welcome-screen';
 import Onboarding from '@/components/onboarding';
 import SelectCampus from '@/components/select-campus';
@@ -79,10 +77,6 @@ export default function DashboardHome() {
             {!showWelcome && !showOnboarding && !showCampus && (
                 <>
                     <Store />
-                    <ComplaintButton onClick={() => setShowComplaint(true)} />
-                    {showComplaint && (
-                        <ComplaintModal onClose={() => setShowComplaint(false)} />
-                    )}
                 </>
             )}
         </>
