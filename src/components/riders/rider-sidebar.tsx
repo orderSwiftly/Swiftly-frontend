@@ -109,7 +109,7 @@ export default function Sidebar() {
                 </nav>
 
                 {/* User Section */}
-                <div className="p-3 border-t border-[var(--sec-clr)]">
+                <div className="p-3 border-t border-[var(--sec-clr)] sec-ff">
                     <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-2'} py-2 mb-1`}>
                         <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--acc-clr)] flex items-center justify-center font-bold text-[var(--pry-clr)] shrink-0">
                             {userAvatar ? (
@@ -148,7 +148,7 @@ export default function Sidebar() {
             </aside>
 
             {/* Mobile Bottom Nav */}
-            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)]">
+            <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)] sec-ff">
                 <div className="flex justify-around items-center py-2 px-4">
                     {navItems.map(({ label, href, icon: Icon }) => {
                         const isActive = pathname === href;
@@ -156,7 +156,7 @@ export default function Sidebar() {
                             <Link
                                 key={href}
                                 href={href}
-                                className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all duration-200 ${isActive
+                                className={`flex flex-col items-center gap-1 py-2 px-4 rounded-xl transition-all duration-200 hover:bg-[var(--prof-clr)] hover:text-[var(--txt-clr)] ${isActive
                                         ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
                                         : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
                                     }`}

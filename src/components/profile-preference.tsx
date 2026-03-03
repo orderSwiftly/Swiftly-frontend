@@ -56,7 +56,7 @@ export default function ProfilePreference() {
           </div>
 
           <Link
-            href="/profile/support"
+            href="/dashboard/profile/support"
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-3">

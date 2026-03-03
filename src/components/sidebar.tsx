@@ -17,7 +17,7 @@ import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from './sidebar-context';
 
 const navItems = [
-  { label: 'Home', href: '/dashboard', icon: HomeIcon },
+  { label: 'Home', href: '/dashboard', icon: HomeIcon, exact: true },
   { label: 'Cart', href: '/dashboard/cart', icon: ShoppingCartIcon },
   { label: 'Orders', href: '/dashboard/my-orders', icon: ShoppingBag },
   { label: 'Profile', href: '/dashboard/profile', icon: UserCircle },
@@ -51,7 +51,10 @@ export default function Sidebar() {
           } bg-[var(--txt-clr)] text-[var(--pry-clr)] flex-col z-40 transition-all duration-300 border-r border-[var(--sec-clr)]`}
       >
         {/* Logo + Toggle */}
-        <div className={`flex items-center ${collapsed ? 'justify-center px-4' : 'justify-between px-5'} py-5 border-b border-[var(--sec-clr)]`}>
+        <div
+          className={`flex items-center ${collapsed ? 'justify-center px-4' : 'justify-between px-5'
+            } py-5 border-b border-[var(--sec-clr)]`}
+        >
           {!collapsed && (
             <Link href="/dashboard" className="flex items-center gap-2 pry-ff">
               <Image
@@ -83,8 +86,8 @@ export default function Sidebar() {
 
         {/* Nav Items */}
         <nav className="flex-1 px-3 py-6 space-y-1 sec-ff">
-          {navItems.map(({ label, href, icon: Icon }) => {
-            const isActive = pathname === href;
+          {navItems.map(({ label, href, icon: Icon, exact }) => {
+            const isActive = exact ? pathname === href : pathname.startsWith(href);
             return (
               <Link
                 key={href}
@@ -96,9 +99,7 @@ export default function Sidebar() {
                   }`}
               >
                 <Icon className="w-5 h-5 shrink-0" />
-                {!collapsed && (
-                  <span className="text-sm font-medium">{label}</span>
-                )}
+                {!collapsed && <span className="text-sm font-medium">{label}</span>}
                 {collapsed && (
                   <div className="absolute left-full ml-3 px-2 py-1 bg-[var(--pry-clr)] text-[var(--txt-clr)] text-xs rounded-md opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-50">
                     {label}
@@ -111,7 +112,10 @@ export default function Sidebar() {
 
         {/* User Section */}
         <div className="p-3 border-t border-[var(--sec-clr)] pry-ff">
-          <div className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-2'} py-2 mb-1`}>
+          <div
+            className={`flex items-center ${collapsed ? 'justify-center' : 'gap-3 px-2'
+              } py-2 mb-1`}
+          >
             <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--acc-clr)] flex items-center justify-center font-bold text-[var(--pry-clr)] shrink-0">
               {user?.photo ? (
                 <Image
@@ -130,9 +134,7 @@ export default function Sidebar() {
                 <p className="text-sm font-semibold text-[var(--pry-clr)] truncate">
                   {isLoading ? 'Loading...' : displayName}
                 </p>
-                <p className="text-xs text-[var(--sec-clr)] truncate">
-                  {user?.email || ''}
-                </p>
+                <p className="text-xs text-[var(--sec-clr)] truncate">{user?.email || ''}</p>
               </div>
             )}
           </div>
@@ -151,16 +153,16 @@ export default function Sidebar() {
       {/* Mobile Bottom Nav */}
       <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)]">
         <div className="flex justify-around items-center py-2 px-4">
-          {navItems.map(({ label, href, icon: Icon }) => {
-            const isActive = pathname === href;
+          {navItems.map(({ label, href, icon: Icon, exact }) => {
+            const isActive = exact ? pathname === href : pathname.startsWith(href);
             return (
               <Link
                 key={href}
                 href={href}
                 className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 ${isActive
-                  ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
-                  : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
-                }`}
+                    ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
+                    : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
+                  }`}
               >
                 <div className="p-1.5 rounded-lg transition-all">
                   <Icon className="w-5 h-5" />

@@ -1,16 +1,12 @@
 "use client";
 
 import { useState, useRef } from "react";
-import { X, Paperclip } from "lucide-react";
+import { X, Paperclip, Send } from "lucide-react";
 import { CreateComplaint } from "@/lib/create-complaint";
 import PulseLoader from "./pulse-loader";
 import toast from "react-hot-toast";
 
-interface ComplaintModalProps {
-  readonly onClose: () => void;
-}
-
-export default function ComplaintModal({ onClose }: ComplaintModalProps) {
+export default function ComplaintForm() {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
   const [attachments, setAttachments] = useState<File[]>([]);
@@ -36,14 +32,12 @@ export default function ComplaintModal({ onClose }: ComplaintModalProps) {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-
     try {
       await CreateComplaint({ subject, content, attachments });
       toast.success("Complaint submitted successfully");
       setSubject("");
       setContent("");
       setAttachments([]);
-      onClose();
     } catch (err) {
       console.error("Error submitting complaint:", err);
       toast.error("Failed to submit complaint");
@@ -53,75 +47,73 @@ export default function ComplaintModal({ onClose }: ComplaintModalProps) {
   };
 
   return (
-    <div className="fixed inset-0 flex items-center justify-end mr-2 z-50">
-      <div className="bg-[var(--light-bg)] rounded-2xl shadow-lg p-6 w-full max-w-md h-fit overflow-y-auto flex flex-col relative">
-        {/* Close Button */}
-        <button
-          onClick={onClose}
-          className="absolute top-3 right-3 text-[var(--acc-clr)] hover:text-red-500 transition"
-        >
-          <X size={20} />
-        </button>
+    <div className="bg-[var(--txt-clr)] rounded-2xl border border-[var(--pry-clr)]/10 shadow-sm p-6 w-full">
+      <p className="text-sm text-[var(--pry-clr)]/60 sec-ff mb-6">
+        Describe your issue and our team will get back to you shortly.
+      </p>
 
-        <h1 className="text-xl font-semibold mb-4 text-[var(--acc-clr)] pry-ff text-center">
-          File a Complaint
-        </h1>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
-          {/* Subject */}
+      <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+        {/* Subject */}
+        <div>
+          <label className="block text-xs font-semibold text-[var(--pry-clr)]/50 sec-ff mb-1 uppercase tracking-wider">
+            Subject
+          </label>
           <input
-            id="subject"
             type="text"
             value={subject}
             onChange={(e) => setSubject(e.target.value)}
             required
-            className="w-full border border-[var(--acc-clr)] text-[var(--txt-clr)] rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] sec-ff"
-            placeholder="Enter complaint subject"
+            className="w-full border border-[var(--pry-clr)]/15 bg-[var(--pry-clr)]/5 text-[var(--pry-clr)] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)]/50 focus:border-[var(--acc-clr)] transition sec-ff placeholder:text-[var(--pry-clr)]/30"
+            placeholder="e.g. Order not delivered"
           />
+        </div>
 
-          {/* Complaint Content */}
+        {/* Message */}
+        <div>
+          <label className="block text-xs font-semibold text-[var(--pry-clr)]/50 sec-ff mb-1 uppercase tracking-wider">
+            Message
+          </label>
           <textarea
-            id="complaint"
             value={content}
             onChange={(e) => setContent(e.target.value)}
-            rows={4}
+            rows={5}
             required
-            className="w-full border border-[var(--acc-clr)] text-[var(--txt-clr)] rounded-lg p-2 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)] sec-ff"
-            placeholder="Describe your issue..."
+            className="w-full border border-[var(--pry-clr)]/15 bg-[var(--pry-clr)]/5 text-[var(--pry-clr)] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)]/50 focus:border-[var(--acc-clr)] transition sec-ff placeholder:text-[var(--pry-clr)]/30 resize-none"
+            placeholder="Describe your issue in detail..."
+          />
+        </div>
+
+        {/* File Upload */}
+        <div>
+          <label className="block text-xs font-semibold text-[var(--pry-clr)]/50 sec-ff mb-2 uppercase tracking-wider">
+            Attachments{" "}
+            <span className="normal-case font-normal">(optional, max 4)</span>
+          </label>
+
+          <input
+            ref={fileInputRef}
+            type="file"
+            multiple
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
           />
 
-          {/* File Upload */}
-          <div>
-            <label className="text-sm font-medium text-[var(--txt-clr)] sec-ff">
-              Attachments (optional, max 4):
-            </label>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 px-4 py-2 border border-dashed border-[var(--bg-clr)]/50 rounded-xl text-sm text-[var(--bg-clr)] hover:border-[var(--bg-clr)] hover:bg-[var(--bg-clr)]/5 transition duration-200 sec-ff"
+          >
+            <Paperclip size={15} />
+            Choose Files
+          </button>
 
-            {/* Hidden input */}
-            <input
-              ref={fileInputRef}
-              type="file"
-              multiple
-              accept="image/*"
-              onChange={handleFileChange}
-              className="hidden"
-            />
-
-            {/* Custom button */}
-            <button
-              type="button"
-              onClick={() => fileInputRef.current?.click()}
-              className="mt-2 flex items-center gap-2 px-3 py-2 border border-[var(--acc-clr)] cursor-pointer rounded-lg text-sm text-[var(--acc-clr)] hover:bg-[var(--acc-clr)] hover:text-[var(--bg-clr)] transition duration-200 sec-ff"
-            >
-              <Paperclip size={16} />
-              Choose Files
-            </button>
-
-            {/* File preview grid */}
+          {attachments.length > 0 && (
             <div className="flex flex-wrap gap-3 mt-3">
               {attachments.map((file, index) => (
                 <div
                   key={index}
-                  className="relative w-20 h-20 rounded-lg overflow-hidden border border-gray-300"
+                  className="relative w-20 h-20 rounded-xl overflow-hidden border border-[var(--pry-clr)]/10 shadow-sm"
                 >
                   <img
                     src={URL.createObjectURL(file)}
@@ -131,34 +123,34 @@ export default function ComplaintModal({ onClose }: ComplaintModalProps) {
                   <button
                     type="button"
                     onClick={() => removeAttachment(index)}
-                    className="absolute top-1 right-1 bg-black/50 text-[var(--acc-clr)] cursor-pointer rounded-full p-1 text-xs hover:bg-black"
+                    className="absolute top-1 right-1 bg-[var(--pry-clr)]/70 text-[var(--txt-clr)] rounded-full p-0.5 hover:bg-[var(--pry-clr)] transition"
                   >
-                    <X size={12} />
+                    <X size={11} />
                   </button>
                 </div>
               ))}
             </div>
-          </div>
+          )}
+        </div>
 
-          {/* Buttons */}
-          <div className="flex justify-end gap-2 mt-4">
-            <button
-              type="button"
-              onClick={onClose}
-              className="px-4 py-2 rounded-md bg-gray-200 hover:bg-gray-300 text-sm sec-ff"
-            >
-              Cancel
-            </button>
-            <button
-              type="submit"
-              disabled={loading}
-              className="px-4 py-2 rounded-md bg-[var(--acc-clr)] text-[var(--bg-clr)] sec-ff hover:bg-opacity-90 text-sm disabled:opacity-50"
-            >
-              {loading ? <PulseLoader /> : "Submit"}
-            </button>
-          </div>
-        </form>
-      </div>
+        {/* Submit */}
+        <div className="flex justify-end pt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-2.5 rounded-xl bg-[var(--acc-clr)] text-[var(--pry-clr)] sec-ff font-semibold text-sm hover:opacity-90 transition disabled:opacity-50 cursor-pointer"
+          >
+            {loading ? (
+              <PulseLoader />
+            ) : (
+              <>
+                <Send size={15} />
+                Submit
+              </>
+            )}
+          </button>
+        </div>
+      </form>
     </div>
   );
 }

@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/layout.tsx
+
 'use client';
 
 import { ReactNode, useEffect, useState } from 'react';

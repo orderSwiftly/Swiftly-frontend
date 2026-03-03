@@ -8,7 +8,7 @@ import AppShell from "@/components/layout/app-shell";
 
 export const metadata: Metadata = {
   title: {
-    default: "Swiftly - Trust-first marketplace",
+    default: "Swiftly",
     template: "%s | Swiftly",
   },
   description: "Trust-first commerce for university trade and beyond",

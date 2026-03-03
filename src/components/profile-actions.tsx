@@ -8,19 +8,14 @@ const actions = [
     icon: Wallet,
   },
   {
-    link: "/my-orders",
+    link: "/dashboard/my-orders",
     label: "My Orders",
     icon: ShoppingBag,
   },
   {
-    link: "/profile/address",
+    link: "/dashboard/profile/address",
     label: "My Addresses",
     icon: Signpost,
-  },
-  {
-    link: "/profile/favorites",
-    label: "Favorites",
-    icon: Heart,
   },
 ];
 
