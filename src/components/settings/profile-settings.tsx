@@ -1,65 +1,197 @@
 "use client";
 
-import { Headphones, MessageSquareWarning, Clock, CheckCircle } from "lucide-react";
-import ComplaintForm from "@/components/complaint-modal";
+import { useEffect, useRef, useState } from "react";
+import { User, Camera } from "lucide-react";
+import { GetProfile } from "@/lib/get-profile";
+import { AdditionalInfo } from "@/lib/additional-info";
+import PulseLoader from "../pulse-loader";
+import toast from "react-hot-toast";
+import Image from "next/image";
 
-const stats = [
-  { label: "Avg. Response", value: "< 2hrs", icon: Clock },
-  { label: "Resolved Today", value: "98%", icon: CheckCircle },
-];
+type SettingsFormData = {
+  name: string;
+  email: string;
+  bio: string;
+  phoneNumber: string;
+  photo?: File;
+};
 
-export default function SupportPage() {
-  const scrollToForm = () => {
-    document.getElementById("complaint-form")?.scrollIntoView({ behavior: "smooth" });
+export default function ProfileSettings() {
+  const [formData, setFormData] = useState<SettingsFormData>({
+    name: "",
+    email: "",
+    bio: "",
+    phoneNumber: "",
+  });
+
+  const [preview, setPreview] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
+
+  useEffect(() => {
+    (async () => {
+      const user = await GetProfile();
+      if (user) {
+        setFormData({
+          name: user.fullname || "",
+          email: user.email || "",
+          bio: "",
+          phoneNumber: user.phoneNumber || "",
+        });
+        if (user.photo) setPreview(user.photo);
+      }
+    })();
+  }, []);
+
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { name, value } = e.target;
+    setFormData((prev) => ({ ...prev, [name]: value }));
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      setFormData((prev) => ({ ...prev, photo: file }));
+      setPreview(URL.createObjectURL(file));
+    }
+  };
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    try {
+      setLoading(true);
+      await AdditionalInfo(formData);
+      toast.success("Profile updated successfully");
+    } catch (err) {
+      console.error(err);
+      toast.error("Failed to update profile");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <main className="min-h-screen bg-[var(--txt-clr)] px-4 py-10 shadow-md rounded-2xl w-full">
-      <div className="max-w-2xl mx-auto">
+    <div className="p-6">
 
-        {/* Header */}
-        <div className="mb-10">
-          <div className="flex items-center gap-3 mb-3">
-            <div className="w-10 h-10 rounded-xl bg-[var(--acc-clr)]/20 flex items-center justify-center">
-              <Headphones size={20} className="text-[var(--bg-clr)]" />
+      {/* ── Profile header ──────────────────────────── */}
+      <div className="flex items-center gap-4 mb-8">
+
+        {/* Avatar */}
+        <div className="relative group w-16 h-16 shrink-0">
+          {preview ? (
+            <Image
+              width={64}
+              height={64}
+              src={preview}
+              alt="Profile"
+              className="w-16 h-16 rounded-full object-cover ring-2 ring-[#9BDD37]"
+            />
+          ) : (
+            <div className="w-16 h-16 bg-[#9BDD37]/10 ring-2 ring-[#9BDD37]/40 rounded-full flex items-center justify-center">
+              <User size={24} className="text-[#9BDD37]" />
             </div>
-            <h1 className="text-3xl font-bold text-[var(--pry-clr)] pry-ff tracking-tight">
-              Support
-            </h1>
-          </div>
-          <p className="text-[var(--pry-clr)]/60 sec-ff">
-            Having trouble? We're here to help. File a complaint and we'll get back to you fast.
+          )}
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
+          >
+            <Camera size={16} className="text-white" />
+          </button>
+          <input
+            ref={fileInputRef}
+            type="file"
+            accept="image/*"
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </div>
+
+        <div>
+          <h2 className="text-xl font-semibold text-[#669917] pry-ff">
+            Profile Information
+          </h2>
+          <p className="text-[#c0c0c0] sec-ff text-sm mt-0.5">
+            Update your phone number and profile picture.
           </p>
-
-          {/* Stats row */}
-          <div className="flex gap-4 mt-5">
-            {stats.map(({ label, value, icon: Icon }) => (
-              <div
-                key={label}
-                className="flex items-center gap-2.5 px-4 py-2.5 rounded-xl bg-[var(--pry-clr)] border border-[var(--pry-clr)]/10"
-              >
-                <Icon size={15} className="text-[var(--acc-clr)]" />
-                <div>
-                  <p className="text-xs text-[var(--sec-clr)] sec-ff">{label}</p>
-                  <p className="text-sm font-semibold text-[var(--acc-clr)] pry-ff">{value}</p>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-
-        {/* Divider with label */}
-        <div className="flex items-center gap-3 mb-6">
-          <MessageSquareWarning size={16} className="text-[var(--bg-clr)] shrink-0" />
-          <h2 className="text-base font-semibold text-[var(--pry-clr)] pry-ff">File a Complaint</h2>
-          <div className="flex-1 h-px bg-[var(--pry-clr)]/10" />
-        </div>
-
-        {/* Form */}
-        <div id="complaint-form">
-          <ComplaintForm />
         </div>
       </div>
-    </main>
+
+      {/* ── Form ────────────────────────────────────── */}
+      <form onSubmit={handleSubmit} className="space-y-5">
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+
+          {/* Full Name — read only */}
+          <div>
+            <label className="block text-xs font-semibold text-[#c0c0c0] sec-ff mb-1.5 uppercase tracking-wider">
+              Full Name
+            </label>
+            <input
+              type="text"
+              value={formData.name}
+              readOnly
+              className="w-full px-4 py-2.5 bg-[#f5f5f5] border border-[#e8e8e8] rounded-xl text-[#c0c0c0] sec-ff text-sm cursor-not-allowed"
+            />
+          </div>
+
+          {/* Email — read only */}
+          <div>
+            <label className="block text-xs font-semibold text-[#c0c0c0] sec-ff mb-1.5 uppercase tracking-wider">
+              Email
+            </label>
+            <input
+              type="email"
+              value={formData.email}
+              readOnly
+              className="w-full px-4 py-2.5 bg-[#f5f5f5] border border-[#e8e8e8] rounded-xl text-[#c0c0c0] sec-ff text-sm cursor-not-allowed"
+            />
+          </div>
+        </div>
+
+        {/* Phone Number — editable */}
+        <div>
+          <label className="block text-xs font-semibold text-[#c0c0c0] sec-ff mb-1.5 uppercase tracking-wider">
+            Phone Number
+          </label>
+          <input
+            type="text"
+            name="phoneNumber"
+            value={formData.phoneNumber}
+            onChange={handleChange}
+            placeholder="Enter your phone number"
+            className="w-full px-4 py-2.5 bg-white border border-[#e8e8e8] rounded-xl text-[#0A0F1A] sec-ff text-sm focus:outline-none focus:ring-2 focus:ring-[#9BDD37]/40 focus:border-[#9BDD37] transition placeholder:text-[#c0c0c0]"
+          />
+        </div>
+
+        {/* Photo upload trigger */}
+        <div>
+          <label className="block text-xs font-semibold text-[#c0c0c0] sec-ff mb-1.5 uppercase tracking-wider">
+            Profile Photo
+          </label>
+          <button
+            type="button"
+            onClick={() => fileInputRef.current?.click()}
+            className="flex items-center gap-2 px-4 py-2 border border-dashed border-[#9BDD37]/50 rounded-xl text-sm text-[#669917] hover:border-[#9BDD37] hover:bg-[#9BDD37]/5 transition sec-ff"
+          >
+            <Camera size={15} />
+            {preview ? "Change Photo" : "Upload Photo"}
+          </button>
+        </div>
+
+        {/* Submit */}
+        <div className="flex justify-end pt-2">
+          <button
+            type="submit"
+            disabled={loading}
+            className="flex items-center gap-2 px-6 py-2.5 bg-[#006B4F] text-white rounded-xl sec-ff font-semibold text-sm hover:bg-[#005a42] transition disabled:opacity-50"
+          >
+            {loading ? <PulseLoader /> : "Update Profile"}
+          </button>
+        </div>
+      </form>
+    </div>
   );
 }
