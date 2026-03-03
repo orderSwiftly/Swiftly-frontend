@@ -159,7 +159,7 @@ export default function Sidebar() {
               <Link
                 key={href}
                 href={href}
-                className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 ${isActive
+                className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 hover:bg-[var(--acc-clr)]/40 hover:text-[var(--pry-clr)] ${isActive
                     ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
                     : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
                   }`}

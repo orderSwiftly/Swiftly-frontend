@@ -17,11 +17,6 @@ const actions = [
     label: "My Orders",
     icon: ShoppingBag,
   },
-  {
-    link: "/seller/dashboard/addresses",
-    label: "My Addresses",
-    icon: Signpost,
-  },
 ];
 
 export default function ProfileActions() {

@@ -3,6 +3,16 @@
 import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
+import {
+  Building2,
+  User,
+  Hash,
+  Landmark,
+  Coins,
+  ShieldCheck,
+  ShieldX,
+  Tag,
+} from 'lucide-react';
 
 type Subaccount = {
   business_name: string;
@@ -12,7 +22,7 @@ type Subaccount = {
   percentage_charge: number;
   currency: string;
   is_verified: boolean;
-  recipient_code?: string; // <-- add recipient code here
+  recipient_code?: string;
 };
 
 interface GetSubaccountProps {
@@ -68,8 +78,8 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
           err instanceof Error
             ? err.message
             : typeof err === 'string'
-            ? err
-            : 'Error fetching subaccount';
+              ? err
+              : 'Error fetching subaccount';
         toast.error(errorMessage);
       } finally {
         setLoading(false);
@@ -79,41 +89,119 @@ export default function GetSubaccount({ subaccountCode }: GetSubaccountProps) {
     fetchSubaccount();
   }, [subaccountCode]);
 
-  return (
-    <main className="p-4">
-      {loading ? (
-        <div className="flex items-center justify-center h-32">
-          <PulseLoader />
-        </div>
-      ) : (
-        <section className="max-w-xl mx-auto bg-[var(--txt-clr)] dark:bg-gray-500 shadow-md rounded p-6">
-          <h1 className="text-xl font-bold mb-4 text-[var(--bg-clr)] pry-ff">Account Details</h1>
+  if (loading) {
+    return (
+      <div className="flex items-center justify-center py-16">
+        <PulseLoader />
+      </div>
+    );
+  }
 
-          {subaccount ? (
-            <div className="space-y-2 text-[var(--prof-clr)] sec-ff">
-              <p><strong className='text-[var(--pry-clr)]'>Business Name:</strong> {subaccount.business_name || 'N/A'}</p>
-              <p><strong className='text-[var(--pry-clr)]'>Account Name:</strong> {subaccount.account_name || 'N/A'}</p>
-              <p><strong className='text-[var(--pry-clr)]'>Account Number:</strong> {subaccount.account_number || 'N/A'}</p>
-              <p><strong className='text-[var(--pry-clr)]'>Settlement Bank:</strong> {subaccount.settlement_bank || 'N/A'}</p>
-              <p><strong className='text-[var(--pry-clr)]'>Currency:</strong> {subaccount.currency || 'NGN'}</p>
-              {/* <p><strong className='text-[var(--pry-clr)]'>Percentage Charge:</strong> {subaccount.percentage_charge}%</p> */}
-              <p><strong className='text-[var(--pry-clr)]'>Recipient Code:</strong> {subaccount.recipient_code || 'N/A'}</p>
-              <p>
-                <strong className='text-[var(--pry-clr)]'>Status:</strong>{' '}
-                <span
-                  className={`inline-block px-2 py-1 text-xs font-semibold rounded ${
-                    subaccount.is_verified ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800'
-                  }`}
-                >
-                  {subaccount.is_verified ? 'Verified' : 'Not Verified'}
-                </span>
-              </p>
-            </div>
-          ) : (
-            <p className="text-gray-500 dark:text-gray-300">No subaccount details available.</p>
-          )}
-        </section>
-      )}
-    </main>
+  if (!subaccount) {
+    return (
+      <div className="flex flex-col items-center justify-center py-16 gap-3 text-[#c0c0c0] sec-ff">
+        <ShieldX size={36} strokeWidth={1.5} />
+        <p className="text-sm">No subaccount details available.</p>
+      </div>
+    );
+  }
+
+  return (
+    <div className="space-y-5 sec-ff">
+
+      {/* ── Verification banner ──────────────────────── */}
+      <div
+        className={`flex items-center gap-3 rounded-xl px-4 py-3 ${subaccount.is_verified
+            ? 'bg-[#9BDD37]/10 border border-[#9BDD37]/30'
+            : 'bg-red-50 border border-red-200'
+          }`}
+      >
+        {subaccount.is_verified ? (
+          <ShieldCheck size={20} className="text-[#669917] shrink-0" />
+        ) : (
+          <ShieldX size={20} className="text-red-500 shrink-0" />
+        )}
+        <div>
+          <p className={`text-sm font-semibold ${subaccount.is_verified ? 'text-[#669917]' : 'text-red-600'}`}>
+            {subaccount.is_verified ? 'Account Verified' : 'Not Verified'}
+          </p>
+          <p className="text-xs text-[#c0c0c0] mt-0.5">
+            {subaccount.is_verified
+              ? 'This account has been verified by Paystack.'
+              : 'This account is pending verification.'}
+          </p>
+        </div>
+      </div>
+
+      {/* ── 2-column grid of detail cards ───────────── */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+
+        <DetailCard
+          icon={<Building2 size={16} className="text-[#669917]" />}
+          label="Business Name"
+          value={subaccount.business_name}
+        />
+
+        <DetailCard
+          icon={<User size={16} className="text-[#669917]" />}
+          label="Account Name"
+          value={subaccount.account_name}
+        />
+
+        <DetailCard
+          icon={<Hash size={16} className="text-[#669917]" />}
+          label="Account Number"
+          value={subaccount.account_number}
+          mono
+        />
+
+        <DetailCard
+          icon={<Landmark size={16} className="text-[#669917]" />}
+          label="Settlement Bank"
+          value={subaccount.settlement_bank}
+        />
+
+        <DetailCard
+          icon={<Coins size={16} className="text-[#669917]" />}
+          label="Currency"
+          value={subaccount.currency || 'NGN'}
+        />
+
+        <DetailCard
+          icon={<Tag size={16} className="text-[#669917]" />}
+          label="Recipient Code"
+          value={subaccount.recipient_code}
+          mono
+        />
+
+      </div>
+    </div>
+  );
+}
+
+/* ── Reusable detail card ─────────────────────────────── */
+function DetailCard({
+  icon,
+  label,
+  value,
+  mono = false,
+}: {
+  icon: React.ReactNode;
+  label: string;
+  value?: string | null;
+  mono?: boolean;
+}) {
+  return (
+    <div className="bg-white border border-[#e8e8e8] rounded-xl p-4 flex flex-col gap-2 hover:border-[#9BDD37] hover:shadow-sm transition-all sec-ff">
+      <div className="flex items-center gap-2">
+        <div className="bg-[#006B4F]/8 rounded-lg p-1.5">
+          {icon}
+        </div>
+        <span className="text-xs text-[#c0c0c0] uppercase tracking-wider">{label}</span>
+      </div>
+      <p className={`text-[#0A0F1A] font-medium text-sm pl-0.5 ${mono ? 'font-mono tracking-wide' : ''}`}>
+        {value || 'N/A'}
+      </p>
+    </div>
   );
 }

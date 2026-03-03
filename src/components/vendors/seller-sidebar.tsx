@@ -17,7 +17,7 @@ import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from '../sidebar-context';
 
 const navItems = [
-    { label: 'Store', href: '/seller/dashboard', icon: Store },
+    { label: 'Store', href: '/seller/dashboard', icon: Store, exact: true },
     { label: 'Products', href: '/seller/dashboard/my-products', icon: Package },
     { label: 'Orders', href: '/seller/dashboard/orders', icon: ShoppingBag },
     { label: 'Profile', href: '/seller/dashboard/profile', icon: UserCircle },
@@ -85,8 +85,8 @@ export default function Sidebar() {
 
                 {/* Nav Items */}
                 <nav className="flex-1 px-3 py-6 space-y-1 sec-ff">
-                    {navItems.map(({ label, href, icon: Icon }) => {
-                        const isActive = pathname === href;
+                    {navItems.map(({ label, href, icon: Icon, exact }) => {
+                        const isActive = exact ? pathname === href : pathname.startsWith(href);
                         return (
                             <Link
                                 key={href}
@@ -153,13 +153,13 @@ export default function Sidebar() {
             {/* Mobile Bottom Nav */}
             <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)] pry-ff">
                 <div className="flex justify-around items-center py-2 px-4">
-                    {navItems.map(({ label, href, icon: Icon }) => {
-                        const isActive = pathname === href;
+                    {navItems.map(({ label, href, icon: Icon, exact }) => {
+                        const isActive = exact ? pathname === href : pathname.startsWith(href);
                         return (
                             <Link
                                 key={href}
                                 href={href}
-                                className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 ${isActive
+                                className={`flex flex-col items-center gap-1 py-2 px-3 rounded-xl transition-all duration-200 hover:bg-[var(--acc-clr)]/40 hover:text-[var(--pry-clr)] ${isActive
                                     ? 'text-[var(--txt-clr)] bg-[var(--prof-clr)]'
                                     : 'text-[var(--pry-clr)] hover:text-[var(--pry-clr)]'
                                 }`}
