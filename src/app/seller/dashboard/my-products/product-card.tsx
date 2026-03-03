@@ -3,7 +3,6 @@
 import { useState, useEffect } from 'react';
 import AddProducts from './add-products';
 import ProductList from './product-list';
-import SubaccountBannerInfo from '@/components/subaccount-info';
 import { Plus } from 'lucide-react';
 
 export default function ProductCard() {
@@ -35,11 +34,6 @@ export default function ProductCard() {
 
   return (
     <main className="h-full w-full bg-[var(--light-bg)] p-4 sm:p-6 pb-20">
-      {/* Banner for new sellers */}
-      <SubaccountBannerInfo
-        isOpen={showBanner}
-        onDismiss={() => setShowBanner(false)}
-      />
 
       {/* Header with Add Product button */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 bg-white/5 p-4 rounded-lg mb-6 border border-white/10">
@@ -48,9 +42,7 @@ export default function ProductCard() {
         </h2>
         <button
           onClick={() => setIsModalOpen(true)}
-          disabled={showBanner}
-          className={`${showBanner ? 'opacity-50 cursor-not-allowed' : ''
-            } bg-[var(--acc-clr)] text-[var(--bg-clr)] px-4 py-2.5 rounded-md font-medium hover:bg-opacity-90 transition flex items-center justify-center gap-x-2 pry-ff w-full sm:w-auto`}
+          className="bg-[var(--acc-clr)] text-[var(--bg-clr)] px-4 py-2.5 rounded-md font-medium hover:bg-opacity-90 transition flex items-center justify-center gap-x-2 pry-ff w-full sm:w-auto"
         >
           <Plus size={16} /> <span>Add Product</span>
         </button>

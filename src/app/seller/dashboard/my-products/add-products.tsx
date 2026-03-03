@@ -18,7 +18,6 @@ export default function AddProducts({ closeModal }: Props) {
     price: '',
     stock: '',
     location: '',
-    biddingEnabled: false,
   });
 
   const [images, setImages] = useState<File[]>([]);
@@ -192,17 +191,6 @@ export default function AddProducts({ closeModal }: Props) {
             className="w-full p-3 rounded-lg bg-white/10 outline-none focus:ring-2 ring-[var(--acc-clr)]"
             required
           />
-
-          <label className="flex items-center gap-2 text-sm">
-            <input
-              type="checkbox"
-              name="biddingEnabled"
-              checked={formData.biddingEnabled}
-              onChange={handleChange}
-              className="accent-[var(--acc-clr)]"
-            />
-            Enable Bidding
-          </label>
 
           <input
             type="file"

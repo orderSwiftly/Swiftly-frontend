@@ -49,7 +49,7 @@ export default function ProductList() {
       const data = await res.json();
 
       if (res.ok && data.status === 'success') {
-        setProducts(data.data.enrichedProducts ?? []);
+        setProducts(data.data.products ?? []);
       } else {
         setError(data.message ?? 'Failed to fetch products');
       }
