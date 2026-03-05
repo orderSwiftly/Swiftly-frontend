@@ -9,6 +9,11 @@ export interface SellerProfile {
     businessName: string;
     email: string;
     logo: string;
+    location: {
+      type: "Point";
+      coordinates: [number, number]; // [longitude, latitude]
+      updated_at: string;
+    } | null;
     accountNumber: string;
     bankCode: string;
     paystackRecipientCode: string;
@@ -44,14 +49,22 @@ export interface SellerProfile {
 export async function fetchSellerProfile(): Promise<SellerProfile> {
   try {
     const token = localStorage.getItem("token");
-    if (!token) {
-      throw new Error("No authentication token found");
-    }
+    if (!token) throw new Error("No authentication token found");
+
+    const coords = await new Promise<{ latitude: number; longitude: number } | null>(
+      (resolve) => {
+        if (!navigator.geolocation) return resolve(null);
+        navigator.geolocation.getCurrentPosition(
+          (pos) => resolve({ latitude: pos.coords.latitude, longitude: pos.coords.longitude }),
+          () => resolve(null),
+          { enableHighAccuracy: true, timeout: 10000, maximumAge: 5 * 60 * 1000 }
+        );
+      }
+    );
 
     const response = await axios.get(`${apiUrl}/api/v1/user/seller-profile`, {
-      headers: {
-        Authorization: `Bearer ${token}`,
-      },
+      headers: { Authorization: `Bearer ${token}` },
+      params: coords ?? {},
     });
 
     return response.data.data as SellerProfile;
@@ -60,5 +73,17 @@ export async function fetchSellerProfile(): Promise<SellerProfile> {
     throw new Error(
       err.response?.data?.message || err.message || "Failed to fetch seller profile"
     );
+  }
+}
+
+export async function reverseGeocode(lat: number, lng: number): Promise<string> {
+  try {
+    const res = await fetch(
+      `https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lng}&format=json`
+    );
+    const data = await res.json();
+    return data.display_name ?? `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+  } catch {
+    return `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
   }
 }

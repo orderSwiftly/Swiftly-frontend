@@ -1,9 +1,9 @@
-// src/app/seller/dashboard/page.tsx
+// src/app/seller/dashboard/store/page.tsx
 
 "use client";
 
 import { useEffect, useState } from "react";
-import { fetchSellerProfile, SellerProfile } from "@/lib/seller";
+import { fetchSellerProfile, SellerProfile, reverseGeocode } from "@/lib/seller";
 import {
     MapPin,
     Package,
@@ -128,10 +128,25 @@ export default function Store() {
     const [data, setData] = useState<SellerProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
+    const [sellerAddress, setSellerAddress] = useState<string | null>(null);
 
     useEffect(() => {
         fetchSellerProfile()
             .then(setData)
+            .catch((e) => setError(e.message))
+            .finally(() => setLoading(false));
+    }, []);
+
+    // If seller has location, reverse geocode it to get a human-readable address
+    useEffect(() => {
+        fetchSellerProfile()
+            .then((profile) => {
+                setData(profile);
+                if (profile.seller.location) {
+                    const [lng, lat] = profile.seller.location.coordinates;
+                    reverseGeocode(lat, lng).then(setSellerAddress);
+                }
+            })
             .catch((e) => setError(e.message))
             .finally(() => setLoading(false));
     }, []);
@@ -198,6 +213,18 @@ export default function Store() {
                                     </span>
                                     <span className="text-white/30">·</span>
                                     <span>{seller.email}</span>
+                                </div>
+
+                                <div>
+                                    {sellerAddress && (
+                                        <div className="flex items-center gap-2 mt-2 lg:text-sm md:text-base text-white/60">
+                                            <span className="text-white/30">·</span>
+                                            <span className="flex items-center gap-1 font-semibold">
+                                                <MapPin size={12} className="text-[var(--prof-clr)]" />
+                                                {sellerAddress}
+                                            </span>
+                                        </div>
+                                    )}
                                 </div>
                             </div>
                         </div>
