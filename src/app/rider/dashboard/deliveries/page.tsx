@@ -1,7 +1,11 @@
+// src/app/rider/dashboard/deliveries/page.tsx
+
+import NearestOrders from "@/components/riders/nearest-orders"
+
 export default function DeliveryPage() {
     return (
-        <main>
-            <h1> Rider deliveries page. </h1>
+        <main className="px-4 py-5">
+            <NearestOrders />
         </main>
     )
 }
