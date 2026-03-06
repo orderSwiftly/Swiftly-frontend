@@ -97,3 +97,39 @@ export async function claimOrder(orderId: string): Promise<void> {
     );
   }
 }
+
+export async function getClaimedOrders(): Promise<NearbyOrder[]> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${apiUrl}/api/v1/rider/claimed-orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data.data.orders as NearbyOrder[];
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch claimed orders"
+    );
+  }
+}
+
+export async function collectOrder(orderId: string): Promise<void> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    await axios.post(
+      `${apiUrl}/api/v1/rider/collect/${orderId}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to collect order"
+    );
+  }
+}

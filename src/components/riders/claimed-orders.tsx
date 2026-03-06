@@ -1,16 +1,10 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import nearbyOrders, { NearbyOrder, claimOrder } from "@/lib/rider-order";
-import {
-    Loader2,
-    AlertCircle,
-    BadgeCheck,
-    ShoppingBag,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import { getClaimedOrders, NearbyOrder } from "@/lib/rider-order";
 import { reverseGeocode } from "@/lib/seller";
 import CollectOrderButton from "@/components/riders/collect-order";
-import RetrieveClaimedOrders from "@/components/riders/claimed-orders";
+import { Loader2, AlertCircle, ShoppingBag, PackageSearch } from "lucide-react";
 
 function formatPrice(price: number) {
     return new Intl.NumberFormat("en-NG", {
@@ -20,19 +14,9 @@ function formatPrice(price: number) {
     }).format(price);
 }
 
-function OrderCard({
-    order,
-    onClaimed,
-    onDeclined,
-}: {
-    order: NearbyOrder;
-    onClaimed: (id: string) => void;
-    onDeclined: (id: string) => void;
-}) {
-    const [claiming, setClaiming] = useState(false);
-    const [error, setError] = useState<string | null>(null);
+function ClaimedOrderCard({ order, onCollected }: { order: NearbyOrder; onCollected: (id: string) => void }) {
     const [pickupAddress, setPickupAddress] = useState<string>("Loading...");
-    const [claimed, setClaimed] = useState(false);
+    const [error, setError] = useState<string | null>(null);
 
     const [lng, lat] = order.seller_location.coordinates;
 
@@ -40,21 +24,10 @@ function OrderCard({
         reverseGeocode(lat, lng).then(setPickupAddress);
     }, [lat, lng]);
 
-    const handleAccept = async () => {
-        setClaiming(true);
-        setError(null);
-        try {
-            await claimOrder(order._id);
-            setClaimed(true);
-        } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Failed to claim order");
-        } finally {
-            setClaiming(false);
-        }
-    };
-
     const firstItem = order.items[0];
     const extraItems = order.items.length - 1;
+
+    
 
     return (
         <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm">
@@ -126,107 +99,68 @@ function OrderCard({
                 <p className="px-4 pb-2 text-xs text-red-500 text-center">{error}</p>
             )}
 
-            {claimed ? (
-                <div className="px-4 pb-4">
-                    <CollectOrderButton
-                        orderId={order._id}
-                        onSuccess={() => onClaimed(order._id)}
-                        onError={(msg) => setError(msg)}
-                    />
-                </div>
-            ) : (
-                <div className="flex items-center gap-3 px-4 pb-4">
-                    <button
-                        onClick={handleAccept}
-                        disabled={claiming}
-                        className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#006B4F] hover:bg-[#005540] disabled:opacity-60 text-[var(--txt-clr)] text-sm font-semibold transition-colors w-full cursor-pointer"
-                    >
-                        {claiming ? <Loader2 size={14} className="animate-spin" /> : null}
-                        Accept
-                    </button>
-                </div>
-            )}
+            <div className="px-4 pb-4">
+                <CollectOrderButton
+                    orderId={order._id}
+                    onSuccess={() => onCollected(order._id)}
+                    onError={(msg) => setError(msg)}
+                />
+            </div>
         </div>
     );
 }
 
-export default function NearestOrders() {
+export default function ClaimedOrders() {
     const [orders, setOrders] = useState<NearbyOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        nearbyOrders()
+        getClaimedOrders()
             .then(setOrders)
             .catch((e) => setError(e.message))
             .finally(() => setLoading(false));
     }, []);
 
-    const removeOrder = useCallback((id: string) => {
+    const removeOrder = (id: string) => {
         setOrders((prev) => prev.filter((o) => o._id !== id));
-    }, []);
+    };
 
     if (loading) {
         return (
-            <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
-                <Loader2 size={36} className="animate-spin text-[#006B4F]" />
-                <p className="text-sm">Finding orders near you…</p>
+            <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
+                <Loader2 size={28} className="animate-spin text-[#006B4F]" />
+                <p className="text-sm">Loading claimed orders…</p>
             </div>
         );
     }
 
     if (error) {
         return (
-            <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-red-500 sec-ff">
-                <AlertCircle size={40} strokeWidth={1.5} />
+            <div className="min-h-[200px] flex flex-col items-center justify-center gap-4 text-red-500 sec-ff">
+                <AlertCircle size={32} strokeWidth={1.5} />
                 <p className="text-sm">{error}</p>
             </div>
         );
     }
 
-    if (orders.length === 0) {
-        return (
-            <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
-                <BadgeCheck size={40} strokeWidth={1.5} className="text-[#9BDD37]" />
-                <p className="text-sm">No nearby orders at the moment</p>
-            </div>
-        );
-    }
+    if (orders.length === 0) return null;
 
     return (
-        <div className="sec-ff">
-            <RetrieveClaimedOrders />  {/* 🔹 shows claimed orders pending collection above nearby */}
-
+        <div className="sec-ff mb-10">
             <div className="flex items-baseline justify-between mb-5">
-                <h2 className="text-lg font-semibold text-[#0A0F1A]">Nearby Orders</h2>
-                <span className="text-[#c0c0c0] text-sm">{orders.length} available</span>
+                <div className="flex items-center gap-2">
+                    <PackageSearch size={16} className="text-[#669917]" />
+                    <h2 className="text-lg font-semibold text-[#0A0F1A]">Claimed Orders</h2>
+                </div>
+                <span className="text-[#c0c0c0] text-sm">{orders.length} pending</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                 {orders.map((order) => (
-                    <OrderCard
+                    <ClaimedOrderCard
                         key={order._id}
                         order={order}
-                        onClaimed={removeOrder}
-                        onDeclined={removeOrder}
-                    />
-                ))}
-            </div>
-        </div>
-    );
-
-    return (
-        <div className="sec-ff">
-            <div className="flex items-baseline justify-between mb-5">
-                <h2 className="text-lg font-semibold text-[#0A0F1A]">Nearby Orders</h2>
-                <span className="text-[#c0c0c0] text-sm">{orders.length} available</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {orders.map((order) => (
-                    <OrderCard
-                        key={order._id}
-                        order={order}
-                        onClaimed={removeOrder}
-                        onDeclined={removeOrder}
+                        onCollected={removeOrder}
                     />
                 ))}
             </div>
