@@ -1,3 +1,5 @@
+// src/components/riders/collect-order.tsx
+
 "use client";
 
 import { collectOrder } from "@/lib/rider-order";

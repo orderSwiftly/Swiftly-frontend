@@ -98,25 +98,6 @@ export async function claimOrder(orderId: string): Promise<void> {
   }
 }
 
-export async function getClaimedOrders(): Promise<NearbyOrder[]> {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No token found");
-
-    const response = await axios.get(`${apiUrl}/api/v1/rider/claimed-orders`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    return response.data.data.orders as NearbyOrder[];
-  } catch (error) {
-    const err = error as AxiosError<{ message: string }>;
-    throw new Error(
-      err.response?.data?.message || err.message || "Failed to fetch claimed orders"
-    );
-  }
-}
-
-
 // after claiming
 export async function collectOrder(orderId: string): Promise<void> {
   try {
@@ -153,6 +134,42 @@ export async function deliverOrder(orderId: string): Promise<void> {
     );
   }
 } 
+
+export async function getClaimedOrders(): Promise<NearbyOrder[]> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${apiUrl}/api/v1/rider/claimed-orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data.data.orders as NearbyOrder[];
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch claimed orders"
+    );
+  }
+}
+
+export async function getCollectedOrders(): Promise<NearbyOrder[]> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${apiUrl}/api/v1/rider/collected-orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data.data.orders as NearbyOrder[];
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch collected orders"
+    );
+  }
+}
 
 // retrieve delivered orders/ completed orders
 export async function getDeliveredOrders(): Promise<NearbyOrder[]> {
