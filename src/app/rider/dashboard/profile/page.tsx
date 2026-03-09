@@ -1,7 +1,9 @@
+import RiderProfileComp from '@/components/riders/rider-prof-comp'
+
 export default function RiderProfile() {
     return (
         <main>
-            <h1> Rider profile page. </h1>
+            <RiderProfileComp />
         </main>
-    )
+    );
 }
