@@ -58,7 +58,7 @@ function OrderCard({
     const extraItems = order.items.length - 1;
 
     return (
-        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm">
+        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm mb-10">
 
             {/* Top: image + order info */}
             <div className="flex gap-3 p-4">

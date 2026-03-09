@@ -41,7 +41,7 @@ function ActiveOrderCard({
     const isClaimed = order.kind === "claimed";
 
     return (
-        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm">
+        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm mb-10">
             {/* Status pill */}
             <div className="px-4 pt-3 pb-0 flex items-center justify-between">
                 {isClaimed ? (

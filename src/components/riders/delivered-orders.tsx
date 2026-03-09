@@ -27,7 +27,7 @@ function DeliveredOrderCard({ order }: { order: NearbyOrder }) {
     const extraItems = order.items.length - 1;
 
     return (
-        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm opacity-90">
+        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm opacity-90 mb-10">
             {/* Status pill */}
             <div className="px-4 pt-3 pb-0 flex items-center justify-between">
                 <span className="inline-flex items-center gap-1.5 text-[10px] font-semibold uppercase tracking-wide text-[#669917] bg-[#f3ffe0] border border-[#d4f5a0] px-2.5 py-1 rounded-full">
