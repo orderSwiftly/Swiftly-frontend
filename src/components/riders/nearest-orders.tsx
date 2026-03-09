@@ -1,3 +1,5 @@
+// src/components/riders/nearest-orders.tsx
+
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
@@ -10,7 +12,6 @@ import {
 } from "lucide-react";
 import { reverseGeocode } from "@/lib/seller";
 import CollectOrderButton from "@/components/riders/collect-order";
-import RetrieveClaimedOrders from "@/components/riders/claimed-orders";
 
 function formatPrice(price: number) {
     return new Intl.NumberFormat("en-NG", {
@@ -192,27 +193,6 @@ export default function NearestOrders() {
             </div>
         );
     }
-
-    return (
-        <div className="sec-ff">
-            <RetrieveClaimedOrders />  {/* 🔹 shows claimed orders pending collection above nearby */}
-
-            <div className="flex items-baseline justify-between mb-5">
-                <h2 className="text-lg font-semibold text-[#0A0F1A]">Nearby Orders</h2>
-                <span className="text-[#c0c0c0] text-sm">{orders.length} available</span>
-            </div>
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                {orders.map((order) => (
-                    <OrderCard
-                        key={order._id}
-                        order={order}
-                        onClaimed={removeOrder}
-                        onDeclined={removeOrder}
-                    />
-                ))}
-            </div>
-        </div>
-    );
 
     return (
         <div className="sec-ff">

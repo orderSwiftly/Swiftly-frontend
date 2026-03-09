@@ -92,6 +92,7 @@ export async function claimOrder(orderId: string): Promise<void> {
     );
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
+    console.error("Claim order error response:", err.response?.data); // 👈 full server message
     throw new Error(
       err.response?.data?.message || err.message || "Failed to claim order"
     );
@@ -177,7 +178,7 @@ export async function getDeliveredOrders(): Promise<NearbyOrder[]> {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
-    const response = await axios.get(`${apiUrl}/api/v1/rider/completed-orders`, {
+    const response = await axios.get(`${apiUrl}/api/v1/rider/delivered-orders`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
