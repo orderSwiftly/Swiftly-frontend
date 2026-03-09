@@ -116,6 +116,8 @@ export async function getClaimedOrders(): Promise<NearbyOrder[]> {
   }
 }
 
+
+// after claiming
 export async function collectOrder(orderId: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
@@ -130,6 +132,43 @@ export async function collectOrder(orderId: string): Promise<void> {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
       err.response?.data?.message || err.message || "Failed to collect order"
+    );
+  }
+}
+
+export async function deliverOrder(orderId: string): Promise<void> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    await axios.post(
+      `${apiUrl}/api/v1/rider/deliver/${orderId}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to deliver order"
+    );
+  }
+} 
+
+// retrieve delivered orders/ completed orders
+export async function getDeliveredOrders(): Promise<NearbyOrder[]> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${apiUrl}/api/v1/rider/completed-orders`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data.data.orders as NearbyOrder[];
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch completed orders"
     );
   }
 }
