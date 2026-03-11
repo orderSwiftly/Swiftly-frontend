@@ -8,6 +8,8 @@ import { FaApple } from 'react-icons/fa';
 import { GraduationCap } from 'lucide-react';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
+import OneSignal from 'react-onesignal';
+import { fetchCurrentInstitution } from '@/lib/campus';
 
 type Campus = {
   id: number;
@@ -51,8 +53,30 @@ export default function SignupComp() {
         throw new Error(data?.message ?? 'Something went wrong');
       }
 
+      const user = data.user ?? data;
+
+      // Guarding
+      if (typeof window !== "undefined") {
+        const permission = await OneSignal.Notifications.requestPermission();
+
+        if (permission) {
+          // Link device to the user
+          await OneSignal.login(user.id);
+
+          // Fetch the institution (campus) the user selected
+          const institution = await fetchCurrentInstitution();
+
+          // Tag the user with role + campus
+          await OneSignal.User.addTags({
+            role: "buyer",
+            campus: institution?.name ?? "unknown"
+          });
+        }
+      }
+
       toast.success('Signup successful! Redirecting to login...');
       router.push('/login');
+
     } catch (err: unknown) {
       if (err instanceof Error) {
         toast.error(err.message);

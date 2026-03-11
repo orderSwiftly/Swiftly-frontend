@@ -10,8 +10,8 @@ import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import { useUserStore } from '@/stores/userStore';
 import Link from 'next/link';
-import { FaApple } from 'react-icons/fa';
-import { FcGoogle } from 'react-icons/fc';
+import OneSignal from 'react-onesignal';
+import { fetchCurrentInstitution } from '@/lib/campus'; // your helper
 
 export default function Login() {
   const router = useRouter();
@@ -27,6 +27,7 @@ const { setUser } = useUserStore();
     setLoading(true);
 
     try {
+      // 1️⃣ Login API
       const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/user/login`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -39,17 +40,12 @@ const { setUser } = useUserStore();
         throw new Error(data.message || 'Login failed');
       }
 
-      const token =
-        data.token ||
-        data.data?.token ||
-        data.data?.user?.token;
-
+      const token = data.token || data.data?.token || data.data?.user?.token;
       if (!token) throw new Error('No token received from server');
 
       const userObj = { ...data.data.user };
       delete userObj.token;
 
-      // Normalize rider "name" → "fullname" so all UI is consistent
       if (userObj.name && !userObj.fullname) {
         userObj.fullname = userObj.name;
         delete userObj.name;
@@ -57,7 +53,28 @@ const { setUser } = useUserStore();
 
       localStorage.setItem('token', token);
       setUser(userObj, token);
+
+      // 2️⃣ Navigate immediately
       router.push('/role-gate');
+
+      // 3️⃣ Trigger OneSignal in the background (non-blocking)
+      if (typeof window !== 'undefined') {
+        (async () => {
+          try {
+            const permission = await OneSignal.Notifications.requestPermission();
+            if (permission) {
+              await OneSignal.login(userObj.id);
+              const institution = await fetchCurrentInstitution();
+              await OneSignal.User.addTags({
+                role: userObj.role || 'buyer',
+                campus: institution?.name ?? 'unknown',
+              });
+            }
+          } catch (err) {
+            console.warn('OneSignal setup failed:', err);
+          }
+        })();
+      }
 
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';
