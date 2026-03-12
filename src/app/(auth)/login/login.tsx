@@ -43,7 +43,7 @@ const { setUser } = useUserStore();
       const token = data.token || data.data?.token || data.data?.user?.token;
       if (!token) throw new Error('No token received from server');
 
-      const userObj = { ...data.data.user };
+      const userObj = { ...data.data.user, id: data.data.user._id };
       delete userObj.token;
 
       if (userObj.name && !userObj.fullname) {
