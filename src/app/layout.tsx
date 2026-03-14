@@ -5,7 +5,6 @@ import { Toaster } from 'react-hot-toast';
 import PushNotification from "@/components/PushNotification";
 import AuthProvider from "@/components/providers/AuthProvider";
 import AppShell from "@/components/layout/app-shell";
-import OneSignalInit from "@/components/OneSignalInit";
 
 export const metadata: Metadata = {
   title: {
@@ -28,7 +27,6 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           {children}
           <Toaster position="top-center" />
           <PushNotification />
-          <OneSignalInit />
         </AuthProvider>
       </body>
     </html>

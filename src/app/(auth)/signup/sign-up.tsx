@@ -2,14 +2,10 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
-import { FcGoogle } from 'react-icons/fc';
-import { FaApple } from 'react-icons/fa';
-import { GraduationCap } from 'lucide-react';
+import { Eye, EyeOff, GraduationCap } from 'lucide-react';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
-import OneSignal from 'react-onesignal';
-import { fetchCurrentInstitution } from '@/lib/campus';
+import Link from 'next/link';
 
 type Campus = {
   id: number;
@@ -17,13 +13,14 @@ type Campus = {
   location: string;
 };
 
-
 export default function SignupComp() {
   const router = useRouter();
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
+  const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [campus, setCampus] = useState<Campus | null>(null);
 
@@ -38,6 +35,12 @@ export default function SignupComp() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+
+    if (password !== confirmPassword) {
+      toast.error('Passwords do not match');
+      return;
+    }
+
     setLoading(true);
 
     try {
@@ -53,27 +56,6 @@ export default function SignupComp() {
         throw new Error(data?.message ?? 'Something went wrong');
       }
 
-      const user = data.user ?? data;
-
-      // Guarding
-      if (typeof window !== "undefined") {
-        const permission = await OneSignal.Notifications.requestPermission();
-
-        if (permission) {
-          // Link device to the user
-          await OneSignal.login(user.id);
-
-          // Fetch the institution (campus) the user selected
-          const institution = await fetchCurrentInstitution();
-
-          // Tag the user with role + campus
-          await OneSignal.User.addTags({
-            role: "buyer",
-            campus: institution?.name ?? "unknown"
-          });
-        }
-      }
-
       toast.success('Signup successful! Redirecting to login...');
       router.push('/login');
 
@@ -86,10 +68,6 @@ export default function SignupComp() {
     } finally {
       setLoading(false);
     }
-  };
-
-  const handleGoogleSignup = () => {
-    toast('Redirecting to social auth...');
   };
 
   const handleLoginRedirect = () => {
@@ -109,7 +87,6 @@ export default function SignupComp() {
           Register with Swiftly
         </h1>
 
-        {/* FORM */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 sec-ff">
           <div>
             <label className="text-sm mb-1 block">Full name</label>
@@ -156,34 +133,46 @@ export default function SignupComp() {
             </div>
           </div>
 
-          <div
-  className="
-    group cursor-pointer flex items-center justify-between gap-3
-    border border-dashed border-[var(--sec-clr)]
-    rounded-lg p-3
-    bg-[var(--sec-clr)]
-    transition
-  "
->
-  <div className="flex flex-col gap-1">
-    {campus ? (
-        <p className="pry-ff text-sm">
-          {campus.name}
-        </p>
-    ) : (
-      <p className="text-sm opacity-70 sec-ff">
-        Select your campus
-      </p>
-    )}
-  </div>
+          <div>
+            <label className="text-sm mb-1 block">Confirm Password</label>
+            <div className="relative">
+              <input
+                type={showConfirmPass ? 'text' : 'password'}
+                placeholder="Re-enter your password"
+                value={confirmPassword}
+                onChange={(e) => setConfirmPassword(e.target.value)}
+                className={`${inputBase} pr-10 ${confirmPassword && password !== confirmPassword
+                    ? 'border-red-500 focus:ring-red-500'
+                    : ''
+                  }`}
+                required
+              />
+              <button
+                type="button"
+                onClick={() => setShowConfirmPass(!showConfirmPass)}
+                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pry-clr)] cursor-pointer"
+              >
+                {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
+              </button>
+            </div>
+            {confirmPassword && password !== confirmPassword && (
+              <p className="text-red-500 text-xs mt-1">Passwords do not match</p>
+            )}
+          </div>
 
-  <GraduationCap
-    size={20}
-    className="text-[var(--acc-clr)] group-hover:scale-110 transition"
-  />
-</div>
-
-
+          <div className="group cursor-pointer flex items-center justify-between gap-3 border border-dashed border-[var(--sec-clr)] rounded-lg p-3 bg-[var(--sec-clr)] transition">
+            <div className="flex flex-col gap-1">
+              {campus ? (
+                <p className="pry-ff text-sm">{campus.name}</p>
+              ) : (
+                <p className="text-sm opacity-70 sec-ff">Select your campus</p>
+              )}
+            </div>
+            <GraduationCap
+              size={20}
+              className="text-[var(--acc-clr)] group-hover:scale-110 transition"
+            />
+          </div>
 
           <button
             type="submit"
@@ -193,7 +182,7 @@ export default function SignupComp() {
             {loading ? <PulseLoader /> : 'Sign Up'}
           </button>
         </form>
-        
+
         <p className="text-sm text-center m-3 text-[var(--pry-clr)] sec-ff">
           Already have an account?{' '}
           <button
@@ -203,30 +192,10 @@ export default function SignupComp() {
             Login here
           </button>
         </p>
-        <p className="text-sm text-center m-3 text-[var(--acc-clr)] sec-ff underline">
+        <input type="checkbox" />
+        <Link href="/terms" className="text-sm text-center m-3 text-[var(--acc-clr)] sec-ff underline">
           I agree to Terms & Privacy Policy
-        </p>
-
-        {/* SOCIAL BUTTONS */}
-        <div className="flex gap-3 sec-ff">
-          <button
-            onClick={handleGoogleSignup}
-            className="flex-1 flex items-center justify-center gap-2 bg-[var(--sec-clr)] text-[var(--pry-clr)] py-2.5 rounded-lg font-medium text-xs cursor-pointer"
-          >
-            <FcGoogle size={20} />
-            Sign up with Google
-          </button>
-
-          <button
-            onClick={handleGoogleSignup}
-            className="flex-1 flex items-center justify-center gap-2 bg-[var(--pry-clr)] text-[var(--txt-clr)] py-2.5 rounded-lg font-medium cursor-pointer text-xs"
-          >
-            <FaApple size={18} />
-            Sign up with Apple
-          </button>
-        </div>
-
-        
+        </Link>
       </div>
     </main>
   );
