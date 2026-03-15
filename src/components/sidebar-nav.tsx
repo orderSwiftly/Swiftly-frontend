@@ -78,7 +78,6 @@ export default function SidebarNav() {
 
             {/* RIGHT — Notifications + User */}
             <div className="flex items-center gap-3">
-                <Bell className="w-5 h-5 text-gray-700" />
 
                 <Link href="/dashboard/profile">
                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-white">
