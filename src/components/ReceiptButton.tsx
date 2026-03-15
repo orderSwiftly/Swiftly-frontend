@@ -2,23 +2,30 @@
 
 import { generateReceiptPDF } from '@/utils/pdfReceipt';
 
+interface Pricing {
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  total: number;
+}
+
 interface ReceiptButtonProps {
   orderId: string;
-  amount: number;
+  pricing: Pricing;
   deliveryCode: string;
   fullname?: string;
 }
 
 const ReceiptButton: React.FC<ReceiptButtonProps> = ({
   orderId,
-  amount,
+  pricing,
   deliveryCode,
   fullname,
 }) => {
   const handleDownload = () => {
     generateReceiptPDF({
       orderId,
-      amount,
+      pricing,
       deliveryCode,
       fullName: fullname || 'Customer',
     });

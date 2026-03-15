@@ -1,15 +1,22 @@
 import jsPDF from 'jspdf';
 
+interface Pricing {
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  total: number;
+}
+
 interface ReceiptData {
   orderId: string;
-  amount: number;
+  pricing: Pricing;
   deliveryCode: string;
   fullName?: string;
 }
 
 export const generateReceiptPDF = ({
   orderId,
-  amount,
+  pricing,
   deliveryCode,
   fullName,
 }: ReceiptData) => {
@@ -19,7 +26,7 @@ export const generateReceiptPDF = ({
   let currentY = 20;
 
   doc.setFontSize(18);
-  doc.setTextColor(45, 202, 215); // Accent color
+  doc.setTextColor(45, 202, 215);
   doc.text('Tredia Payment Receipt', startX, currentY);
 
   currentY += 15;
@@ -35,7 +42,16 @@ export const generateReceiptPDF = ({
   doc.text(`Order ID: ${orderId}`, startX, currentY);
   currentY += 10;
 
-  doc.text(`Total Amount: ₦${amount.toLocaleString()}`, startX, currentY);
+  doc.text(`Subtotal: ₦${pricing.subtotal.toLocaleString()}`, startX, currentY);
+  currentY += 10;
+
+  doc.text(`Service Fee: ₦${pricing.serviceFee.toLocaleString()}`, startX, currentY);
+  currentY += 10;
+
+  doc.text(`Delivery Fee: ₦${pricing.deliveryFee.toLocaleString()}`, startX, currentY);
+  currentY += 10;
+
+  doc.text(`Total: ₦${pricing.total.toLocaleString()}`, startX, currentY);
   currentY += 10;
 
   doc.text(`Delivery Code: ${deliveryCode}`, startX, currentY);

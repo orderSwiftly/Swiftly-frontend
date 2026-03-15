@@ -26,16 +26,22 @@ const ErrorBlock = ({ title, message }: ErrorBlockProps) => (
   </div>
 );
 
+interface Pricing {
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  total: number;
+}
+
+type OrderData = {
+  _id?: string;
+  pricing?: Pricing;
+  deliveryCode?: string;
+};
+
 export default function PaymentCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'timeout' | 'missing'>('loading');
   const [message, setMessage] = useState('');
-
-  type OrderData = {
-    _id?: string;
-    total?: number;
-    deliveryCode?: string;
-  };
-
   const [orderData, setOrderData] = useState<OrderData | null>(null);
   const searchParams = useSearchParams();
   const reference = searchParams.get('reference');
@@ -71,7 +77,7 @@ export default function PaymentCallbackPage() {
           setMessage(data.message || 'Payment confirmed successfully!');
           setOrderData({
             _id: data.data?.order?._id,
-            total: data.data?.order?.total ?? 0, // <-- Use order.total here
+            pricing: data.data?.order?.pricing,
             deliveryCode: data.data?.order?.deliveryCode,
           });
         } else {
@@ -131,8 +137,20 @@ export default function PaymentCallbackPage() {
             </div>
 
             <div className="flex justify-between">
-              <span className="font-bold">Total Amount:</span>
-              <span className="font-semibold">₦{orderData.total?.toLocaleString()}</span>
+              <span className="font-bold">Subtotal:</span>
+              <span>₦{orderData.pricing?.subtotal?.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-bold">Service Fee:</span>
+              <span>₦{orderData.pricing?.serviceFee?.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between">
+              <span className="font-bold">Delivery Fee:</span>
+              <span>₦{orderData.pricing?.deliveryFee?.toLocaleString()}</span>
+            </div>
+            <div className="flex justify-between font-semibold text-[var(--acc-clr)]">
+              <span>Total:</span>
+              <span>₦{orderData.pricing?.total?.toLocaleString()}</span>
             </div>
 
             <div className="flex justify-between">
@@ -143,7 +161,7 @@ export default function PaymentCallbackPage() {
             <div className="pt-4">
               <ReceiptButton
                 orderId={orderData._id ?? 'Unknown'}
-                amount={orderData.total ?? 0}
+                pricing={orderData.pricing ?? { subtotal: 0, serviceFee: 0, deliveryFee: 0, total: 0 }}
                 deliveryCode={orderData.deliveryCode ?? 'N/A'}
                 fullname="Customer"
               />
