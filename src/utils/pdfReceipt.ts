@@ -27,7 +27,7 @@ export const generateReceiptPDF = ({
 
   doc.setFontSize(18);
   doc.setTextColor(45, 202, 215);
-  doc.text('Tredia Payment Receipt', startX, currentY);
+  doc.text('Swiftly Payment Receipt', startX, currentY);
 
   currentY += 15;
   doc.setFontSize(12);
@@ -59,5 +59,5 @@ export const generateReceiptPDF = ({
 
   doc.text(`Date: ${new Date().toLocaleString()}`, startX, currentY);
 
-  doc.save(`Tredia_Receipt_${orderId}.pdf`);
+  doc.save(`Swiftly_Receipt_${orderId}.pdf`);
 };
