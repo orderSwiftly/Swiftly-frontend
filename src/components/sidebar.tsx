@@ -118,9 +118,8 @@ export default function Sidebar() {
           >
             <div className="w-10 h-10 rounded-full overflow-hidden bg-[var(--acc-clr)] flex items-center justify-center font-bold text-[var(--pry-clr)] shrink-0">
               {user?.photo ? (
-                <Image
-                  width={40}
-                  height={40}
+                // eslint-disable-next-line @next/next/no-img-element
+                <img
                   src={user.photo}
                   alt={displayName}
                   className="w-full h-full object-cover"

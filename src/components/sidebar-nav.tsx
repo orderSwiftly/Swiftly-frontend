@@ -3,7 +3,6 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Bell } from 'lucide-react';
 
 import { useUserStore } from '@/stores/userStore';
 import { useUIStore } from '@/stores/campusStore';
@@ -82,13 +81,11 @@ export default function SidebarNav() {
                 <Link href="/dashboard/profile">
                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-white">
                         {user?.photo ? (
-                            <Image
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img
                                 src={user.photo}
                                 alt={user.fullname || 'User'}
-                                width={32}
-                                height={32}
                                 className="w-full h-full object-cover"
-                                priority
                             />
                         ) : (
                             <span>{isLoading ? '' : userInitial}</span>

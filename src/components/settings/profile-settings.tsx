@@ -6,7 +6,6 @@ import { GetProfile } from "@/lib/get-profile";
 import { AdditionalInfo } from "@/lib/additional-info";
 import PulseLoader from "../pulse-loader";
 import toast from "react-hot-toast";
-import Image from "next/image";
 
 type SettingsFormData = {
   name: string;
@@ -15,6 +14,9 @@ type SettingsFormData = {
   phoneNumber: string;
   photo?: File;
 };
+
+const optimizeCloudinaryUrl = (url: string) =>
+  url.replace("/upload/", "/upload/q_auto,f_auto,w_64/");
 
 export default function ProfileSettings() {
   const [formData, setFormData] = useState<SettingsFormData>({
@@ -25,6 +27,7 @@ export default function ProfileSettings() {
   });
 
   const [preview, setPreview] = useState<string | null>(null);
+  const [imgError, setImgError] = useState(false);
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
@@ -38,7 +41,7 @@ export default function ProfileSettings() {
           bio: "",
           phoneNumber: user.phoneNumber || "",
         });
-        if (user.photo) setPreview(user.photo);
+        if (user.photo) setPreview(optimizeCloudinaryUrl(user.photo));
       }
     })();
   }, []);
@@ -55,6 +58,7 @@ export default function ProfileSettings() {
     if (file) {
       setFormData((prev) => ({ ...prev, photo: file }));
       setPreview(URL.createObjectURL(file));
+      setImgError(false);
     }
   };
 
@@ -80,12 +84,12 @@ export default function ProfileSettings() {
 
         {/* Avatar */}
         <div className="relative group w-16 h-16 shrink-0">
-          {preview ? (
-            <Image
-              width={64}
-              height={64}
+          {preview && !imgError ? (
+            // eslint-disable-next-line @next/next/no-img-element
+            <img
               src={preview}
               alt="Profile"
+              onError={() => setImgError(true)}
               className="w-16 h-16 rounded-full object-cover ring-2 ring-[#9BDD37]"
             />
           ) : (
@@ -177,7 +181,7 @@ export default function ProfileSettings() {
             className="flex items-center gap-2 px-4 py-2 border border-dashed border-[#9BDD37]/50 rounded-xl text-sm text-[#669917] hover:border-[#9BDD37] hover:bg-[#9BDD37]/5 transition sec-ff"
           >
             <Camera size={15} />
-            {preview ? "Change Photo" : "Upload Photo"}
+            {preview && !imgError ? "Change Photo" : "Upload Photo"}
           </button>
         </div>
 
