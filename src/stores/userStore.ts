@@ -8,7 +8,7 @@ export interface User {
   _id: string;
   role: UserRole;
   email: string;
-  phone?: string;
+  phoneNumber?: string;
   referralCode?: string;
 
   // Buyer & Seller

@@ -32,7 +32,7 @@ export default function OrdersHeader({
               ? "Orders"
               : tab === "active"
                 ? "Active Orders"
-                : "Passive Orders"}
+                : "Delivered Orders"}
           </button>
         ))}
       </div>
