@@ -1,45 +1,54 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Plus } from "lucide-react";
 import EmptyAddressState from "./components/empty-address-state";
 import AddressCard, { Address } from "./components/address-card";
 import DeleteAddressModal from "./components/delete-address-modal";
 import AddAddressModal from "./components/add-address-modal";
-import ErrorModal from "./components/error-modal";
-import SuccessModal from "./components/success-modal";
+import toast from "react-hot-toast";
+import PulseLoader from "@/components/pulse-loader";
 
 export default function AddressPage() {
   const [addresses, setAddresses] = useState<Address[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showAddModal, setShowAddModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
-  const [showErrorModal, setShowErrorModal] = useState(false);
-  const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [selectedAddressToDelete, setSelectedAddressToDelete] =
-    useState<Address | null>(null);
+  const [selectedAddressToDelete, setSelectedAddressToDelete] = useState<Address | null>(null);
 
-  const handleAddAddress = (newAddress: {
-    hallType: string;
-    hallName: string;
-    roomFloor: string;
-    roomNumber: string;
-  }) => {
-    // Simulate API call - randomly show success or error
-    const isSuccess = Math.random() > 0.2;
+  const api_url = process.env.NEXT_PUBLIC_API_URL;
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-    if (isSuccess) {
-      const address: Address = {
-        _id: Date.now().toString(),
-        ...newAddress,
-        isSelected: addresses.length === 0,
-      };
-      setAddresses((prev) => [...prev, address]);
-      setShowAddModal(false);
-      setShowSuccessModal(true);
-    } else {
-      setShowAddModal(false);
-      setShowErrorModal(true);
-    }
+  // Fetch addresses on mount
+  useEffect(() => {
+    const fetchAddresses = async () => {
+      try {
+        const res = await fetch(`${api_url}/api/v1/user/address`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        if (res.ok && data.status === "success") {
+          setAddresses(data.data.address ?? []);
+        } else {
+          toast.error(data?.message ?? "Failed to load addresses");
+        }
+      } catch (err) {
+        toast.error("Something went wrong");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAddresses();
+  }, []);
+
+  const handleAddAddress = (newAddress: { building: string; room: string }) => {
+    const address: Address = {
+      _id: Date.now().toString(),
+      ...newAddress,
+      isSelected: addresses.length === 0,
+    };
+    setAddresses((prev) => [...prev, address]);
+    setShowAddModal(false);
   };
 
   const handleDeleteAddress = (id: string) => {
@@ -53,7 +62,7 @@ export default function AddressPage() {
   const confirmDelete = () => {
     if (selectedAddressToDelete) {
       setAddresses((prev) =>
-        prev.filter((addr) => addr._id !== selectedAddressToDelete._id),
+        prev.filter((addr) => addr._id !== selectedAddressToDelete._id)
       );
       setShowDeleteModal(false);
       setSelectedAddressToDelete(null);
@@ -65,7 +74,7 @@ export default function AddressPage() {
       prev.map((addr) => ({
         ...addr,
         isSelected: addr._id === id ? !addr.isSelected : false,
-      })),
+      }))
     );
   };
 
@@ -78,10 +87,14 @@ export default function AddressPage() {
       </header>
 
       <main className="pb-24 px-4 pt-6">
-        {addresses.length === 0 ? (
+        {loading ? (
+          <div className="flex items-center justify-center h-40">
+            <PulseLoader />
+          </div>
+        ) : addresses.length === 0 ? (
           <EmptyAddressState />
         ) : (
-          <div className="max-w-2xl mx-auto">
+          <div className="max-w-4xl">
             {addresses.map((address) => (
               <AddressCard
                 key={address._id}
@@ -120,14 +133,6 @@ export default function AddressPage() {
           }}
           onConfirm={confirmDelete}
         />
-      )}
-
-      {showErrorModal && (
-        <ErrorModal onClose={() => setShowErrorModal(false)} />
-      )}
-
-      {showSuccessModal && (
-        <SuccessModal onClose={() => setShowSuccessModal(false)} />
       )}
     </div>
   );

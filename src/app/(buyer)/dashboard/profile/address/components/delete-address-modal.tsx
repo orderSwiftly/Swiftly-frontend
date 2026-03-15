@@ -4,10 +4,8 @@ import { AlertCircle } from "lucide-react";
 
 interface DeleteAddressModalProps {
   address: {
-    hallType: string;
-    hallName: string;
-    roomFloor: string;
-    roomNumber: string;
+    room: string;
+    building: string;
   } | null;
   onClose: () => void;
   onConfirm: () => void;
@@ -30,8 +28,7 @@ export default function DeleteAddressModal({
         </div>
 
         <h3 className="font-medium text-[#101828] text-center mb-2">
-          Delete {address.hallType}, {address.hallName}, {address.roomFloor},{" "}
-          {address.roomNumber}
+          Delete {address.building}, {address.room}
         </h3>
 
         <p className="text-xs text-[#667085] text-center mb-6">
