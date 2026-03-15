@@ -10,14 +10,6 @@ export default function ProfilePreference() {
   const { logout, user } = useUserStore();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
   const [notificationsEnabled, setNotificationsEnabled] = useState(true);
-  const [copiedCode, setCopiedCode] = useState(false);
-
-  const handleCopyReferralCode = () => {
-    const referralCode = user?.referralCode || "SWIFT12345";
-    navigator.clipboard.writeText(referralCode);
-    setCopiedCode(true);
-    setTimeout(() => setCopiedCode(false), 2000);
-  };
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
@@ -70,26 +62,6 @@ export default function ProfilePreference() {
 
             <ChevronRight className="w-4 h-4 text-gray-400" />
           </Link>
-
-          <button
-            onClick={handleCopyReferralCode}
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                <Copy className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-sm font-medium text-gray-800">
-                Copy Referral Code
-              </span>
-            </div>
-
-            <Copy
-              className={`w-4 h-4 ${
-                copiedCode ? "text-green-600" : "text-gray-400"
-              }`}
-            />
-          </button>
 
           <button
             onClick={handleLogoutClick}

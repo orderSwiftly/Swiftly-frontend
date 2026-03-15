@@ -1,17 +1,14 @@
-// src/lib/cartTotals.ts
+const DELIVERY_FEE = 600;
 
-const DELIVERY_FEE = 500;
-
-function calculateVAT(subtotal: number): number {
-  if (subtotal <= 1000) return 0;
-  if (subtotal <= 9999) return 100;
-  if (subtotal <= 19999) return 150;
-  if (subtotal <= 99999) return 200;
-  return 250;
+function calculateServiceFee(subtotal: number): number {
+  if (subtotal < 1000) return 0;
+  const capped = Math.min(subtotal, 2999999);
+  const steps = Math.floor(capped / 10000);
+  return 50 + 50 * steps;
 }
 
 export default function calculateTotals(subtotal: number) {
-  const serviceFee = calculateVAT(subtotal);
+  const serviceFee = calculateServiceFee(subtotal);
   const deliveryFee = DELIVERY_FEE;
   const total = subtotal + serviceFee + deliveryFee;
 
