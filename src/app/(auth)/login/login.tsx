@@ -10,8 +10,6 @@ import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import { useUserStore } from '@/stores/userStore';
 import Link from 'next/link';
-import OneSignal from 'react-onesignal';
-import { fetchCurrentInstitution } from '@/lib/campus'; // your helper
 
 export default function Login() {
   const router = useRouter();
@@ -56,25 +54,6 @@ const { setUser } = useUserStore();
 
       // 2️⃣ Navigate immediately
       router.push('/role-gate');
-
-      // 3️⃣ Trigger OneSignal in the background (non-blocking)
-      if (typeof window !== 'undefined') {
-        (async () => {
-          try {
-            const permission = await OneSignal.Notifications.requestPermission();
-            if (permission) {
-              await OneSignal.login(userObj.id);
-              const institution = await fetchCurrentInstitution();
-              await OneSignal.User.addTags({
-                role: userObj.role || 'buyer',
-                campus: institution?.name ?? 'unknown',
-              });
-            }
-          } catch (err) {
-            console.warn('OneSignal setup failed:', err);
-          }
-        })();
-      }
 
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Login failed';

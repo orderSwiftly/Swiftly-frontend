@@ -6,6 +6,7 @@ import { Eye, EyeOff, GraduationCap } from 'lucide-react';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
+import Image from 'next/image';
 
 type Campus = {
   id: number;
@@ -83,33 +84,39 @@ export default function SignupComp() {
   return (
     <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] px-4">
       <div className="w-full max-w-md bg-[var(--txt-clr)] p-8 rounded-2xl shadow-lg text-[var(--pry-clr)]">
-        <h1 className="text-3xl font-bold text-center mb-6 pry-ff">
-          Register with Swiftly
-        </h1>
+        <div className='flex flex-col items-center'>
+          <Image
+            src="/swiftly.png" alt="Swiftly Logo" width={100} height={100} />
+          <h1 className="text-xl font-bold text-center mb-4 pry-ff">
+            Register with Swiftly
+          </h1>
+        </div>
 
         <form onSubmit={handleSubmit} className="flex flex-col gap-5 sec-ff">
-          <div>
-            <label className="text-sm mb-1 block">Full name</label>
-            <input
-              type="text"
-              placeholder="John Doe"
-              value={fullname}
-              onChange={(e) => setFullname(e.target.value)}
-              className={inputBase}
-              required
-            />
-          </div>
+          <div className="flex gap-4">
+            <div className="flex-1">
+              <label className="text-sm mb-1 block">Full name</label>
+              <input
+                type="text"
+                placeholder="John Doe"
+                value={fullname}
+                onChange={(e) => setFullname(e.target.value)}
+                className={inputBase}
+                required
+              />
+            </div>
 
-          <div>
-            <label className="text-sm mb-1 block">Email</label>
-            <input
-              type="email"
-              placeholder="you@example.com"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              className={inputBase}
-              required
-            />
+            <div className="flex-1">
+              <label className="text-sm mb-1 block">Email</label>
+              <input
+                type="email"
+                placeholder="you@example.com"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className={inputBase}
+                required
+              />
+            </div>
           </div>
 
           <div>
@@ -142,8 +149,8 @@ export default function SignupComp() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className={`${inputBase} pr-10 ${confirmPassword && password !== confirmPassword
-                    ? 'border-red-500 focus:ring-red-500'
-                    : ''
+                  ? 'border-red-500 focus:ring-red-500'
+                  : ''
                   }`}
                 required
               />
