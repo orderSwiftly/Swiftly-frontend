@@ -1,12 +1,15 @@
+// src/app/(buyer)/explore/product/[id]/page.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import PulseLoader from '@/components/pulse-loader';
 import ExploreReview from '@/app/(buyer)/explore/product/[id]/review/explore-rev';
+import { ShoppingCart } from 'lucide-react';
 
 type Product = {
   _id: string;
@@ -23,6 +26,10 @@ export default function ProductDetails() {
   const [product, setProduct] = useState<Product | null>(null);
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
+  const [addingToCart, setAddingToCart] = useState(false);
+  const router = useRouter();
+
+  const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
 
   useEffect(() => {
     if (!id) return;
@@ -55,6 +62,43 @@ export default function ProductDetails() {
 
     fetchProduct();
   }, [id]);
+
+  const handleAddToCart = async () => {
+    if (!product) return;
+
+    if (!token) {
+      toast.error('Please sign up or log in to add items to cart');
+      router.push('/signup');
+      return;
+    }
+
+    try {
+      setAddingToCart(true);
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+
+      const res = await fetch(`${api_url}/api/v1/cart/add/${product._id}`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ quantity: 1 }),
+      });
+
+      const data = await res.json();
+
+      if (res.ok && data.status === 'success') {
+        toast.success(`${product.title} added to cart`);
+      } else {
+        toast.error(data?.message || 'Failed to add to cart');
+      }
+    } catch (error) {
+      console.error(error);
+      toast.error('Something went wrong!');
+    } finally {
+      setAddingToCart(false);
+    }
+  };
 
   if (loading)
     return (
@@ -92,9 +136,8 @@ export default function ProductDetails() {
             <div
               key={idx}
               onClick={() => setMainImage(img)}
-              className={`relative min-w-[80px] h-20 rounded-md overflow-hidden cursor-pointer border transition duration-200 ${
-                mainImage === img ? 'border-[var(--acc-clr)]' : 'border-gray-300'
-              }`}
+              className={`relative min-w-[80px] h-20 rounded-md overflow-hidden cursor-pointer border transition duration-200 ${mainImage === img ? 'border-[var(--acc-clr)]' : 'border-gray-300'
+                }`}
             >
               <Image src={img} alt={`Thumbnail ${idx}`} fill className="object-cover" />
             </div>
@@ -112,6 +155,18 @@ export default function ProductDetails() {
           <p><span className="font-medium">Price:</span> ₦{product.price.toLocaleString()}</p>
           <p><span className="font-medium">Stock:</span> {product.stock}</p>
           <p><span className="font-medium">Location:</span> {product.location}</p>
+        </div>
+
+        {/* Add to Cart Button */}
+        <div className="mt-6">
+          <button
+            onClick={handleAddToCart}
+            disabled={addingToCart || product.stock === 0}
+            className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer pry-ff"
+          >
+            <ShoppingCart size={20} />
+            {addingToCart ? 'Adding...' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+          </button>
         </div>
       </div>
 

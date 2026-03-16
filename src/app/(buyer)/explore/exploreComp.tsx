@@ -1,3 +1,5 @@
+// src/app/(buyer)/explore/exploreComp.tsx
+
 'use client';
 
 import { useState, useEffect } from 'react';

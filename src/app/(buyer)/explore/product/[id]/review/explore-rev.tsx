@@ -84,7 +84,7 @@ export default function ExploreReview({ productId }: Props) {
         value={comment}
         onChange={(e) => setComment(e.target.value)}
         placeholder="Write your review..."
-        className="w-full p-2 border rounded sec-ff border-gray-300 dark:border-gray-600 dark:bg-gray-800 mb-4"
+        className="w-full p-2 border rounded sec-ff border-gray-300 dark:border-gray-600 dark:bg-gray-800 mb-4 text-[var(--pry-clr)]"
         rows={4}
       />
 
@@ -106,7 +106,7 @@ export default function ExploreReview({ productId }: Props) {
             reviews.map((review) => (
               <li
                 key={review._id}
-                className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
+                className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-[var(--bg-clr)]"
               >
               {/* Reviewer photo */}
               {review.reviewerPhoto ? (
@@ -118,7 +118,7 @@ export default function ExploreReview({ productId }: Props) {
                   className="w-12 h-12 rounded-full object-cover"
                 />
               ) : (
-                <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-[var(--txt-clr)]">
+                <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-[var(--prof-clr)]">
                   {review.reviewerName?.[0] || 'A'}
                 </div>
               )}
@@ -126,7 +126,7 @@ export default function ExploreReview({ productId }: Props) {
               <div className="flex-1">
           {/* Name + rating */}
           <div className="flex items-center justify-between mb-1">
-            <p className="font-semibold text-gray-800 dark:text-gray-100 pry-ff font-semibold">
+            <p className="font-semibold text-gray-800 dark:text-gray-100 pry-ff font-semibold text-[var(--bg-clr)]">
               {review.reviewerName || 'Anonymous'}
             </p>
             <span className="text-yellow-400 font-medium sec-ff">
@@ -134,7 +134,9 @@ export default function ExploreReview({ productId }: Props) {
             </span>
           </div>
           {/* Comment */}
-          <p className="text-gray-700 dark:text-gray-300 sec-ff">{review.comment}</p>
+          <p className="dark:text-gray-300 sec-ff text-[var(--bg-clr)]">
+            {review.comment}
+          </p>
           {/* Optional date */}
           <p className="text-sm text-gray-400 dark:text-gray-500 mt-1m sec-ff">
             {new Date(review.createdAt).toLocaleDateString()}

@@ -1,21 +1,26 @@
 export interface OrderItem {
-  productId: { $oid: string };
+  productId: string;
   title: string;
   quantity: number;
   price: number;
   productImg?: string[];
-  productOwnerId?: { $oid: string };
+  productOwnerId?: string;
   lineTotal?: number;
   itemStatus?: string;
   shippedAt?: string;
 }
 
 export interface ShippingAddress {
-  addressLine1: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
+  // institution address
+  building?: string;
+  room?: string;
+  institutionId?: string;
+  // standard address
+  // addressLine1?: string;
+  // city?: string;
+  // state?: string;
+  // postalCode?: string;
+  // country?: string;
 }
 
 export interface OrderPricing {
@@ -26,24 +31,19 @@ export interface OrderPricing {
 }
 
 export interface Order {
-  _id: { $oid: string };
-  userId: { $oid: string };
+  _id: string;
+  userId?: string;
   items: OrderItem[];
   pricing: OrderPricing;
   shippingAddress: ShippingAddress;
   orderStatus: string;
   paymentStatus: string;
-  createdAt: { $date: string };
-  confirmed: boolean;
+  createdAt: string;
+  confirmed?: boolean;
   escrowStatus?: string;
   paystackAccessCode?: string;
   paystackReference?: string;
-  paymentConfirmedAt?: { $date: string };
+  paymentConfirmedAt?: string;
   deliveryCode?: number;
-  shippedAt?: { $date: string };
-
-  // convenience fields after transformation
-  total?: number;
-  id?: string;
-  created?: string;
+  shippedAt?: string;
 }

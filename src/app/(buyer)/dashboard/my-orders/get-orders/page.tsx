@@ -1,4 +1,3 @@
-// src/app/(buyer)/dashboard/my-orders/get-orders/page.tsx
 "use client";
 
 import OrdersHeader from "../components/orders-header";
@@ -38,6 +37,7 @@ export default function GetOrders({
         return orders.filter(
           (o) =>
             o.orderStatus === "delivered" ||
+            o.orderStatus === "collected" ||
             o.orderStatus === "cancelled" ||
             o.orderStatus === "returned"
         );
@@ -59,7 +59,7 @@ export default function GetOrders({
       ) : (
         filteredOrders.map((order, index) => (
           <OrderCard
-            key={order._id.$oid ?? index}
+            key={order._id ?? index}
             order={order}
             currentUserId={currentUserId || ""}
             shippingLoading={shippingLoading}
