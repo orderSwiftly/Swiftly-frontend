@@ -66,9 +66,6 @@ export default function DashboardPage() {
                     <h2 className="text-xl md:text-2xl font-semibold text-gray-800 pry-ff">
                         Categories
                     </h2>
-                    <button className="text-sm md:text-base font-medium text-green-600 hover:text-green-700">
-                        See all
-                    </button>
                 </div>
 
                 <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
@@ -88,23 +85,6 @@ export default function DashboardPage() {
                             </span>
                         </button>
                     ))}
-                </div>
-            </section>
-
-            {/* Referral Card */}
-            <section className="mt-14 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl">
-                <div className="bg-green-600 rounded-2xl p-6 sm:p-8 md:p-10 flex flex-col sm:flex-row items-center justify-between shadow-lg text-white">
-                    <div className="text-center sm:text-left">
-                        <p className="text-xl md:text-3xl font-bold">
-                            Refer a friend and get <span className="underline decoration-yellow-400">50% OFF</span>
-                        </p>
-                        <p className="text-green-100 mt-2 text-sm md:text-lg">
-                            Share your code and save on your next 5 orders.
-                        </p>
-                    </div>
-                    <button className="mt-6 sm:mt-0 px-8 py-3 bg-white text-green-600 font-bold rounded-xl hover:bg-gray-100 transition-colors">
-                        Refer Now
-                    </button>
                 </div>
             </section>
 
