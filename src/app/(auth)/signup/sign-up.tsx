@@ -24,6 +24,7 @@ export default function SignupComp() {
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [loading, setLoading] = useState(false);
   const [campus, setCampus] = useState<Campus | null>(null);
+  const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   const api_url = process.env.NEXT_PUBLIC_API_URL;
 
@@ -58,6 +59,7 @@ export default function SignupComp() {
       }
 
       toast.success('Signup successful! Redirecting to login...');
+      setLoading(false); // ✅ stop loading before redirect
       router.push('/login');
 
     } catch (err: unknown) {
@@ -66,7 +68,6 @@ export default function SignupComp() {
       } else {
         toast.error('Something went wrong');
       }
-    } finally {
       setLoading(false);
     }
   };
@@ -85,8 +86,7 @@ export default function SignupComp() {
     <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] px-4">
       <div className="w-full max-w-md bg-[var(--txt-clr)] p-8 rounded-2xl shadow-lg text-[var(--pry-clr)]">
         <div className='flex flex-col items-center'>
-          <Image
-            src="/swiftly.png" alt="Swiftly Logo" width={100} height={100} />
+          <Image src="/swiftly.png" alt="Swiftly Logo" width={100} height={100} />
           <h1 className="text-xl font-bold text-center mb-4 pry-ff">
             Register with Swiftly
           </h1>
@@ -149,8 +149,8 @@ export default function SignupComp() {
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
                 className={`${inputBase} pr-10 ${confirmPassword && password !== confirmPassword
-                  ? 'border-red-500 focus:ring-red-500'
-                  : ''
+                    ? 'border-red-500 focus:ring-red-500'
+                    : ''
                   }`}
                 required
               />
@@ -181,10 +181,27 @@ export default function SignupComp() {
             />
           </div>
 
+          {/* Terms checkbox */}
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="terms"
+              checked={agreedToTerms}
+              onChange={(e) => setAgreedToTerms(e.target.checked)}
+              className="cursor-pointer accent-[var(--acc-clr)]"
+            />
+            <label htmlFor="terms" className="text-sm sec-ff">
+              I agree to the{' '}
+              <Link href="/terms" className="text-[var(--acc-clr)] underline font-medium">
+                Terms & Privacy Policy
+              </Link>
+            </label>
+          </div>
+
           <button
             type="submit"
-            disabled={loading}
-            className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--pry-clr)] py-3 rounded-lg font-semibold h-[44px] cursor-pointer"
+            disabled={loading || !agreedToTerms}
+            className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--pry-clr)] py-3 rounded-lg font-semibold h-[44px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? <PulseLoader /> : 'Sign Up'}
           </button>
@@ -199,10 +216,6 @@ export default function SignupComp() {
             Login here
           </button>
         </p>
-        <input type="checkbox" />
-        <Link href="/terms" className="text-sm text-center m-3 text-[var(--acc-clr)] sec-ff underline">
-          I agree to Terms & Privacy Policy
-        </Link>
       </div>
     </main>
   );
