@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { User, Camera } from "lucide-react";
+import { User, Camera, Loader2 } from "lucide-react";
 import { GetProfile } from "@/lib/get-profile";
 import { AdditionalInfo } from "@/lib/additional-info";
 import PulseLoader from "../pulse-loader";
@@ -12,6 +12,7 @@ type SettingsFormData = {
   email: string;
   bio: string;
   phoneNumber: string;
+  gender: string;
   photo?: File;
 };
 
@@ -24,11 +25,13 @@ export default function ProfileSettings() {
     email: "",
     bio: "",
     phoneNumber: "",
+    gender: "",
   });
 
   const [preview, setPreview] = useState<string | null>(null);
   const [imgError, setImgError] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [photoLoading, setPhotoLoading] = useState(false); // ✅ photo spinner
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -40,6 +43,7 @@ export default function ProfileSettings() {
           email: user.email || "",
           bio: "",
           phoneNumber: user.phoneNumber || "",
+          gender: user.gender || "",
         });
         if (user.photo) setPreview(optimizeCloudinaryUrl(user.photo));
       }
@@ -47,7 +51,7 @@ export default function ProfileSettings() {
   }, []);
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
@@ -57,7 +61,7 @@ export default function ProfileSettings() {
     const file = e.target.files?.[0];
     if (file) {
       setFormData((prev) => ({ ...prev, photo: file }));
-      setPreview(URL.createObjectURL(file));
+      setPreview(URL.createObjectURL(file)); // show local preview immediately
       setImgError(false);
     }
   };
@@ -66,13 +70,23 @@ export default function ProfileSettings() {
     e.preventDefault();
     try {
       setLoading(true);
-      await AdditionalInfo(formData);
+      // ✅ if a new photo is being uploaded, start photo spinner too
+      if (formData.photo) setPhotoLoading(true);
+
+      const updatedUser = await AdditionalInfo(formData);
+
+      // ✅ once done, update preview with the real Cloudinary URL
+      if (updatedUser?.photo) {
+        setPreview(optimizeCloudinaryUrl(updatedUser.photo));
+      }
+
       toast.success("Profile updated successfully");
     } catch (err) {
       console.error(err);
       toast.error("Failed to update profile");
     } finally {
       setLoading(false);
+      setPhotoLoading(false); // ✅ stop photo spinner
     }
   };
 
@@ -84,7 +98,12 @@ export default function ProfileSettings() {
 
         {/* Avatar */}
         <div className="relative group w-16 h-16 shrink-0">
-          {preview && !imgError ? (
+          {photoLoading ? (
+            // ✅ spinner overlay while photo is uploading
+            <div className="w-16 h-16 rounded-full bg-[#9BDD37]/10 ring-2 ring-[#9BDD37]/40 flex items-center justify-center">
+              <Loader2 size={20} className="text-[#9BDD37] animate-spin" />
+            </div>
+          ) : preview && !imgError ? (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={preview}
@@ -97,13 +116,16 @@ export default function ProfileSettings() {
               <User size={24} className="text-[#9BDD37]" />
             </div>
           )}
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
-          >
-            <Camera size={16} className="text-white" />
-          </button>
+          {/* hide camera button while uploading */}
+          {!photoLoading && (
+            <button
+              type="button"
+              onClick={() => fileInputRef.current?.click()}
+              className="absolute inset-0 rounded-full bg-black/40 opacity-0 group-hover:opacity-100 flex items-center justify-center transition-opacity cursor-pointer"
+            >
+              <Camera size={16} className="text-white" />
+            </button>
+          )}
           <input
             ref={fileInputRef}
             type="file"
@@ -168,6 +190,23 @@ export default function ProfileSettings() {
             placeholder="Enter your phone number"
             className="w-full px-4 py-2.5 bg-white border border-[#e8e8e8] rounded-xl text-[#0A0F1A] sec-ff text-sm focus:outline-none focus:ring-2 focus:ring-[#9BDD37]/40 focus:border-[#9BDD37] transition placeholder:text-[#c0c0c0]"
           />
+        </div>
+
+        {/* Gender — dropdown */}
+        <div>
+          <label className="block text-xs font-semibold text-[#c0c0c0] sec-ff mb-1.5 uppercase tracking-wider">
+            Gender
+          </label>
+          <select
+            name="gender"
+            value={formData.gender}
+            onChange={handleChange}
+            className="w-full px-4 py-2.5 bg-white border border-[#e8e8e8] rounded-xl text-[#0A0F1A] sec-ff text-sm focus:outline-none focus:ring-2 focus:ring-[#9BDD37]/40 focus:border-[#9BDD37] transition cursor-pointer"
+          >
+            <option value="">-- Select gender --</option>
+            <option value="male">Male</option>
+            <option value="female">Female</option>
+          </select>
         </div>
 
         {/* Photo upload trigger */}
