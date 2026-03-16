@@ -1,159 +1,132 @@
-// src/app/(buyer)/dashboard/my-orders/components/order-card.tsx
-"use client";
+'use client';
 
-import Image from "next/image";
-import Link from "next/link";
-import { ArrowRight, Truck, Trash2 } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { Order } from "@/types/order";
-import OrderProgress from "../components/order-progress";
-import { ORDER_PROGRESS_MAP } from "@/lib/order-progress";
+import Image from 'next/image';
+import Link from 'next/link';
+import { ArrowRight, Truck } from 'lucide-react';
+import { useRouter } from 'next/navigation';
+import { Order } from '@/types/order';
 
 interface Props {
   readonly order: Order;
-  readonly currentUserId: string | null;
+  readonly currentUserId: string;
   readonly shippingLoading: string | null;
   readonly handleShipOrder: (orderId: string) => void;
 }
 
-export default function OrderCard({
-  order,
-  currentUserId,
-  shippingLoading,
-  handleShipOrder,
-}: Props) {
+export default function OrderCard({ order, currentUserId, shippingLoading, handleShipOrder }: Props) {
   const router = useRouter();
 
-  // ✅ Determine if the current user owns any item in this order
-  const isOwner = order.items?.some(
-    (item) =>
-      (typeof item.productOwnerId === "string"
-        ? item.productOwnerId
-        : item.productOwnerId?.$oid) === currentUserId
-  );
+  const isOwner = order.items?.some(item => item.productOwnerId === currentUserId);
 
-  // --- SAFE TOTAL PRICE ---
-  const computedTotalPrice = Array.isArray(order.items)
-    ? order.items.reduce((sum, item) => {
-      const price = typeof item.price === "number" ? item.price : 0;
-      const quantity = typeof item.quantity === "number" ? item.quantity : 0;
-      return sum + price * quantity;
-    }, 0)
-    : 0;
+  // Only show institution-style addresses (building + room)
+  const { building, room } = order.shippingAddress ?? {};
+  const shippingLabel = building || room
+    ? [building, room].filter(Boolean).join(', ')
+    : null;
 
-  const safeTotalPrice =
-    typeof order.total === "number" && order.total > 0
-      ? order.total
-      : computedTotalPrice;
+  // Support both old totalPrice and new pricing.total
+  const orderTotal = order.pricing?.total ?? order.totalPrice ?? 0;
 
-  const shippingAddress = order.shippingAddress || {
-    addressLine1: "N/A",
-    city: "N/A",
-    state: "N/A",
-  };
-
-  const progress = ORDER_PROGRESS_MAP[order.orderStatus ?? ""] ?? 0;
+  // Shorten the ID for display: last 8 chars uppercased
+  const shortId = order._id ? `#${order._id.slice(-8).toUpperCase()}` : '—';
 
   return (
-    <section className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5 pry-ff shadow-sm">
+    <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5">
       {/* Header */}
-      <div className="flex justify-between">
-        <p className="text-sm text-gray-400">
-          <span className="font-medium text-white">Order ID:</span>{" "}
-          {order._id?.$oid ?? "—"}
+      <div className="flex flex-col sm:flex-row justify-between gap-2">
+        <p className="text-sm text-gray-400 sec-ff">
+          <span className="font-medium text-white">Order ID:</span> {shortId}
         </p>
-        <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize">
-          {order.orderStatus ?? "pending"}
+        <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize sec-ff">
+          {order.orderStatus}
         </p>
       </div>
 
       {/* Items */}
       <div className="space-y-4">
-        {order.items?.map((item, index) => {
-          const price = item.price ?? 0;
-          const quantity = item.quantity ?? 0;
-          const total = price * quantity;
-
-          return (
-            <div
-              key={index}
-              className="flex items-center gap-4 border border-white/10 bg-white/5 rounded-lg p-4"
-            >
-              <div className="w-20 h-20 relative overflow-hidden rounded-lg">
-                <Image
-                  src={item.productImg?.[0] || "/fallback.jpg"}
-                  alt={item.title ?? "Product"}
-                  fill
-                  className="object-cover"
-                />
-              </div>
-
-              <div className="flex-1">
-                <h3 className="font-semibold text-white">{item.title}</h3>
-                <p className="text-sm text-gray-400">
-                  ₦{price.toLocaleString()} × {quantity}
-                </p>
-              </div>
-
-              <p className="font-bold text-white">₦{total.toLocaleString()}</p>
-
-              <Trash2 className="text-gray-400 hover:text-red-400 cursor-pointer" />
+        {order.items.map((item, index) => (
+          <div
+            key={index}
+            className="flex items-center gap-4 border border-white/10 bg-white/10 rounded-md p-3"
+          >
+            <div className="w-20 h-20 sm:w-24 sm:h-24 relative overflow-hidden rounded-md bg-gray-100">
+              <Image
+                src={item.productImg?.[0] || '/fallback.jpg'}
+                alt={item.title}
+                fill
+                className="object-cover"
+              />
             </div>
-          );
-        })}
+            <div className="flex-1">
+              <p className="text-sm font-semibold text-[var(--txt-clr)] pry-ff line-clamp-1">
+                {item.title}
+              </p>
+              <p className="text-xs text-gray-400 sec-ff mt-1">
+                ₦{item.price.toLocaleString()} × {item.quantity}
+              </p>
+            </div>
+            <p className="text-sm font-bold text-[var(--txt-clr)] sec-ff whitespace-nowrap">
+              ₦{(item.price * item.quantity).toLocaleString()}
+            </p>
+          </div>
+        ))}
       </div>
 
       {/* Shipping Address & Total */}
-      <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 p-4 bg-white/5 rounded-lg border border-white/10">
-        <div>
-          <p className="text-xs text-gray-500 mb-1">Shipping to:</p>
-          <p className="text-sm text-gray-300">
-            {shippingAddress.addressLine1}, {shippingAddress.city},{" "}
-            {shippingAddress.state}
-          </p>
-        </div>
-        <div className="text-right">
-          <p className="text-xs text-gray-500 mb-1">Order Total</p>
-          <p className="text-xl font-bold text-[var(--acc-clr)]">
-            ₦{safeTotalPrice.toLocaleString()}
-          </p>
-        </div>
+      <div className="flex items-start justify-between p-2">
+        <p className="text-gray-400 sec-ff text-sm">
+          {shippingLabel ? `Shipping to: ${shippingLabel}` : 'Shipping address unavailable'}
+        </p>
+        <p className="text-sm font-bold text-[var(--acc-clr)] sec-ff">
+          Total: ₦{orderTotal.toLocaleString()}
+        </p>
       </div>
 
-      {/* Footer Actions */}
-      <div className="flex justify-between items-start gap-4">
-        <Link
-          href={`/dashboard/my-orders/get-orders/${order._id?.$oid}`}
-          className="text-[var(--acc-clr)] flex items-center gap-1"
-        >
-          View Order <ArrowRight size={16} />
-        </Link>
+      {/* Footer */}
+      <div className="flex items-center pt-2">
+        <div className="flex items-center gap-4 justify-between w-full">
+          <Link
+            className="text-[var(--acc-clr)] sec-ff flex items-center gap-1 group"
+            href={`/dashboard/my-orders/get-orders/${order._id}`}
+          >
+            <span className="hover:underline">View Order</span>
+            <ArrowRight size={16} className="transition-transform duration-150 group-hover:translate-x-1" />
+          </Link>
 
-        <div className="flex flex-col items-stretch gap-2 w-full max-w-xs">
-          {order.paymentStatus !== "paid" && !isOwner && (
-            <button
-              onClick={() =>
-                router.push(`/order/${order._id?.$oid}/payment`)
-              }
-              className="bg-[var(--acc-clr)] text-white px-5 py-2 rounded-lg cursor-pointer"
-            >
-              Proceed to Checkout
-            </button>
-          )}
-
-          {order.orderStatus === "confirmed" && isOwner && (
-            <button
-              onClick={() => handleShipOrder(order._id?.$oid ?? "")}
-              disabled={shippingLoading === order._id?.$oid}
-              className="bg-green-600 text-white px-4 py-2 rounded-lg"
-            >
-              {shippingLoading === order._id?.$oid ? "Shipping..." : "Ship Order"}
-            </button>
-          )}
+          <div className="flex items-center gap-2">
+            {order.orderStatus === 'confirmed' && isOwner && (
+              <button
+                onClick={() => handleShipOrder(order._id)}
+                disabled={shippingLoading === order._id}
+                className="text-[var(--bg-clr)] sec-ff flex items-center gap-1 group bg-[var(--acc-clr)] px-4 py-2 rounded-lg border border-[var(--acc-clr)] hover:bg-[var(--acc-clr)]/90 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {shippingLoading === order._id ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                    <span>Shipping...</span>
+                  </>
+                ) : (
+                  <>
+                    <Truck size={16} />
+                    <span>Ship Order</span>
+                  </>
+                )}
+              </button>
+            )}
+          </div>
         </div>
-      </div>
 
-      <OrderProgress filled={progress} />
-    </section>
+        {order.paymentStatus !== 'paid' && !isOwner && (
+          <div>
+            <button
+              onClick={() => router.push(`/order/${order._id}/payment`)}
+              className="bg-[var(--acc-clr)] !text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
+            >
+              Checkout
+            </button>
+          </div>
+        )}
+      </div>
+    </div>
   );
 }

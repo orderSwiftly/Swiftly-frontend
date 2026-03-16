@@ -1,12 +1,11 @@
 // src/app/(buyer)/dashboard/my-orders/get-orders/[id]/page.tsx
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
 import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X } from 'lucide-react';
+import { ArrowLeft, X, MapPin, Package, CreditCard, Tag, Clock } from 'lucide-react';
 import ConfirmDelivery from './confirm-delivery';
 
 interface OrderItem {
@@ -19,248 +18,229 @@ interface OrderItem {
   itemStatus?: string;
 }
 
-interface ShippingAddress {
-  addressLine1: string;
-  city: string;
-  state: string;
-  postalCode: string;
-  country: string;
-}
-
-interface Pricing {
-  subtotal: number;
-  serviceFee: number;
-  deliveryFee: number;
-  total: number;
-}
-
 interface Order {
   _id: string;
   items: OrderItem[];
-  pricing: Pricing;
+  pricing: { subtotal: number; serviceFee: number; deliveryFee: number; total: number };
   orderStatus: string;
   paymentStatus: string;
   createdAt: string;
-  shippingAddress: ShippingAddress;
+  shippingAddress: {
+    building?: string; room?: string;
+    addressLine1?: string; city?: string; state?: string;
+  };
   deliveryCode?: number;
-  escrowStatus?: string;
-  confirmed?: boolean;
 }
 
-const optimizeCloudinaryUrl = (url: string) =>
-  url.replace('/upload/', '/upload/q_auto,f_auto,w_300/');
+const card: React.CSSProperties = {
+  backgroundColor: '#f6faf3',
+  border: '1px solid rgba(0,107,79,0.1)',
+  boxShadow: '0 2px 16px rgba(0,107,79,0.07)',
+  borderRadius: '16px',
+  padding: '16px',
+};
+
+const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
+  pending: { bg: 'rgba(234,179,8,0.12)', color: '#b45309', border: 'rgba(234,179,8,0.35)' },
+  confirmed: { bg: 'rgba(59,130,246,0.10)', color: '#1d4ed8', border: 'rgba(59,130,246,0.3)' },
+  shipped: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
+  delivered: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
+  collected: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
+  cancelled: { bg: 'rgba(239,68,68,0.10)', color: '#b91c1c', border: 'rgba(239,68,68,0.3)' },
+};
+
+const imgUrl = (url: string) => url.replace('/upload/', '/upload/q_auto,f_auto,w_300/');
 
 export default function GetOrderById() {
   const [order, setOrder] = useState<Order | null>(null);
   const [loading, setLoading] = useState(true);
-  const { id } = useParams();
   const [showPopup, setShowPopup] = useState(false);
-
-  const fetchOrder = async () => {
-    try {
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token found');
-
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const res = await fetch(`${api_url}/api/v1/order/get-order/${id}`, {
-        headers: { Authorization: `Bearer ${token}` },
-      });
-
-      const data = await res.json();
-
-      if (res.ok && data.status === 'success') {
-        setOrder(data.data.order);
-      } else {
-        setOrder(null);
-      }
-    } catch (err) {
-      console.error('Error fetching order:', err);
-      setOrder(null);
-    } finally {
-      setLoading(false);
-    }
-  };
+  const { id } = useParams();
 
   useEffect(() => {
-    fetchOrder();
+    const load = async () => {
+      try {
+        const token = localStorage.getItem('token');
+        const api_url = process.env.NEXT_PUBLIC_API_URL;
+        const res = await fetch(`${api_url}/api/v1/order/get-order/${id}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+        const data = await res.json();
+        setOrder(res.ok && data.status === 'success' ? data.data.order : null);
+      } catch {
+        setOrder(null);
+      } finally {
+        setLoading(false);
+      }
+    };
+    load();
   }, [id]);
 
-  if (loading) {
-    return (
-      <div className="h-screen flex items-center justify-center bg-[var(--light-bg)]">
-        <PulseLoader />
-      </div>
-    );
-  }
+  if (loading) return (
+    <div className="h-screen flex items-center justify-center bg-[var(--txt-clr)]">
+      <PulseLoader />
+    </div>
+  );
 
-  if (!order) {
-    return (
-      <div className="px-6 py-10 text-left">
-        <p className="text-lg text-[var(--txt-clr)] sec-ff">Order not found.</p>
+  if (!order) return (
+    <div className="min-h-screen bg-[var(--txt-clr)] flex items-center justify-center px-6 text-center">
+      <div className="space-y-3">
+        <Package size={48} className="text-[var(--acc-clr)] mx-auto opacity-40" />
+        <p className="text-lg text-[var(--pry-clr)] sec-ff">Order not found.</p>
+        <Link href="/dashboard/my-orders" className="text-[var(--bg-clr)] sec-ff text-sm underline underline-offset-4">
+          Back to orders
+        </Link>
       </div>
-    );
-  }
+    </div>
+  );
+
+  const shortId = `#${order._id.slice(-8).toUpperCase()}`;
+  const ss = STATUS_STYLES[order.orderStatus] ?? { bg: 'rgba(10,15,26,0.06)', color: 'var(--pry-clr)', border: 'rgba(10,15,26,0.15)' };
+  const addr = order.shippingAddress ?? {};
+  const hasInstitution = addr.building || addr.room;
+  const shippingLine = hasInstitution
+    ? [addr.building, addr.room].filter(Boolean).join(', ')
+    : [addr.addressLine1, addr.city, addr.state].filter(Boolean).join(', ') || 'N/A';
+
+  const meta = [
+    { icon: Clock, label: 'Placed', value: new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) },
+    { icon: CreditCard, label: 'Payment', value: order.paymentStatus },
+    { icon: Tag, label: 'Delivery Code', value: order.deliveryCode ? String(order.deliveryCode) : '—' },
+  ];
 
   return (
-    <div className="min-h-screen bg-[var(--light-bg)] px-4 max-w-5xl mx-auto space-y-8 pb-20">
-      {/* Back button */}
-      <Link
-        href="/dashboard/my-orders"
-        className="text-[var(--acc-clr)] sec-ff flex items-center gap-1 group w-fit"
-      >
-        <ArrowLeft size={16} className="transition-transform duration-150 group-hover:-translate-x-1" />
-        <span className="hover:underline">Back to Orders</span>
-      </Link>
+    <div className="min-h-screen bg-[var(--txt-clr)] pb-24">
+      <div className="max-w-5xl px-4 pt-6 space-y-5">
 
-      {/* Order Summary */}
-      <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-6">
+        {/* Back + title */}
+        <Link href="/dashboard/my-orders"
+          className="inline-flex items-center gap-2 text-[var(--bg-clr)] hover:text-[var(--acc-clr)] transition-colors sec-ff text-sm group"
+        >
+          <ArrowLeft size={15} className="transition-transform duration-150 group-hover:-translate-x-1" />
+          Back to Orders
+        </Link>
 
-        {/* Header */}
-        <div className="flex flex-col sm:flex-row justify-between gap-2 border-b border-white/10 pb-4">
+        <div className="flex items-start justify-between gap-3">
           <div>
-            <p className="text-sm text-gray-400 sec-ff">
-              <span className="font-medium text-white">Order ID:</span> {order._id}
-            </p>
-            <p className="text-sm text-gray-400 sec-ff">
-              Placed on: {new Date(order.createdAt).toLocaleString()}
-            </p>
-            {order.deliveryCode && (
-              <p className="text-sm text-gray-400 sec-ff">
-                Delivery Code: <span className="text-white">{order.deliveryCode}</span>
-              </p>
-            )}
+            <h1 className="text-xl sm:text-2xl font-bold text-[var(--pry-clr)] pry-ff">Order Details</h1>
+            <p className="text-sm text-[var(--bg-clr)] sec-ff mt-0.5">{shortId}</p>
           </div>
-          <div className="text-right">
-            <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize sec-ff">
-              {order.orderStatus}
-            </p>
-            <p className="text-xs text-gray-400 sec-ff">Payment: {order.paymentStatus}</p>
-            {order.escrowStatus && (
-              <p className="text-xs text-gray-400 sec-ff">Escrow: {order.escrowStatus}</p>
-            )}
-          </div>
+          <span
+            className="text-xs font-semibold px-3 py-1.5 rounded-full border capitalize sec-ff shrink-0"
+            style={{ background: ss.bg, color: ss.color, borderColor: ss.border }}
+          >
+            {order.orderStatus}
+          </span>
         </div>
 
-        {/* Order Items */}
-        <div className="space-y-5">
-          {order.items.map((item, index) => (
-            <div
-              key={index}
-              className="border border-white/10 bg-white/10 rounded-lg p-4 space-y-3"
-            >
-              <div className="flex flex-col sm:flex-row gap-4">
+        {/* Meta strip */}
+        <div className="grid grid-cols-3 gap-3">
+          {meta.map(({ icon: Icon, label, value }) => (
+            <div key={label} style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
+              <div className="flex items-center gap-1 mb-1">
+                <Icon size={12} className="text-[var(--bg-clr)] shrink-0" />
+                <span className="text-xs text-[var(--bg-clr)] sec-ff opacity-70 truncate">{label}</span>
+              </div>
+              <p className="text-sm font-bold text-[var(--pry-clr)] sec-ff capitalize truncate">{value}</p>
+            </div>
+          ))}
+        </div>
 
-                {/* Product images */}
-                <div className="flex gap-2 overflow-x-auto pb-2">
-                  {item.productImg?.length ? (
-                    item.productImg.map((img, idx) => (
-                      <div
-                        key={idx}
-                        className="w-28 h-28 flex-shrink-0 rounded-md overflow-hidden bg-gray-100"
-                      >
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img
-                          src={optimizeCloudinaryUrl(img)}
-                          alt={`${item.title} ${idx + 1}`}
-                          className="w-full h-full object-cover"
-                          onError={(e) => {
-                            (e.target as HTMLImageElement).style.display = 'none';
-                          }}
-                        />
-                      </div>
-                    ))
-                  ) : (
-                    <div className="w-28 h-28 rounded-md bg-gray-100" />
+        {/* Items */}
+        <div className="space-y-3">
+          <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2">
+            <Package size={15} className="text-[var(--bg-clr)]" /> Items
+          </h2>
+          {order.items.map((item, i) => (
+            <div key={i} style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
+              <div className="flex gap-3">
+                <div className="flex gap-2 shrink-0">
+                  {(item.productImg?.slice(0, 2) ?? []).map((img, idx) => (
+                    <div key={idx} className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0"
+                      style={{ border: '1px solid rgba(0,107,79,0.12)' }}>
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={imgUrl(img)} alt={item.title} className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                    </div>
+                  ))}
+                  {!item.productImg?.length && (
+                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl shrink-0" style={{ backgroundColor: 'rgba(0,107,79,0.08)' }} />
                   )}
                 </div>
-
-                {/* Product details */}
-                <div className="flex-1">
-                  <p className="text-base font-semibold text-[var(--txt-clr)] pry-ff">{item.title}</p>
-                  <p className="text-sm text-gray-400 sec-ff mt-1">
-                    Unit Price: ₦{item.price.toLocaleString()}
-                  </p>
-                  <p className="text-sm text-gray-400 sec-ff">
-                    Quantity: {item.quantity}
-                  </p>
+                <div className="flex-1 min-w-0">
+                  <p className="text-sm font-bold text-[var(--pry-clr)] pry-ff truncate">{item.title}</p>
+                  <p className="text-xs text-[var(--bg-clr)] sec-ff mt-0.5 opacity-80">₦{item.price.toLocaleString()} × {item.quantity}</p>
                   {item.itemStatus && (
-                    <p className="text-sm text-gray-400 sec-ff capitalize">
-                      Status: <span className="text-[var(--acc-clr)]">{item.itemStatus}</span>
-                    </p>
+                    <span className="inline-block mt-1.5 text-xs sec-ff capitalize px-2 py-0.5 rounded-full border font-medium"
+                      style={{ background: 'rgba(102,153,23,0.1)', color: 'var(--prof-clr)', borderColor: 'rgba(102,153,23,0.25)' }}>
+                      {item.itemStatus}
+                    </span>
                   )}
-                  <p className="text-sm font-bold text-[var(--txt-clr)] mt-2">
-                    Total: ₦{(item.price * item.quantity).toLocaleString()}
-                  </p>
                 </div>
+                <p className="text-sm font-bold text-[var(--bg-clr)] sec-ff whitespace-nowrap self-start">
+                  ₦{(item.price * item.quantity).toLocaleString()}
+                </p>
               </div>
             </div>
           ))}
         </div>
 
-        {/* Shipping Address */}
-        <div className="bg-white/5 border border-white/10 rounded-lg p-4">
-          <h3 className="text-lg font-semibold text-[var(--txt-clr)] pry-ff mb-3">Shipping Address</h3>
-          <p className="text-sm text-gray-300 sec-ff">{order.shippingAddress.addressLine1}</p>
-          <p className="text-sm text-gray-300 sec-ff">
-            {order.shippingAddress.city}, {order.shippingAddress.state}
-          </p>
-          <p className="text-sm text-gray-300 sec-ff">
-            {order.shippingAddress.postalCode}, {order.shippingAddress.country}
-          </p>
+        {/* Shipping */}
+        <div style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
+          <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2 mb-2">
+            <MapPin size={15} className="text-[var(--bg-clr)]" /> Shipping Address
+          </h2>
+          <p className="text-sm text-[var(--pry-clr)] sec-ff opacity-70">{shippingLine}</p>
         </div>
 
-        {/* Pricing breakdown */}
-        <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-1">
-          <h3 className="text-lg font-semibold text-[var(--txt-clr)] pry-ff mb-3">Pricing</h3>
-          <p className="text-sm text-gray-300 sec-ff flex justify-between">
-            <span>Subtotal</span>
-            <span>₦{order.pricing.subtotal.toLocaleString()}</span>
-          </p>
-          <p className="text-sm text-gray-300 sec-ff flex justify-between">
-            <span>Delivery Fee</span>
-            <span>₦{order.pricing.deliveryFee.toLocaleString()}</span>
-          </p>
-          {order.pricing.serviceFee > 0 && (
-            <p className="text-sm text-gray-300 sec-ff flex justify-between">
-              <span>Service Fee</span>
-              <span>₦{order.pricing.serviceFee.toLocaleString()}</span>
-            </p>
-          )}
+        {/* Pricing */}
+        <div style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
+          <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2 mb-3">
+            <CreditCard size={15} className="text-[var(--bg-clr)]" /> Pricing
+          </h2>
+          <div className="space-y-1.5">
+            {[
+              { label: 'Subtotal', value: order.pricing.subtotal },
+              { label: 'Delivery Fee', value: order.pricing.deliveryFee },
+              ...(order.pricing.serviceFee > 0 ? [{ label: 'Service Fee', value: order.pricing.serviceFee }] : []),
+            ].map(({ label, value }) => (
+              <div key={label} className="flex justify-between text-sm sec-ff">
+                <span className="text-[var(--pry-clr)] opacity-60">{label}</span>
+                <span className="text-[var(--pry-clr)] font-medium">₦{value.toLocaleString()}</span>
+              </div>
+            ))}
+          </div>
+          <div className="mt-3 pt-3 flex justify-between items-center" style={{ borderTop: '1px solid rgba(0,107,79,0.12)' }}>
+            <span className="font-bold text-[var(--pry-clr)] pry-ff">Total</span>
+            <span className="text-xl font-bold text-[var(--bg-clr)] sec-ff">₦{order.pricing.total.toLocaleString()}</span>
+          </div>
         </div>
 
-        {/* Total & Actions */}
-        <div className="flex justify-between items-center pt-4 border-t border-white/10">
-          <p className="text-lg font-bold text-[var(--acc-clr)] sec-ff">
-            Total: ₦{order.pricing.total.toLocaleString()}
-          </p>
+        {/* Actions */}
+        <div className="flex gap-3 justify-end">
           {order.orderStatus === 'shipped' && (
-            <button
-              onClick={() => setShowPopup(true)}
-              className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
-            >
-              Enter delivery code
+            <button onClick={() => setShowPopup(true)}
+              className="bg-[var(--bg-clr)] text-[var(--txt-clr)] font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 sec-ff cursor-pointer transition text-sm">
+              Enter Delivery Code
             </button>
           )}
           {order.paymentStatus !== 'paid' && (
-            <Link
-              href={`/order/${order._id}/payment`}
-              className="bg-[var(--acc-clr)] text-[var(--bg-clr)] font-semibold capitalize px-5 py-2 rounded-lg hover:opacity-90 sec-ff cursor-pointer transition"
-            >
+            <Link href={`/order/${order._id}/payment`}
+              className="bg-[var(--acc-clr)] text-[var(--pry-clr)] font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 sec-ff cursor-pointer transition text-sm">
               Checkout
             </Link>
           )}
         </div>
       </div>
 
-      {/* Confirm delivery popup */}
+      {/* Popup */}
       {showPopup && (
-        <div className="fixed inset-0 bg-black/60 flex items-center justify-center z-50">
-          <div className="bg-[var(--light-bg)] rounded-xl p-6 w-full max-w-md relative">
-            <button
-              onClick={() => setShowPopup(false)}
-              className="absolute top-3 right-3 text-[var(--acc-clr)] cursor-pointer"
-            >
-              <X />
+        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 px-4"
+          style={{ backgroundColor: 'rgba(10,15,26,0.55)' }}>
+          <div className="w-full max-w-md relative" style={{ ...card, borderRadius: '20px', padding: '24px', boxShadow: '0 20px 60px rgba(0,107,79,0.18)' }}>
+            <button onClick={() => setShowPopup(false)}
+              className="absolute top-4 right-4 text-[var(--bg-clr)] hover:text-[var(--acc-clr)] transition-colors cursor-pointer opacity-70 hover:opacity-100">
+              <X size={20} />
             </button>
             <ConfirmDelivery />
           </div>

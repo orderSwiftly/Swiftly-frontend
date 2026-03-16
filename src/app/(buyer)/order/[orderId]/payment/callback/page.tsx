@@ -187,7 +187,7 @@ export default function PaymentCallbackPage() {
 
       <div className="mt-8 text-center">
         <p className="text-sm text-gray-500 sec-ff">
-          Need help? <Link href="/contact" className="text-[var(--acc-clr)] underline">Contact Support</Link>
+          Need help? <Link href="/dashboard/profile/support" className="text-[var(--acc-clr)] underline">Contact Support</Link>
         </p>
       </div>
     </div>

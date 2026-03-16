@@ -36,6 +36,7 @@ export default function NewOrder() {
   const [building, setBuilding] = useState('');
   const [room, setRoom] = useState('');
   const [useManual, setUseManual] = useState(false);
+  const [savingAddress, setSavingAddress] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const router = useRouter();
 
@@ -87,9 +88,58 @@ export default function NewOrder() {
       if (res.ok && data.status === 'success') {
         setSavedAddresses(data.data.address ?? []);
       }
-      // 404 just means no saved addresses — that's fine
     } catch (err) {
       console.error(err);
+    }
+  };
+
+  const handleSaveNewAddress = async () => {
+    if (!building.trim() || !room.trim()) {
+      toast.error('Please fill in both building and room fields');
+      return;
+    }
+
+    setSavingAddress(true);
+    try {
+      const token = localStorage.getItem('token');
+      const res = await fetch(`${api_url}/api/v1/user/add-address`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({ building, room }),
+      });
+
+      const data = await res.json();
+
+      if (!res.ok) {
+        toast.error(data?.message ?? 'Failed to save address');
+        return;
+      }
+
+      toast.success('Address saved!');
+
+      // Re-fetch to get the real server _id, then auto-select the new one
+      const refreshRes = await fetch(`${api_url}/api/v1/user/address`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const refreshData = await refreshRes.json();
+      if (refreshRes.ok && refreshData.status === 'success') {
+        const updated: SavedAddress[] = refreshData.data.address ?? [];
+        setSavedAddresses(updated);
+        const newAddr = updated[updated.length - 1];
+        if (newAddr) setSelectedAddressId(newAddr._id);
+      }
+
+      setBuilding('');
+      setRoom('');
+      setUseManual(false);
+    } catch (err) {
+      console.error(err);
+      toast.error('Something went wrong');
+    } finally {
+      setSavingAddress(false);
     }
   };
 
@@ -102,8 +152,10 @@ export default function NewOrder() {
       let body: Record<string, string> = {};
 
       if (!useManual && selectedAddressId) {
+        // Using a saved (or just-saved) address
         body = { addressId: selectedAddressId };
-      } else if (building.trim() && room.trim()) {
+      } else if (useManual && building.trim() && room.trim()) {
+        // Using the new address directly without saving
         body = { building, room };
       } else {
         toast.error('Please select or enter a delivery address');
@@ -211,12 +263,12 @@ export default function NewOrder() {
                 onClick={() => { setUseManual(true); setSelectedAddressId(''); }}
                 className="text-sm text-[var(--acc-clr)] underline mt-1 cursor-pointer pry-ff"
               >
-                Enter a different address
+                + Add a new address
               </button>
             </div>
           )}
 
-          {/* Manual entry — shown when no saved addresses or user chose manual */}
+          {/* New address form */}
           {(useManual || savedAddresses.length === 0) && (
             <div className="space-y-3">
               {savedAddresses.length > 0 && (
@@ -239,9 +291,19 @@ export default function NewOrder() {
                 placeholder="Room / Office"
                 className="w-full p-3 rounded-md border border-[var(--prof-clr)] bg-transparent focus:outline-none focus:border-[var(--acc-clr)] sec-ff"
               />
+
+              {/* Optional: save for future use */}
+              <button
+                onClick={handleSaveNewAddress}
+                disabled={savingAddress}
+                className="w-full p-2 rounded-lg border border-[var(--acc-clr)] text-[var(--acc-clr)] sec-ff text-sm font-medium hover:bg-[var(--acc-clr)]/10 transition disabled:opacity-50 cursor-pointer"
+              >
+                {savingAddress ? 'Saving...' : 'Save address for future use'}
+              </button>
             </div>
           )}
 
+          {/* Place Order — works with a saved address OR a new one typed in */}
           <button
             onClick={handleSubmit}
             disabled={submitting}

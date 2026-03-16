@@ -11,16 +11,16 @@ export interface OrderItem {
 }
 
 export interface ShippingAddress {
-  // institution address
+  // institution address (shown in UI)
   building?: string;
   room?: string;
   institutionId?: string;
-  // standard address
-  // addressLine1?: string;
-  // city?: string;
-  // state?: string;
-  // postalCode?: string;
-  // country?: string;
+  // legacy standard address (ignored in UI)
+  addressLine1?: string;
+  city?: string;
+  state?: string;
+  postalCode?: string;
+  country?: string;
 }
 
 export interface OrderPricing {
@@ -32,18 +32,12 @@ export interface OrderPricing {
 
 export interface Order {
   _id: string;
-  userId?: string;
   items: OrderItem[];
-  pricing: OrderPricing;
-  shippingAddress: ShippingAddress;
+  pricing?: OrderPricing;
+  totalPrice?: number;
   orderStatus: string;
   paymentStatus: string;
   createdAt: string;
-  confirmed?: boolean;
-  escrowStatus?: string;
-  paystackAccessCode?: string;
-  paystackReference?: string;
-  paymentConfirmedAt?: string;
-  deliveryCode?: number;
-  shippedAt?: string;
+  shippingAddress: ShippingAddress;
+  canShip?: boolean;
 }

@@ -15,6 +15,11 @@ interface SellerProfile {
     role: string;
 }
 
+function resolveId(id: string | { $oid: string } | undefined): string {
+    if (!id) return "";
+    return typeof id === "string" ? id : id.$oid;
+}
+
 export default function SellerOrderCard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
@@ -43,17 +48,12 @@ export default function SellerOrderCard() {
         }
     };
 
-    const fetchOrders = async () => {
+    const loadOrders = async () => {
         if (!sellerProfile) return;
         try {
             const token = localStorage.getItem("token") || "";
             const fetchedOrders = await fetchSellerOrders(token);
-
-            const normalized: Order[] = fetchedOrders.map((o: Order) => ({
-                ...o,
-                id: typeof o._id === "string" ? o._id : o._id?.$oid ?? "",
-            }));
-            setOrders(normalized);
+            setOrders(fetchedOrders);
         } catch (err) {
             console.error(err);
             setError("Failed to fetch orders");
@@ -62,89 +62,74 @@ export default function SellerOrderCard() {
         }
     };
 
-    useEffect(() => {
-        fetchProfile();
-    }, []);
+    useEffect(() => { fetchProfile(); }, []);
+    useEffect(() => { if (sellerProfile) loadOrders(); }, [sellerProfile]);
 
-    useEffect(() => {
-        if (sellerProfile) fetchOrders();
-    }, [sellerProfile]);
-
-    /**
-     * Optimistically mark all items in this order as shipped
-     * so the button disables instantly without waiting for a refetch.
-     */
     const handleShipped = (orderId: string) => {
         setOrders((prev) =>
             prev.map((order) => {
-                if (order.id !== orderId) return order;
+                if (resolveId(order._id) !== orderId) return order;
                 return {
                     ...order,
                     orderStatus: "shipped",
-                    items: order.items.map((item) => ({
-                        ...item,
-                        itemStatus: "shipped",
-                    })),
+                    items: order.items.map((item) => ({ ...item, itemStatus: "shipped" })),
                 };
             })
         );
     };
 
-    if (loading) {
-        return (
-            <div className="flex items-center justify-center h-64">
-                <PulseLoader />
-            </div>
-        );
-    }
-
-    if (error) {
-        return <p className="text-center mt-8 text-red-500">{error}</p>;
-    }
-
-    if (!sellerProfile) {
-        return (
-            <p className="text-center mt-8 text-red-500">Seller profile not found</p>
-        );
-    }
+    if (loading) return <div className="flex items-center justify-center h-64"><PulseLoader /></div>;
+    if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
+    if (!sellerProfile) return <p className="text-center mt-8 text-red-500">Seller profile not found</p>;
 
     return (
         <main className="mt-8 mb-10 space-y-6 pry-ff">
-            <h1 className="text-3xl font-bold text-center text-gray-900 dark:text-white mb-6">
+            <h1 className="text-3xl font-bold text-center text-[var(--pry-clr)] mb-6">
                 Seller Orders
             </h1>
 
             {orders.length === 0 ? (
-                <p className="text-center text-gray-500">No orders found</p>
+                <p className="text-center text-[var(--sec-clr)] sec-ff">No orders found</p>
             ) : (
                 <div className="flex flex-col gap-6">
                     {orders.map((order) => {
-                        if (!order.id) return null;
+                        const orderId = resolveId(order._id);
+                        if (!orderId) return null;
+
                         const canShip = checkCanShipOrder(order, sellerProfile._id);
+                        const shortId = `#${orderId.slice(-8).toUpperCase()}`;
+                        const total = order.pricing?.total ?? 0;
 
                         return (
                             <div
-                                key={order.id}
-                                className="border rounded-2xl shadow-lg p-5 flex flex-col gap-4 bg-white dark:bg-gray-800 hover:shadow-2xl transition-shadow"
+                                key={orderId}
+                                className="rounded-2xl p-5 flex flex-col gap-4 transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]"
+                                style={{
+                                    backgroundColor: '#f6faf3',
+                                    border: '1px solid rgba(0,107,79,0.1)',
+                                    boxShadow: '0 2px 16px rgba(0,107,79,0.07)',
+                                }}
                             >
                                 {/* Header */}
-                                <div className="flex justify-between items-center w-full flex-wrap gap-2">
-                                    <p className="text-sm text-gray-500 dark:text-gray-400">
-                                        Order ID:{" "}
-                                        <span className="font-medium text-gray-800 dark:text-white">
-                                            {order.id}
-                                        </span>
+                                <div className="flex justify-between items-center flex-wrap gap-2">
+                                    <p className="text-sm text-[var(--sec-clr)] sec-ff">
+                                        Order ID: <span className="font-semibold text-[var(--pry-clr)]">{shortId}</span>
                                     </p>
                                     <div className="flex items-center gap-2">
                                         <span
-                                            className={`text-xs px-2 py-1 rounded-full font-medium ${order.paymentStatus === "paid"
-                                                    ? "bg-green-100 text-green-800 dark:bg-green-800 dark:text-green-100"
-                                                    : "bg-yellow-100 text-yellow-800 dark:bg-yellow-800 dark:text-yellow-100"
-                                                }`}
+                                            className="text-xs px-2.5 py-1 rounded-full font-medium sec-ff capitalize"
+                                            style={
+                                                order.paymentStatus === "paid"
+                                                    ? { background: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: '1px solid rgba(102,153,23,0.25)' }
+                                                    : { background: 'rgba(234,179,8,0.12)', color: '#b45309', border: '1px solid rgba(234,179,8,0.3)' }
+                                            }
                                         >
-                                            {order.paymentStatus === "paid" ? "Paid" : "Pending"}
+                                            {order.paymentStatus}
                                         </span>
-                                        <span className="text-xs text-gray-500 dark:text-gray-400 uppercase">
+                                        <span
+                                            className="text-xs px-2.5 py-1 rounded-full font-medium sec-ff capitalize"
+                                            style={{ background: 'rgba(0,107,79,0.08)', color: 'var(--bg-clr)', border: '1px solid rgba(0,107,79,0.15)' }}
+                                        >
                                             {order.orderStatus}
                                         </span>
                                     </div>
@@ -153,28 +138,24 @@ export default function SellerOrderCard() {
                                 {/* Items */}
                                 <div className="flex flex-col gap-3">
                                     {order.items.map((item, index) => (
-                                        <div
-                                            key={item.productId.$oid || index}
-                                            className="flex items-center gap-4"
-                                        >
-                                            <div className="w-16 h-16 relative overflow-hidden rounded-lg flex-shrink-0">
+                                        <div key={resolveId(item.productId) || index} className="flex items-center gap-3">
+                                            <div className="w-14 h-14 sm:w-16 sm:h-16 relative overflow-hidden rounded-xl flex-shrink-0"
+                                                style={{ border: '1px solid rgba(0,107,79,0.12)' }}>
                                                 <Image
                                                     src={item.productImg?.[0] || "/fallback.jpg"}
                                                     alt={item.title}
-                                                    width={64}
-                                                    height={64}
-                                                    className="object-cover w-full h-full"
+                                                    fill
+                                                    className="object-cover"
                                                 />
                                             </div>
-                                            <div className="flex-1">
-                                                <h4 className="font-semibold text-gray-900 dark:text-white text-sm sm:text-base">
-                                                    {item.title}
-                                                </h4>
-                                                <p className="text-gray-500 dark:text-gray-400 text-xs">
-                                                    Qty: {item.quantity} | ₦{item.lineTotal?.toLocaleString()}
+                                            <div className="flex-1 min-w-0">
+                                                <h4 className="font-semibold text-[var(--pry-clr)] text-sm truncate pry-ff">{item.title}</h4>
+                                                <p className="text-[var(--bg-clr)] text-xs sec-ff opacity-80 mt-0.5">
+                                                    Qty: {item.quantity} · ₦{item.lineTotal?.toLocaleString()}
                                                 </p>
                                                 {item.itemStatus === "shipped" && (
-                                                    <span className="text-xs text-blue-500 font-medium">
+                                                    <span className="text-xs font-medium sec-ff"
+                                                        style={{ color: 'var(--prof-clr)' }}>
                                                         Shipped ✓
                                                     </span>
                                                 )}
@@ -183,20 +164,16 @@ export default function SellerOrderCard() {
                                     ))}
                                 </div>
 
-                                {/* Total */}
-                                <p className="text-gray-600 dark:text-gray-300 text-sm font-medium mt-2">
-                                    Total: ₦
-                                    {(
-                                        order.pricing?.total ?? order.total
-                                    )?.toLocaleString()}
-                                </p>
-
-                                {/* Actions */}
-                                <div className="flex flex-col sm:flex-row sm:justify-between items-start sm:items-center gap-2 mt-2 w-full">
+                                {/* Footer */}
+                                <div className="flex justify-between items-center flex-wrap gap-2 pt-2"
+                                    style={{ borderTop: '1px solid rgba(0,107,79,0.1)' }}>
+                                    <p className="text-sm font-bold text-[var(--bg-clr)] sec-ff">
+                                        Total: ₦{total.toLocaleString()}
+                                    </p>
                                     <ShipButton
-                                        orderId={order.id}
+                                        orderId={orderId}
                                         canShip={canShip}
-                                        onShipped={() => handleShipped(order.id!)}
+                                        onShipped={() => handleShipped(orderId)}
                                     />
                                 </div>
                             </div>

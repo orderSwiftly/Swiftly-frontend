@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/my-orders/get-orders/page.tsx
+
 "use client";
 
 import OrdersHeader from "../components/orders-header";
@@ -11,6 +13,11 @@ interface Props {
   currentUserId: string | null;
   shippingLoading: string | null;
   handleShipOrder: (orderId: string) => void;
+}
+
+function resolveId(id: string | { $oid: string } | undefined): string {
+  if (!id) return "";
+  return typeof id === "string" ? id : id.$oid;
 }
 
 export default function GetOrders({
@@ -59,7 +66,7 @@ export default function GetOrders({
       ) : (
         filteredOrders.map((order, index) => (
           <OrderCard
-            key={order._id ?? index}
+            key={resolveId(order._id) || index}
             order={order}
             currentUserId={currentUserId || ""}
             shippingLoading={shippingLoading}
