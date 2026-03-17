@@ -1,3 +1,5 @@
+// src/components/vendors/seller-order-card.tsx
+
 "use client";
 
 import { useEffect, useState } from "react";
@@ -6,7 +8,9 @@ import { Order } from "@/types/order";
 import PulseLoader from "../pulse-loader";
 import Image from "next/image";
 import ShipButton from "./ship-button";
-import { checkCanShipOrder } from "@/lib/order-utils";
+import { checkCanShipOrder, filterOrdersByTab, getEmptyMessageByTab } from "@/lib/order-utils";
+
+type Tab = "orders" | "active" | "delivered";
 
 interface SellerProfile {
     _id: string;
@@ -20,11 +24,18 @@ function resolveId(id: string | { $oid: string } | undefined): string {
     return typeof id === "string" ? id : id.$oid;
 }
 
+const tabs: { key: Tab; label: string }[] = [
+    { key: "orders", label: "Orders" },
+    { key: "active", label: "Active" },
+    { key: "delivered", label: "Delivered" },
+];
+
 export default function SellerOrderCard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null);
+    const [activeTab, setActiveTab] = useState<Tab>("orders");
 
     const fetchProfile = async () => {
         try {
@@ -82,17 +93,55 @@ export default function SellerOrderCard() {
     if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
     if (!sellerProfile) return <p className="text-center mt-8 text-red-500">Seller profile not found</p>;
 
+    const filteredOrders = filterOrdersByTab(activeTab, orders, sellerProfile._id);
+
+    // Count badges
+    const counts: Record<Tab, number> = {
+        orders: filterOrdersByTab("orders", orders, sellerProfile._id).length,
+        active: filterOrdersByTab("active", orders, sellerProfile._id).length,
+        delivered: filterOrdersByTab("delivered", orders, sellerProfile._id).length,
+    };
+
     return (
-        <main className="mt-8 mb-10 space-y-6 pry-ff">
+        <main className="mt-8 mb-10 space-y-6 pry-ff p-4">
             <h1 className="text-3xl font-bold text-center text-[var(--pry-clr)] mb-6">
                 Seller Orders
             </h1>
 
-            {orders.length === 0 ? (
-                <p className="text-center text-[var(--sec-clr)] sec-ff">No orders found</p>
+            {/* ── Tabs ─────────────────────────────────── */}
+            <div className="flex items-center border-b border-[#e8e8e8]">
+                {tabs.map(({ key, label }) => (
+                    <button
+                        key={key}
+                        onClick={() => setActiveTab(key)}
+                        className={`relative flex items-center justify-center gap-2 flex-1 py-3 text-sm font-semibold sec-ff transition-colors ${activeTab === key
+                                ? "text-[#006B4F] border-b-2 border-[#006B4F] -mb-px"
+                                : "text-[#c0c0c0] hover:text-[#0A0F1A]"
+                            }`}
+                    >
+                        {label}
+                        {counts[key] > 0 && (
+                            <span
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${activeTab === key
+                                        ? "bg-[#006B4F] text-white"
+                                        : "bg-[#f0f0f0] text-[#c0c0c0]"
+                                    }`}
+                            >
+                                {counts[key]}
+                            </span>
+                        )}
+                    </button>
+                ))}
+            </div>
+
+            {/* ── Orders ───────────────────────────────── */}
+            {filteredOrders.length === 0 ? (
+                <p className="text-center text-[var(--sec-clr)] sec-ff py-10">
+                    {getEmptyMessageByTab(activeTab)}
+                </p>
             ) : (
                 <div className="flex flex-col gap-6">
-                    {orders.map((order) => {
+                    {filteredOrders.map((order) => {
                         const orderId = resolveId(order._id);
                         if (!orderId) return null;
 
@@ -105,9 +154,9 @@ export default function SellerOrderCard() {
                                 key={orderId}
                                 className="rounded-2xl p-5 flex flex-col gap-4 transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]"
                                 style={{
-                                    backgroundColor: '#f6faf3',
-                                    border: '1px solid rgba(0,107,79,0.1)',
-                                    boxShadow: '0 2px 16px rgba(0,107,79,0.07)',
+                                    backgroundColor: "#f6faf3",
+                                    border: "1px solid rgba(0,107,79,0.1)",
+                                    boxShadow: "0 2px 16px rgba(0,107,79,0.07)",
                                 }}
                             >
                                 {/* Header */}
@@ -120,15 +169,15 @@ export default function SellerOrderCard() {
                                             className="text-xs px-2.5 py-1 rounded-full font-medium sec-ff capitalize"
                                             style={
                                                 order.paymentStatus === "paid"
-                                                    ? { background: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: '1px solid rgba(102,153,23,0.25)' }
-                                                    : { background: 'rgba(234,179,8,0.12)', color: '#b45309', border: '1px solid rgba(234,179,8,0.3)' }
+                                                    ? { background: "rgba(102,153,23,0.12)", color: "var(--prof-clr)", border: "1px solid rgba(102,153,23,0.25)" }
+                                                    : { background: "rgba(234,179,8,0.12)", color: "#b45309", border: "1px solid rgba(234,179,8,0.3)" }
                                             }
                                         >
                                             {order.paymentStatus}
                                         </span>
                                         <span
                                             className="text-xs px-2.5 py-1 rounded-full font-medium sec-ff capitalize"
-                                            style={{ background: 'rgba(0,107,79,0.08)', color: 'var(--bg-clr)', border: '1px solid rgba(0,107,79,0.15)' }}
+                                            style={{ background: "rgba(0,107,79,0.08)", color: "var(--bg-clr)", border: "1px solid rgba(0,107,79,0.15)" }}
                                         >
                                             {order.orderStatus}
                                         </span>
@@ -139,8 +188,10 @@ export default function SellerOrderCard() {
                                 <div className="flex flex-col gap-3">
                                     {order.items.map((item, index) => (
                                         <div key={resolveId(item.productId) || index} className="flex items-center gap-3">
-                                            <div className="w-14 h-14 sm:w-16 sm:h-16 relative overflow-hidden rounded-xl flex-shrink-0"
-                                                style={{ border: '1px solid rgba(0,107,79,0.12)' }}>
+                                            <div
+                                                className="w-14 h-14 sm:w-16 sm:h-16 relative overflow-hidden rounded-xl flex-shrink-0"
+                                                style={{ border: "1px solid rgba(0,107,79,0.12)" }}
+                                            >
                                                 <Image
                                                     src={item.productImg?.[0] || "/fallback.jpg"}
                                                     alt={item.title}
@@ -154,8 +205,7 @@ export default function SellerOrderCard() {
                                                     Qty: {item.quantity} · ₦{item.lineTotal?.toLocaleString()}
                                                 </p>
                                                 {item.itemStatus === "shipped" && (
-                                                    <span className="text-xs font-medium sec-ff"
-                                                        style={{ color: 'var(--prof-clr)' }}>
+                                                    <span className="text-xs font-medium sec-ff" style={{ color: "var(--prof-clr)" }}>
                                                         Shipped ✓
                                                     </span>
                                                 )}
@@ -165,16 +215,20 @@ export default function SellerOrderCard() {
                                 </div>
 
                                 {/* Footer */}
-                                <div className="flex justify-between items-center flex-wrap gap-2 pt-2"
-                                    style={{ borderTop: '1px solid rgba(0,107,79,0.1)' }}>
+                                <div
+                                    className="flex justify-between items-center flex-wrap gap-2 pt-2"
+                                    style={{ borderTop: "1px solid rgba(0,107,79,0.1)" }}
+                                >
                                     <p className="text-sm font-bold text-[var(--bg-clr)] sec-ff">
                                         Total: ₦{total.toLocaleString()}
                                     </p>
-                                    <ShipButton
-                                        orderId={orderId}
-                                        canShip={canShip}
-                                        onShipped={() => handleShipped(orderId)}
-                                    />
+                                    {activeTab === "orders" && (
+                                        <ShipButton
+                                            orderId={orderId}
+                                            canShip={canShip}
+                                            onShipped={() => handleShipped(orderId)}
+                                        />
+                                    )}
                                 </div>
                             </div>
                         );

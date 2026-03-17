@@ -1,3 +1,5 @@
+// src/lib/order-utils.ts
+
 import { Order } from "@/types/order";
 
 const normalizeStatus = (status?: string): string =>
@@ -12,18 +14,9 @@ const toStringId = (id: unknown): string => {
   return String(id);
 };
 
-/**
- * Check if the current seller owns any item in the order
- * AND that item hasn't been shipped yet.
- * If ALL of the seller's items are shipped → canShip = false → button disabled.
- */
 export function checkCanShipOrder(order: Order, sellerId: string): boolean {
   const status = normalizeStatus(order.orderStatus);
-
-  // Order must be confirmed to allow shipping
   if (status !== "confirmed") return false;
-
-  // Seller must own at least one item that is NOT yet shipped
   return order.items.some(
     (item) =>
       toStringId(item.productOwnerId) === sellerId &&
@@ -32,7 +25,7 @@ export function checkCanShipOrder(order: Order, sellerId: string): boolean {
 }
 
 export const filterOrdersByTab = (
-  ordersTab: "orders" | "active" | "passive",
+  ordersTab: "orders" | "active" | "delivered",
   orders: Order[],
   currentUserId?: string | null
 ): Order[] => {
@@ -44,7 +37,6 @@ export const filterOrdersByTab = (
         order.items?.some(
           (item) => toStringId(item.productOwnerId) === toStringId(currentUserId)
         ) ?? false;
-
       if (!isSellerOrder) return false;
     }
 
@@ -52,15 +44,15 @@ export const filterOrdersByTab = (
 
     switch (ordersTab) {
       case "orders":
-        return status === "pending";
+        return status === "confirmed";
       case "active":
-        return status === "confirmed" || status === "shipped";
-      case "passive":
         return (
-          status === "delivered" ||
-          status === "cancelled" ||
-          status === "returned"
+          status === "shipped" ||
+          status === "claimed" ||
+          status === "collected"
         );
+      case "delivered":
+        return status === "delivered";
       default:
         return false;
     }
@@ -68,13 +60,12 @@ export const filterOrdersByTab = (
 };
 
 export const getEmptyMessageByTab = (
-  ordersTab: "orders" | "active" | "passive"
+  ordersTab: "orders" | "active" | "delivered"
 ): string => {
   const messages: Record<typeof ordersTab, string> = {
-    orders: "You have no pending orders.",
-    active: "You have no active orders.",
-    passive: "You have no passive orders.",
+    orders: "No confirmed orders yet.",
+    active: "No active orders.",
+    delivered: "No delivered orders yet.",
   };
-
   return messages[ordersTab];
 };
