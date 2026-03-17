@@ -1,11 +1,8 @@
-// src/components/riders/active-orders.tsx
-
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getClaimedOrders, getCollectedOrders, NearbyOrder } from "@/lib/rider-order";
+import { getClaimedOrders, getCollectedOrders, GetShippedOrder } from "@/lib/rider-order";
 import { Loader2, AlertCircle, Bike } from "lucide-react";
-import { reverseGeocode } from "@/lib/seller";
 import CollectOrderButton from "@/components/riders/collect-order";
 import DeliverOrderButton from "@/components/riders/deliver-order";
 
@@ -17,7 +14,7 @@ function formatPrice(price: number) {
     }).format(price);
 }
 
-type ActiveOrder = NearbyOrder & { kind: "claimed" | "collected" };
+type ActiveOrder = GetShippedOrder & { kind: "claimed" | "collected" };
 
 function ActiveOrderCard({
     order,
@@ -26,19 +23,16 @@ function ActiveOrderCard({
     order: ActiveOrder;
     onRemove: (id: string) => void;
 }) {
-    const [pickupAddress, setPickupAddress] = useState("Loading...");
     const [error, setError] = useState<string | null>(null);
-
-    const [lng, lat] = order.seller_location.coordinates;
-
-    useEffect(() => {
-        reverseGeocode(lat, lng).then(setPickupAddress);
-    }, [lat, lng]);
 
     const firstItem = order.items[0];
     const extraItems = order.items.length - 1;
-
     const isClaimed = order.kind === "claimed";
+
+    const deliveryAddress =
+        order.shippingAddress.building && order.shippingAddress.room
+            ? `${order.shippingAddress.building}, Room ${order.shippingAddress.room}`
+            : order.shippingAddress.addressLine1 || order.shippingAddress.city;
 
     return (
         <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm mb-10">
@@ -88,20 +82,17 @@ function ActiveOrderCard({
             {/* Dotted rows */}
             <div className="px-4 pb-3 flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-[#c0c0c0] shrink-0">Pick Up</span>
+                    <span className="text-xs text-[#c0c0c0] shrink-0">Seller</span>
                     <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
-                    <span
-                        className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[160px] truncate text-right"
-                        title={pickupAddress}
-                    >
-                        {pickupAddress}
+                    <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[160px] truncate text-right">
+                        {order.seller_name}
                     </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
                     <span className="text-xs text-[#c0c0c0] shrink-0">Deliver To</span>
                     <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
                     <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[140px] truncate text-right">
-                        {order.shippingAddress.addressLine1 || order.shippingAddress.city}
+                        {deliveryAddress}
                     </span>
                 </div>
                 {!isClaimed && (

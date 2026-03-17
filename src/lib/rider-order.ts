@@ -1,15 +1,8 @@
-// src/lib/rider-order.ts
 import axios, { AxiosError } from "axios";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
 
-export interface SellerLocation {
-  type: "Point";
-  coordinates: [number, number]; // [longitude, latitude]
-  updated_at: string;
-}
-
-export interface NearbyOrder {
+export interface GetShippedOrder {
   _id: string;
   userId: string;
   items: {
@@ -30,6 +23,10 @@ export interface NearbyOrder {
     total: number;
   };
   shippingAddress: {
+    // official
+    room: string;
+    building: string;
+    // standard
     addressLine1: string;
     city: string;
     state: string;
@@ -42,40 +39,25 @@ export interface NearbyOrder {
   paystackReference: string;
   confirmed: boolean;
   deliveryCode: number;
-  escrowStatus: string;
   paymentConfirmedAt: string;
-  seller_location: SellerLocation;
+  seller_name: string;
   shippedAt: string;
 }
 
-export default async function nearbyOrders(): Promise<NearbyOrder[]> {
+export default async function getShippedOrders(): Promise<GetShippedOrder[]> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
-    const coords = await new Promise<{ lat: number; lon: number } | null>(
-      (resolve) => {
-        if (!navigator.geolocation) return resolve(null);
-        navigator.geolocation.getCurrentPosition(
-          (pos) => resolve({ lat: pos.coords.latitude, lon: pos.coords.longitude }),
-          () => resolve(null),
-          { enableHighAccuracy: true, timeout: 10000, maximumAge: 5 * 60 * 1000 }
-        );
-      }
-    );
-
-    if (!coords) throw new Error("Unable to get your location");
-
-    const response = await axios.get(`${apiUrl}/api/v1/rider/nearby-orders`, {
+    const response = await axios.get(`${apiUrl}/api/v1/rider/shipped-orders`, {
       headers: { Authorization: `Bearer ${token}` },
-      params: coords,
     });
 
-    return response.data.data as NearbyOrder[];
+    return response.data.data as GetShippedOrder[];
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
-      err.response?.data?.message || err.message || "Failed to fetch nearby orders"
+      err.response?.data?.message || err.message || "Failed to fetch shipped orders"
     );
   }
 }
@@ -92,14 +74,13 @@ export async function claimOrder(orderId: string): Promise<void> {
     );
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
-    console.error("Claim order error response:", err.response?.data); // 👈 full server message
+    console.error("Claim order error response:", err.response?.data);
     throw new Error(
       err.response?.data?.message || err.message || "Failed to claim order"
     );
   }
 }
 
-// after claiming
 export async function collectOrder(orderId: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
@@ -134,9 +115,9 @@ export async function deliverOrder(orderId: string): Promise<void> {
       err.response?.data?.message || err.message || "Failed to deliver order"
     );
   }
-} 
+}
 
-export async function getClaimedOrders(): Promise<NearbyOrder[]> {
+export async function getClaimedOrders(): Promise<GetShippedOrder[]> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
@@ -145,7 +126,7 @@ export async function getClaimedOrders(): Promise<NearbyOrder[]> {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    return response.data.data.orders as NearbyOrder[];
+    return response.data.data.orders as GetShippedOrder[];
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
@@ -154,7 +135,7 @@ export async function getClaimedOrders(): Promise<NearbyOrder[]> {
   }
 }
 
-export async function getCollectedOrders(): Promise<NearbyOrder[]> {
+export async function getCollectedOrders(): Promise<GetShippedOrder[]> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
@@ -163,7 +144,7 @@ export async function getCollectedOrders(): Promise<NearbyOrder[]> {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    return response.data.data.orders as NearbyOrder[];
+    return response.data.data.orders as GetShippedOrder[];
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
@@ -172,8 +153,7 @@ export async function getCollectedOrders(): Promise<NearbyOrder[]> {
   }
 }
 
-// retrieve delivered orders/ completed orders
-export async function getDeliveredOrders(): Promise<NearbyOrder[]> {
+export async function getDeliveredOrders(): Promise<GetShippedOrder[]> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
@@ -182,7 +162,7 @@ export async function getDeliveredOrders(): Promise<NearbyOrder[]> {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    return response.data.data.orders as NearbyOrder[];
+    return response.data.data.orders as GetShippedOrder[];
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(

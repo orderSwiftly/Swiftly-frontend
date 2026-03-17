@@ -1,16 +1,8 @@
-// src/components/riders/nearest-orders.tsx
-
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import nearbyOrders, { NearbyOrder, claimOrder } from "@/lib/rider-order";
-import {
-    Loader2,
-    AlertCircle,
-    BadgeCheck,
-    ShoppingBag,
-} from "lucide-react";
-import { reverseGeocode } from "@/lib/seller";
+import getShippedOrders, { GetShippedOrder, claimOrder } from "@/lib/rider-order";
+import { Loader2, AlertCircle, BadgeCheck, ShoppingBag } from "lucide-react";
 import CollectOrderButton from "@/components/riders/collect-order";
 
 function formatPrice(price: number) {
@@ -26,20 +18,13 @@ function OrderCard({
     onClaimed,
     onDeclined,
 }: {
-    order: NearbyOrder;
+    order: GetShippedOrder;
     onClaimed: (id: string) => void;
     onDeclined: (id: string) => void;
 }) {
     const [claiming, setClaiming] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [pickupAddress, setPickupAddress] = useState<string>("Loading...");
     const [claimed, setClaimed] = useState(false);
-
-    const [lng, lat] = order.seller_location.coordinates;
-
-    useEffect(() => {
-        reverseGeocode(lat, lng).then(setPickupAddress);
-    }, [lat, lng]);
 
     const handleAccept = async () => {
         setClaiming(true);
@@ -99,10 +84,10 @@ function OrderCard({
             {/* Dotted rows */}
             <div className="px-4 pb-3 flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-[#c0c0c0] shrink-0">Pick Up</span>
+                    <span className="text-xs text-[#c0c0c0] shrink-0">Seller</span>
                     <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
-                    <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[160px] truncate text-right" title={pickupAddress}>
-                        {pickupAddress}
+                    <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[160px] truncate text-right">
+                        {order.seller_name}
                     </span>
                 </div>
 
@@ -110,7 +95,7 @@ function OrderCard({
                     <span className="text-xs text-[#c0c0c0] shrink-0">Deliver To</span>
                     <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
                     <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[140px] truncate text-right">
-                        {order.shippingAddress.addressLine1 || order.shippingAddress.city}
+                        {order.shippingAddress.building || order.shippingAddress.room}
                     </span>
                 </div>
 
@@ -152,12 +137,12 @@ function OrderCard({
 }
 
 export default function NearestOrders() {
-    const [orders, setOrders] = useState<NearbyOrder[]>([]);
+    const [orders, setOrders] = useState<GetShippedOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        nearbyOrders()
+        getShippedOrders()
             .then(setOrders)
             .catch((e) => setError(e.message))
             .finally(() => setLoading(false));
@@ -171,7 +156,7 @@ export default function NearestOrders() {
         return (
             <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
                 <Loader2 size={36} className="animate-spin text-[#006B4F]" />
-                <p className="text-sm">Finding orders near you…</p>
+                <p className="text-sm">Loading shipped orders…</p>
             </div>
         );
     }
@@ -189,7 +174,7 @@ export default function NearestOrders() {
         return (
             <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
                 <BadgeCheck size={40} strokeWidth={1.5} className="text-[#9BDD37]" />
-                <p className="text-sm">No nearby orders at the moment</p>
+                <p className="text-sm">No shipped orders at the moment</p>
             </div>
         );
     }
@@ -197,7 +182,7 @@ export default function NearestOrders() {
     return (
         <div className="sec-ff">
             <div className="flex items-baseline justify-between mb-5">
-                <h2 className="text-lg font-semibold text-[#0A0F1A]">Nearby Orders</h2>
+                <h2 className="text-lg font-semibold text-[#0A0F1A]">Shipped Orders</h2>
                 <span className="text-[#c0c0c0] text-sm">{orders.length} available</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

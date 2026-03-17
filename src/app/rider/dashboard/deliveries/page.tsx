@@ -6,7 +6,7 @@ import NearestOrders from "@/components/riders/nearest-orders";
 import ActiveOrders from "@/components/riders/active-orders";
 import DeliveredOrders from "@/components/riders/delivered-orders";
 
-type TopTab = "pending" | "active" | "passive";
+type TopTab = "pending" | "active" | "delivered";
 
 export default function DeliveryPage() {
     const [activeTab, setActiveTab] = useState<TopTab>("pending");
@@ -15,7 +15,7 @@ export default function DeliveryPage() {
         <main className="px-4 py-5 sec-ff">
             {/* Top-level tab bar */}
             <div className="flex gap-1 bg-[#f5f5f5] p-1 rounded-xl mb-6">
-                {(["pending", "active", "passive"] as TopTab[]).map((tab) => (
+                {(["pending", "active", "delivered"] as TopTab[]).map((tab) => (
                     <button
                         key={tab}
                         onClick={() => setActiveTab(tab)}
@@ -31,7 +31,7 @@ export default function DeliveryPage() {
 
             {activeTab === "pending" && <NearestOrders />}
             {activeTab === "active" && <ActiveOrders />}
-            {activeTab === "passive" && <DeliveredOrders />}
+            {activeTab === "delivered" && <DeliveredOrders />}
         </main>
     );
 }
