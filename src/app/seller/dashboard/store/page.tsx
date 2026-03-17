@@ -1,9 +1,7 @@
-// src/app/seller/dashboard/store/page.tsx
-
 "use client";
 
-import { useEffect, useState } from "react";
-import { fetchSellerProfile, SellerProfile, reverseGeocode } from "@/lib/seller";
+import { useEffect, useState, useCallback } from "react";
+import { fetchSellerProfile, SellerProfile } from "@/lib/seller";
 import {
     MapPin,
     Package,
@@ -35,45 +33,66 @@ function formatDate(iso: string) {
 
 function ProductCard({ product }: { product: SellerProfile["products"][0] }) {
     const [imgIndex, setImgIndex] = useState(0);
+    const [paused, setPaused] = useState(false);
     const outOfStock = product.stock === 0;
     const hasMultiple = product.productImg.length > 1;
 
-    const prev = () =>
-        setImgIndex((i) => (i - 1 + product.productImg.length) % product.productImg.length);
-    const next = () =>
-        setImgIndex((i) => (i + 1) % product.productImg.length);
+    const prev = useCallback(() =>
+        setImgIndex((i) => (i - 1 + product.productImg.length) % product.productImg.length),
+        [product.productImg.length]
+    );
+
+    const next = useCallback(() =>
+        setImgIndex((i) => (i + 1) % product.productImg.length),
+        [product.productImg.length]
+    );
+
+    useEffect(() => {
+        if (!hasMultiple || paused) return;
+        const timer = setInterval(next, 3000);
+        return () => clearInterval(timer);
+    }, [hasMultiple, paused, next]);
 
     return (
-        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden flex flex-col hover:-translate-y-1 transition-all duration-200 hover:shadow-lg hover:shadow-[#006B4F]/10 hover:border-[#9BDD37] sec-ff">
+        <div className={`bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden flex flex-col hover:-translate-y-1 transition-all duration-200 hover:shadow-lg hover:shadow-[#006B4F]/10 hover:border-[#9BDD37] sec-ff ${outOfStock ? "opacity-60" : ""}`}>
             {/* Image */}
-            <div className="relative aspect-[4/3] bg-[#f5f5f5] overflow-hidden group">
-                <img
-                    src={product.productImg[imgIndex]}
-                    alt={product.title}
-                    className="w-full h-full object-cover transition-transform duration-500 group-hover:scale-105"
-                />
+            <div
+                className="relative aspect-[4/3] bg-[#f5f5f5] overflow-hidden group"
+                onMouseEnter={() => setPaused(true)}
+                onMouseLeave={() => setPaused(false)}
+            >
+                {/* Slides */}
+                {product.productImg.map((src, i) => (
+                    <img
+                        key={i}
+                        src={src}
+                        alt={`${product.title} ${i + 1}`}
+                        className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ${i === imgIndex ? "opacity-100" : "opacity-0"
+                            }`}
+                    />
+                ))}
 
                 {/* Carousel controls */}
                 {hasMultiple && (
                     <>
                         <button
-                            onClick={prev}
-                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-[#0A0F1A]/60 hover:bg-[#0A0F1A]/80 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => { e.preventDefault(); prev(); }}
+                            className="absolute left-2 top-1/2 -translate-y-1/2 bg-[#0A0F1A]/60 hover:bg-[#0A0F1A]/80 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         >
                             <ChevronLeft size={16} />
                         </button>
                         <button
-                            onClick={next}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#0A0F1A]/60 hover:bg-[#0A0F1A]/80 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity"
+                            onClick={(e) => { e.preventDefault(); next(); }}
+                            className="absolute right-2 top-1/2 -translate-y-1/2 bg-[#0A0F1A]/60 hover:bg-[#0A0F1A]/80 text-white rounded-full p-1 opacity-0 group-hover:opacity-100 transition-opacity z-10"
                         >
                             <ChevronRight size={16} />
                         </button>
-                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5">
+                        <div className="absolute bottom-2 left-1/2 -translate-x-1/2 flex gap-1.5 z-10">
                             {product.productImg.map((_, i) => (
                                 <button
                                     key={i}
                                     onClick={() => setImgIndex(i)}
-                                    className={`w-1.5 h-1.5 rounded-full transition-all ${i === imgIndex ? "bg-[#9BDD37] scale-125" : "bg-white/60"
+                                    className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${i === imgIndex ? "bg-[#9BDD37] scale-125" : "bg-white/60"
                                         }`}
                                 />
                             ))}
@@ -82,13 +101,13 @@ function ProductCard({ product }: { product: SellerProfile["products"][0] }) {
                 )}
 
                 {/* Category badge */}
-                <span className="absolute top-3 left-3 text-xs px-2.5 py-1 rounded-full bg-[#0A0F1A]/70 backdrop-blur-sm text-white border border-white/10">
+                <span className="absolute top-3 left-3 text-xs px-2.5 py-1 rounded-full bg-[#0A0F1A]/70 backdrop-blur-sm text-white border border-white/10 z-10">
                     {product.category.name}
                 </span>
 
                 {/* Stock badge */}
                 <span
-                    className={`absolute top-3 right-3 text-xs px-2.5 py-1 rounded-full font-medium ${outOfStock
+                    className={`absolute top-3 right-3 text-xs px-2.5 py-1 rounded-full font-medium z-10 ${outOfStock
                             ? "bg-red-50 text-red-500 border border-red-200"
                             : "bg-[#9BDD37]/15 text-[#669917] border border-[#9BDD37]/40"
                         }`}
@@ -128,25 +147,10 @@ export default function Store() {
     const [data, setData] = useState<SellerProfile | null>(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
-    const [sellerAddress, setSellerAddress] = useState<string | null>(null);
 
     useEffect(() => {
         fetchSellerProfile()
             .then(setData)
-            .catch((e) => setError(e.message))
-            .finally(() => setLoading(false));
-    }, []);
-
-    // If seller has location, reverse geocode it to get a human-readable address
-    useEffect(() => {
-        fetchSellerProfile()
-            .then((profile) => {
-                setData(profile);
-                if (profile.seller.location) {
-                    const [lng, lat] = profile.seller.location.coordinates;
-                    reverseGeocode(lat, lng).then(setSellerAddress);
-                }
-            })
             .catch((e) => setError(e.message))
             .finally(() => setLoading(false));
     }, []);
@@ -174,6 +178,12 @@ export default function Store() {
     const { seller, products } = data;
     const totalStock = products.reduce((sum, p) => sum + p.stock, 0);
     const totalValue = products.reduce((sum, p) => sum + p.price * p.stock, 0);
+
+    const sortedProducts = [...products].sort((a, b) => {
+        if (a.stock === 0 && b.stock > 0) return 1;
+        if (a.stock > 0 && b.stock === 0) return -1;
+        return 0;
+    });
 
     const stats = [
         { label: "Total Products", value: products.length, icon: Layers },
@@ -214,18 +224,12 @@ export default function Store() {
                                     <span className="text-white/30">·</span>
                                     <span>{seller.email}</span>
                                 </div>
-
-                                <div>
-                                    {sellerAddress && (
-                                        <div className="flex items-center gap-2 mt-2 lg:text-sm md:text-base text-white/60">
-                                            <span className="text-white/30">·</span>
-                                            <span className="flex items-center gap-1 font-semibold">
-                                                <MapPin size={12} className="text-[var(--prof-clr)]" />
-                                                {sellerAddress}
-                                            </span>
-                                        </div>
-                                    )}
-                                </div>
+                                {seller.seller_address && (
+                                    <div className="flex items-center gap-1.5 mt-1.5 text-white/60 text-sm">
+                                        <MapPin size={12} className="text-[#9BDD37] shrink-0" />
+                                        <span>{seller.seller_address}</span>
+                                    </div>
+                                )}
                             </div>
                         </div>
 
@@ -264,7 +268,7 @@ export default function Store() {
                         <span className="text-[#c0c0c0] text-sm">{products.length} items</span>
                     </div>
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
-                        {products.map((p) => (
+                        {sortedProducts.map((p) => (
                             <ProductCard key={p._id} product={p} />
                         ))}
                     </div>

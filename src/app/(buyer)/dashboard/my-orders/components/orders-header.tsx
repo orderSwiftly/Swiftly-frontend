@@ -2,7 +2,7 @@
 "use client";
 
 interface OrdersHeaderProps {
-  activeTab: "orders" | "active" | "passive";
+  activeTab: "pending orders" | "active" | "passive";
   onTabChange: (tab: "orders" | "active" | "passive") => void;
 }
 
@@ -19,7 +19,7 @@ export default function OrdersHeader({
       </div>
 
       <div className="flex items-center px-4">
-        {["orders", "active", "passive"].map((tab) => (
+        {["pending orders", "active", "passive"].map((tab) => (
           <button
             key={tab}
             onClick={() => onTabChange(tab as any)}
@@ -28,7 +28,7 @@ export default function OrdersHeader({
                 : "border-transparent text-[var(--bg-clr)]"
               }`}
           >
-            {tab === "orders"
+            {tab === "pending orders"
               ? "Orders"
               : tab === "active"
                 ? "Active Orders"

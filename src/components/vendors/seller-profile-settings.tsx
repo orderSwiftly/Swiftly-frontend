@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
-import { User, Camera } from "lucide-react";
+import { User, Camera, MapPin } from "lucide-react";
 import { GetProfile } from "@/lib/get-profile";
 import { AdditionalInfo } from "@/lib/additional-info";
 import PulseLoader from "../pulse-loader";
@@ -11,17 +11,17 @@ import Image from "next/image";
 type SettingsFormData = {
     name: string;
     email: string;
-    bio: string;
     phoneNumber: string;
-    logo?: File;
+    seller_address: string;
+    photo?: File;
 };
 
 export default function ProfileSettings() {
     const [formData, setFormData] = useState<SettingsFormData>({
         name: "",
         email: "",
-        bio: "",
         phoneNumber: "",
+        seller_address: "",
     });
 
     const [preview, setPreview] = useState<string | null>(null);
@@ -35,8 +35,8 @@ export default function ProfileSettings() {
                 setFormData({
                     name: user.businessName || "",
                     email: user.email || "",
-                    bio: "",
                     phoneNumber: user.phoneNumber || "",
+                    seller_address: user.seller_address || "",
                 });
                 if (user.logo) setPreview(user.logo);
             }
@@ -114,7 +114,7 @@ export default function ProfileSettings() {
                         Profile Information
                     </h2>
                     <p className="text-[#c0c0c0] sec-ff text-sm mt-0.5">
-                        Update your phone number and profile picture.
+                        Update your phone number, address and profile picture.
                     </p>
                 </div>
             </div>
@@ -132,7 +132,8 @@ export default function ProfileSettings() {
                         <input
                             type="text"
                             value={formData.name}
-                            className="w-full px-4 py-2.5 bg-[#f5f5f5] rounded-xl text-[var(--sec-clr)] sec-ff text-sm focus:outline-none border-[#e8e8e8] focus:ring-2 focus:ring-[var(--prof-clr)] focus:border-[var(--prof-clr)] transition"
+                            readOnly
+                            className="w-full px-4 py-2.5 bg-[#f5f5f5] rounded-xl text-[var(--sec-clr)] sec-ff text-sm focus:outline-none border border-[#e8e8e8] cursor-not-allowed"
                         />
                     </div>
 
@@ -163,6 +164,27 @@ export default function ProfileSettings() {
                         placeholder="Enter your phone number"
                         className="w-full px-4 py-2.5 bg-white border border-[#e8e8e8] rounded-xl text-[#0A0F1A] sec-ff text-sm focus:outline-none focus:ring-2 focus:ring-[#9BDD37]/40 focus:border-[#9BDD37] transition placeholder:text-[#c0c0c0]"
                     />
+                </div>
+
+                {/* Seller Address — editable */}
+                <div>
+                    <label className="block text-xs font-semibold text-[#c0c0c0] sec-ff mb-1.5 uppercase tracking-wider">
+                        Seller Address
+                    </label>
+                    <div className="relative">
+                        <MapPin
+                            size={15}
+                            className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#669917] pointer-events-none"
+                        />
+                        <input
+                            type="text"
+                            name="seller_address"
+                            value={formData.seller_address}
+                            onChange={handleChange}
+                            placeholder="Enter your pickup address"
+                            className="w-full pl-9 pr-4 py-2.5 bg-white border border-[#e8e8e8] rounded-xl text-[#0A0F1A] sec-ff text-sm focus:outline-none focus:ring-2 focus:ring-[#9BDD37]/40 focus:border-[#9BDD37] transition placeholder:text-[#c0c0c0]"
+                        />
+                    </div>
                 </div>
 
                 {/* Photo upload trigger */}
