@@ -62,55 +62,6 @@ export default function AccountSettings({ formData, handleInputChange, handleSav
       </div>
 
       <div className="space-y-8">
-        {/* Change Password */}
-        <div className="border-b border-white/10 pb-6">
-          <h3 className="text-lg font-medium text-[var(--bg-clr)] pry-ff mb-4">Change Password</h3>
-          <div className="space-y-4 max-w-md">
-            <div>
-              <label className="block text-sm font-medium text-[var(--bg-clr)] mb-2 sec-ff">Current Password</label>
-              <div className="relative">
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  value={formData.currentPassword}
-                  onChange={(e) => handleInputChange('currentPassword', e.target.value)}
-                  className="w-full px-3 py-2 pr-10 border border-[var(--pry-clr)]/40 rounded-md text-[var(--bg-clr)] focus:border-[var(--acc-clr)] focus:outline-none"
-                />
-                <button
-                  type="button"
-                  onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--bg-clr)] hover:text-[var(--acc-clr)]"
-                >
-                  {showPassword ? <EyeOff size={16} /> : <Eye size={16} />}
-                </button>
-              </div>
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--bg-clr)] mb-2 sec-ff">New Password</label>
-              <input
-                type="password"
-                value={formData.newPassword}
-                onChange={(e) => handleInputChange('newPassword', e.target.value)}
-                className="w-full px-3 py-2 border border-[var(--pry-clr)]/40 rounded-md text-[var(--bg-clr)] focus:border-[var(--acc-clr)] focus:outline-none"
-              />
-            </div>
-            <div>
-              <label className="block text-sm font-medium text-[var(--bg-clr)] mb-2 sec-ff">Confirm New Password</label>
-              <input
-                type="password"
-                value={formData.confirmPassword}
-                onChange={(e) => handleInputChange('confirmPassword', e.target.value)}
-                className="w-full px-3 py-2 border border-[var(--pry-clr)]/40 rounded-md text-[var(--bg-clr)] focus:border-[var(--acc-clr)] focus:outline-none"
-              />
-            </div>
-            <button
-              onClick={() => handleSave('password')}
-              className="px-4 py-2 bg-[var(--acc-clr)]/90 text-[var(--bg-clr)] rounded-md hover:opacity-90 transition-opacity font-medium sec-ff"
-            >
-              Update Password
-            </button>
-          </div>
-        </div>
-
         {/* Danger Zone */}
         <div>
           <h3 className="text-lg font-semibold text-red-500 pry-ff mb-4">Danger Zone</h3>

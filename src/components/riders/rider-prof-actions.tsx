@@ -2,11 +2,11 @@ import { ShoppingBag, Signpost, ChevronRight, Wallet, User, UserCircle, BikeIcon
 import Link from "next/link";
 
 const actions = [
-    {
-        link: "/rider/dashboard/profile/account",
-        label: "Account Settings",
-        icon: UserCircle,
-    },
+    // {
+    //     link: "/rider/dashboard/profile/account",
+    //     label: "Account Settings",
+    //     icon: UserCircle,
+    // },
     {
         link: "/rider/dashboard/deliveries",
         label: "Deliveries",
