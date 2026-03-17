@@ -17,7 +17,7 @@ export default function MyOrdersPage() {
   const handleShipOrder = async (orderId: string) => {
     setShippingLoading(orderId);
     // Placeholder: buyers don't ship orders, sellers will implement this
-    console.log("Ship order:", orderId);
+    // console.log("Ship order:", orderId);
     setTimeout(() => setShippingLoading(null), 2000); // mock async
   };
 

@@ -30,12 +30,19 @@ const tabs: { key: Tab; label: string }[] = [
     { key: "delivered", label: "Delivered" },
 ];
 
+const PAGE_SIZE = 10;
+
 export default function SellerOrderCard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null);
     const [activeTab, setActiveTab] = useState<Tab>("orders");
+    const [visibleCount, setVisibleCount] = useState<Record<Tab, number>>({
+        orders: PAGE_SIZE,
+        active: PAGE_SIZE,
+        delivered: PAGE_SIZE,
+    });
 
     const fetchProfile = async () => {
         try {
@@ -76,6 +83,11 @@ export default function SellerOrderCard() {
     useEffect(() => { fetchProfile(); }, []);
     useEffect(() => { if (sellerProfile) loadOrders(); }, [sellerProfile]);
 
+    // Reset visible count when tab changes
+    useEffect(() => {
+        setVisibleCount((prev) => ({ ...prev, [activeTab]: PAGE_SIZE }));
+    }, [activeTab]);
+
     const handleShipped = (orderId: string) => {
         setOrders((prev) =>
             prev.map((order) => {
@@ -89,13 +101,22 @@ export default function SellerOrderCard() {
         );
     };
 
+    const handleLoadMore = () => {
+        setVisibleCount((prev) => ({
+            ...prev,
+            [activeTab]: prev[activeTab] + PAGE_SIZE,
+        }));
+    };
+
     if (loading) return <div className="flex items-center justify-center h-64"><PulseLoader /></div>;
     if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
     if (!sellerProfile) return <p className="text-center mt-8 text-red-500">Seller profile not found</p>;
 
     const filteredOrders = filterOrdersByTab(activeTab, orders, sellerProfile._id);
+    const visibleOrders = filteredOrders.slice(0, visibleCount[activeTab]);
+    const hasMore = visibleCount[activeTab] < filteredOrders.length;
+    const remaining = filteredOrders.length - visibleCount[activeTab];
 
-    // Count badges
     const counts: Record<Tab, number> = {
         orders: filterOrdersByTab("orders", orders, sellerProfile._id).length,
         active: filterOrdersByTab("active", orders, sellerProfile._id).length,
@@ -141,7 +162,7 @@ export default function SellerOrderCard() {
                 </p>
             ) : (
                 <div className="flex flex-col gap-6">
-                    {filteredOrders.map((order) => {
+                    {visibleOrders.map((order) => {
                         const orderId = resolveId(order._id);
                         if (!orderId) return null;
 
@@ -233,6 +254,16 @@ export default function SellerOrderCard() {
                             </div>
                         );
                     })}
+
+                    {/* ── Load More ────────────────────────── */}
+                    {hasMore && (
+                        <button
+                            onClick={handleLoadMore}
+                            className="w-full py-3 rounded-xl border border-dashed border-[#006B4F]/30 text-sm font-semibold text-[var(--pry-clr)] hover:bg-[#006B4F]/5 transition-colors sec-ff"
+                        >
+                            Load more · {remaining} remaining
+                        </button>
+                    )}
                 </div>
             )}
         </main>
