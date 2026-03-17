@@ -8,6 +8,8 @@ import { useState } from "react";
 import { Order } from "@/types/order";
 import { getEmptyMessageByTab } from "@/lib/order-utils";
 
+type Tab = "pending orders" | "active" | "passive";
+
 interface Props {
   orders: Order[];
   currentUserId: string | null;
@@ -26,13 +28,11 @@ export default function GetOrders({
   shippingLoading,
   handleShipOrder,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<"orders" | "active" | "passive">(
-    "orders"
-  );
+  const [activeTab, setActiveTab] = useState<Tab>("pending orders");
 
   const getFilteredOrders = () => {
     switch (activeTab) {
-      case "orders":
+      case "pending orders":
         return orders.filter((o) => o.orderStatus === "pending");
       case "active":
         return orders.filter(

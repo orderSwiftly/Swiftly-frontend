@@ -8,9 +8,15 @@ import { Order } from "@/types/order";
 import PulseLoader from "../pulse-loader";
 import Image from "next/image";
 import ShipButton from "./ship-button";
-import { checkCanShipOrder, filterOrdersByTab, getEmptyMessageByTab } from "@/lib/order-utils";
+import { checkCanShipOrder, filterOrdersByTab, getSellerEmptyMessage, SellerTab } from "@/lib/order-utils";
 
-type Tab = "orders" | "active" | "delivered";
+const tabs: { key: SellerTab; label: string }[] = [
+    { key: "pending orders", label: "Orders" },
+    { key: "active", label: "Active" },
+    { key: "delivered", label: "Delivered" },
+];
+
+const PAGE_SIZE = 10;
 
 interface SellerProfile {
     _id: string;
@@ -24,22 +30,14 @@ function resolveId(id: string | { $oid: string } | undefined): string {
     return typeof id === "string" ? id : id.$oid;
 }
 
-const tabs: { key: Tab; label: string }[] = [
-    { key: "orders", label: "Orders" },
-    { key: "active", label: "Active" },
-    { key: "delivered", label: "Delivered" },
-];
-
-const PAGE_SIZE = 10;
-
 export default function SellerOrderCard() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
     const [sellerProfile, setSellerProfile] = useState<SellerProfile | null>(null);
-    const [activeTab, setActiveTab] = useState<Tab>("orders");
-    const [visibleCount, setVisibleCount] = useState<Record<Tab, number>>({
-        orders: PAGE_SIZE,
+    const [activeTab, setActiveTab] = useState<SellerTab>("pending orders");
+    const [visibleCount, setVisibleCount] = useState<Record<SellerTab, number>>({
+        "pending orders": PAGE_SIZE,
         active: PAGE_SIZE,
         delivered: PAGE_SIZE,
     });
@@ -83,7 +81,6 @@ export default function SellerOrderCard() {
     useEffect(() => { fetchProfile(); }, []);
     useEffect(() => { if (sellerProfile) loadOrders(); }, [sellerProfile]);
 
-    // Reset visible count when tab changes
     useEffect(() => {
         setVisibleCount((prev) => ({ ...prev, [activeTab]: PAGE_SIZE }));
     }, [activeTab]);
@@ -117,8 +114,8 @@ export default function SellerOrderCard() {
     const hasMore = visibleCount[activeTab] < filteredOrders.length;
     const remaining = filteredOrders.length - visibleCount[activeTab];
 
-    const counts: Record<Tab, number> = {
-        orders: filterOrdersByTab("orders", orders, sellerProfile._id).length,
+    const counts: Record<SellerTab, number> = {
+        "pending orders": filterOrdersByTab("pending orders", orders, sellerProfile._id).length,
         active: filterOrdersByTab("active", orders, sellerProfile._id).length,
         delivered: filterOrdersByTab("delivered", orders, sellerProfile._id).length,
     };
@@ -158,7 +155,7 @@ export default function SellerOrderCard() {
             {/* ── Orders ───────────────────────────────── */}
             {filteredOrders.length === 0 ? (
                 <p className="text-center text-[var(--sec-clr)] sec-ff py-10">
-                    {getEmptyMessageByTab(activeTab)}
+                    {getSellerEmptyMessage(activeTab)}
                 </p>
             ) : (
                 <div className="flex flex-col gap-6">
@@ -243,7 +240,7 @@ export default function SellerOrderCard() {
                                     <p className="text-sm font-bold text-[var(--bg-clr)] sec-ff">
                                         Total: ₦{total.toLocaleString()}
                                     </p>
-                                    {activeTab === "orders" && (
+                                    {activeTab === "pending orders" && (
                                         <ShipButton
                                             orderId={orderId}
                                             canShip={canShip}

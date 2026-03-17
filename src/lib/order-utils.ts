@@ -24,8 +24,11 @@ export function checkCanShipOrder(order: Order, sellerId: string): boolean {
   );
 }
 
+// ── Seller tabs ──────────────────────────────────────
+export type SellerTab = "pending orders" | "active" | "delivered";
+
 export const filterOrdersByTab = (
-  ordersTab: "orders" | "active" | "delivered",
+  ordersTab: SellerTab,
   orders: Order[],
   currentUserId?: string | null
 ): Order[] => {
@@ -43,7 +46,7 @@ export const filterOrdersByTab = (
     const status = normalizeStatus(order.orderStatus);
 
     switch (ordersTab) {
-      case "orders":
+      case "pending orders":
         return status === "confirmed";
       case "active":
         return (
@@ -59,13 +62,25 @@ export const filterOrdersByTab = (
   });
 };
 
-export const getEmptyMessageByTab = (
-  ordersTab: "orders" | "active" | "delivered"
-): string => {
-  const messages: Record<typeof ordersTab, string> = {
-    orders: "No confirmed orders yet.",
+export const getSellerEmptyMessage = (tab: SellerTab): string => {
+  const messages: Record<SellerTab, string> = {
+    "pending orders": "No confirmed orders yet.",
     active: "No active orders.",
     delivered: "No delivered orders yet.",
   };
-  return messages[ordersTab];
+  return messages[tab];
 };
+
+// ── Buyer tabs ───────────────────────────────────────
+export type BuyerTab = "pending orders" | "active" | "passive";
+
+export const getBuyerEmptyMessage = (tab: BuyerTab): string => {
+  const messages: Record<BuyerTab, string> = {
+    "pending orders": "You have no pending orders.",
+    active: "You have no active orders.",
+    passive: "You have no delivered orders.",
+  };
+  return messages[tab];
+};
+
+export const getEmptyMessageByTab = getBuyerEmptyMessage;
