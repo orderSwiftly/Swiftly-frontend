@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import { getClaimedOrders, getCollectedOrders, GetShippedOrder } from "@/lib/rider-order";
+import { getActiveOrders, GetShippedOrder } from "@/lib/rider-order";
 import { Loader2, AlertCircle, Bike } from "lucide-react";
 import CollectOrderButton from "@/components/riders/collect-order";
 import DeliverOrderButton from "@/components/riders/deliver-order";
@@ -135,11 +135,11 @@ export default function ActiveOrders() {
     const [error, setError] = useState<string | null>(null);
 
     useEffect(() => {
-        Promise.all([getClaimedOrders(), getCollectedOrders()])
-            .then(([claimed, collected]) => {
+        Promise.all([getClaimedOrders(), getActiveOrders()])
+            .then(([claimed, active]) => {
                 const merged: ActiveOrder[] = [
                     ...claimed.map((o) => ({ ...o, kind: "claimed" as const })),
-                    ...collected.map((o) => ({ ...o, kind: "collected" as const })),
+                    ...active.map((o) => ({ ...o, kind: "active" as const })),
                 ];
                 setOrders(merged);
             })

@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import getShippedOrders, { GetShippedOrder, claimOrder } from "@/lib/rider-order";
+import getShippedOrders, { GetShippedOrder, requestOrder } from "@/lib/rider-order";
 import { Loader2, AlertCircle, BadgeCheck, ShoppingBag } from "lucide-react";
 import CollectOrderButton from "@/components/riders/collect-order";
 
@@ -16,7 +16,6 @@ function formatPrice(price: number) {
 function OrderCard({
     order,
     onClaimed,
-    onDeclined,
 }: {
     order: GetShippedOrder;
     onClaimed: (id: string) => void;
@@ -30,7 +29,7 @@ function OrderCard({
         setClaiming(true);
         setError(null);
         try {
-            await claimOrder(order._id);
+            await requestOrder(order._id);
             setClaimed(true);
         } catch (e: unknown) {
             setError(e instanceof Error ? e.message : "Failed to claim order");

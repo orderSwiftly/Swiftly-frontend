@@ -1,3 +1,5 @@
+// src/lib/rider-order.ts
+
 import axios, { AxiosError } from "axios";
 
 const apiUrl = process.env.NEXT_PUBLIC_API_URL;
@@ -23,18 +25,19 @@ export interface GetShippedOrder {
     total: number;
   };
   shippingAddress: {
-    // official
-    room: string;
-    building: string;
+    // official (on-campus)
+    room?: string;
+    building?: string;
     // standard
-    addressLine1: string;
+    addressLine1?: string;
     city: string;
     state: string;
     postalCode: string;
     country: string;
   };
-  orderStatus: string;
+  orderStatus: "shipped" | "awaiting_verification" | "verified" | "collected" | "delivered";
   paymentStatus: string;
+  escrowStatus: "held" | "released" | "refunded";
   createdAt: string;
   paystackReference: string;
   confirmed: boolean;
@@ -42,14 +45,43 @@ export interface GetShippedOrder {
   paymentConfirmedAt: string;
   seller_name: string;
   shippedAt: string;
+  // Rider assignment
+  assigned_rider_id?: string;
+  // Lifecycle timestamps
+  requested_at?: string;
+  verified_at?: string;
+  collected_at?: string;
+  delivered_at?: string;
 }
+
+export interface RiderProfile {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  photo: string;
+  isAvailable: boolean;
+  createdAt: string;
+}
+
+export interface PaginatedResponse<T> {
+  data: T[];
+  meta: {
+    total: number;
+    totalPages: number;
+    page: number;
+    limit: number;
+  };
+}
+
+// ─── Browse available orders ───────────────────────────────────────────────
 
 export default async function getShippedOrders(): Promise<GetShippedOrder[]> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
-    const response = await axios.get(`${apiUrl}/api/v1/rider/shipped-orders`, {
+    const response = await axios.get(`${apiUrl}/api/v1/rider/orders/shipped`, {
       headers: { Authorization: `Bearer ${token}` },
     });
 
@@ -62,24 +94,47 @@ export default async function getShippedOrders(): Promise<GetShippedOrder[]> {
   }
 }
 
-export async function claimOrder(orderId: string): Promise<void> {
+// ─── Request pickup (replaces claim) ──────────────────────────────────────
+
+export async function requestOrder(orderId: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
     await axios.post(
-      `${apiUrl}/api/v1/rider/claim/${orderId}`,
+      `${apiUrl}/api/v1/rider/request/${orderId}`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
-    console.error("Claim order error response:", err.response?.data);
     throw new Error(
-      err.response?.data?.message || err.message || "Failed to claim order"
+      err.response?.data?.message || err.message || "Failed to request order"
     );
   }
 }
+
+// ─── Active orders (awaiting_verification → verified → collected) ──────────
+
+export async function getActiveOrders(): Promise<GetShippedOrder[]> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${apiUrl}/api/v1/rider/orders/active`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data.data as GetShippedOrder[];
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch active orders"
+    );
+  }
+}
+
+// ─── Collect from seller ───────────────────────────────────────────────────
 
 export async function collectOrder(orderId: string): Promise<void> {
   try {
@@ -99,6 +154,8 @@ export async function collectOrder(orderId: string): Promise<void> {
   }
 }
 
+// ─── Deliver to buyer ──────────────────────────────────────────────────────
+
 export async function deliverOrder(orderId: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
@@ -117,56 +174,87 @@ export async function deliverOrder(orderId: string): Promise<void> {
   }
 }
 
-export async function getClaimedOrders(): Promise<GetShippedOrder[]> {
+// ─── Buyer: accept / reject rider (called from buyer side) ───────────────
+
+export async function acceptRider(orderId: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
-    const response = await axios.get(`${apiUrl}/api/v1/rider/claimed-orders`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    return response.data.data.orders as GetShippedOrder[];
+    await axios.post(
+      `${apiUrl}/api/v1/order/${orderId}/rider/accept`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
-      err.response?.data?.message || err.message || "Failed to fetch claimed orders"
+      err.response?.data?.message || err.message || "Failed to accept rider"
     );
   }
 }
 
-export async function getCollectedOrders(): Promise<GetShippedOrder[]> {
+export async function rejectRider(orderId: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
-    const response = await axios.get(`${apiUrl}/api/v1/rider/collected-orders`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
-
-    return response.data.data.orders as GetShippedOrder[];
+    await axios.post(
+      `${apiUrl}/api/v1/order/${orderId}/rider/reject`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
-      err.response?.data?.message || err.message || "Failed to fetch collected orders"
+      err.response?.data?.message || err.message || "Failed to reject rider"
     );
   }
 }
 
-export async function getDeliveredOrders(): Promise<GetShippedOrder[]> {
+// ─── Delivered orders (paginated) ─────────────────────────────────────────
+
+export async function getDeliveredOrders(
+  page = 1,
+  limit = 20
+): Promise<PaginatedResponse<GetShippedOrder>> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
-    const response = await axios.get(`${apiUrl}/api/v1/rider/delivered-orders`, {
-      headers: { Authorization: `Bearer ${token}` },
-    });
+    const response = await axios.get(
+      `${apiUrl}/api/v1/rider/orders/delivered?page=${page}&limit=${limit}`,
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
 
-    return response.data.data.orders as GetShippedOrder[];
+    return {
+      data: response.data.data as GetShippedOrder[],
+      meta: response.data.meta,
+    };
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
-      err.response?.data?.message || err.message || "Failed to fetch completed orders"
+      err.response?.data?.message || err.message || "Failed to fetch delivered orders"
+    );
+  }
+}
+
+// ─── Rider profile ─────────────────────────────────────────────────────────
+
+export async function getRiderProfile(): Promise<RiderProfile> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    const response = await axios.get(`${apiUrl}/api/v1/rider`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+
+    return response.data.data as RiderProfile;
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to fetch rider profile"
     );
   }
 }

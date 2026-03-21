@@ -1,3 +1,8 @@
+/* instead of claiming an order directly, 
+ riders now send a request to claim, which the system processes asynchronously. 
+ This allows for better handling of edge cases 
+ like multiple riders trying to claim the same order at once. */
+
 // src/components/riders/claimed-orders.tsx
 
 "use client";
