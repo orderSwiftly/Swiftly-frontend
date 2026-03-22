@@ -125,7 +125,8 @@ export async function getActiveOrders(): Promise<GetShippedOrder[]> {
       headers: { Authorization: `Bearer ${token}` },
     });
 
-    return response.data.data as GetShippedOrder[];
+    const payload = response.data.data;
+    return (Array.isArray(payload) ? payload : payload.orders ?? []) as GetShippedOrder[];
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
@@ -216,7 +217,7 @@ export async function rejectRider(orderId: string): Promise<void> {
 
 export async function getDeliveredOrders(
   page = 1,
-  limit = 20
+  limit = 10
 ): Promise<PaginatedResponse<GetShippedOrder>> {
   try {
     const token = localStorage.getItem("token");
@@ -227,10 +228,16 @@ export async function getDeliveredOrders(
       { headers: { Authorization: `Bearer ${token}` } }
     );
 
-    return {
-      data: response.data.data as GetShippedOrder[],
-      meta: response.data.meta,
+    const payload = response.data.data;
+    const orders = Array.isArray(payload) ? payload : (payload.orders ?? []);
+    const meta = payload.meta ?? response.data.meta ?? {
+      total: orders.length,
+      totalPages: 1,
+      page,
+      limit,
     };
+
+    return { data: orders as GetShippedOrder[], meta };
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(

@@ -2,7 +2,7 @@
 "use client";
 
 import { useState } from "react";
-import NearestOrders from "@/components/riders/nearest-orders";
+import ShippedOrders from "@/components/riders/shipped-orders";
 import ActiveOrders from "@/components/riders/active-orders";
 import DeliveredOrders from "@/components/riders/delivered-orders";
 
@@ -29,7 +29,7 @@ export default function DeliveryPage() {
                 ))}
             </div>
 
-            {activeTab === "pending" && <NearestOrders />}
+            {activeTab === "pending" && <ShippedOrders />}
             {activeTab === "active" && <ActiveOrders />}
             {activeTab === "delivered" && <DeliveredOrders />}
         </main>

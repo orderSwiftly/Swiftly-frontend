@@ -1,3 +1,5 @@
+// src/types/order.ts
+
 export interface OrderItem {
   productId: string;
   title: string;
@@ -30,14 +32,38 @@ export interface OrderPricing {
   total: number;
 }
 
+export interface RiderInfo {
+  _id: string;
+  name: string;
+  email: string;
+  phone: string;
+  photo: string;
+}
+
 export interface Order {
   _id: string;
   items: OrderItem[];
   pricing?: OrderPricing;
   totalPrice?: number;
-  orderStatus: string;
+  orderStatus:
+    | "pending"
+    | "confirmed"
+    | "shipped"
+    | "awaiting_verification"
+    | "verified"
+    | "collected"
+    | "delivered"
+    | "cancelled"
+    | "returned"
+    | string;
   paymentStatus: string;
   createdAt: string;
   shippingAddress: ShippingAddress;
   canShip?: boolean;
+  deliveryCode?: number;
+  assigned_rider_id?: string;
+  requested_at?: string;
+  verified_at?: string;
+  collected_at?: string;
+  delivered_at?: string;
 }

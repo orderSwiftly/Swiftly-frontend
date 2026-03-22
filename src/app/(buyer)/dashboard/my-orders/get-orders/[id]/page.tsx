@@ -1,12 +1,14 @@
 // src/app/(buyer)/dashboard/my-orders/get-orders/[id]/page.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
-import { useParams } from 'next/navigation';
+import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, MapPin, Package, CreditCard, Tag, Clock } from 'lucide-react';
+import { ArrowLeft, X, MapPin, Package, CreditCard, Tag, Clock, ShieldAlert } from 'lucide-react';
 import ConfirmDelivery from './confirm-delivery';
+import VerifyRider from '../../components/verify-rider';
 
 interface OrderItem {
   productId: string;
@@ -44,9 +46,10 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; border: string 
   pending: { bg: 'rgba(234,179,8,0.12)', color: '#b45309', border: 'rgba(234,179,8,0.35)' },
   confirmed: { bg: 'rgba(59,130,246,0.10)', color: '#1d4ed8', border: 'rgba(59,130,246,0.3)' },
   shipped: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
+  awaiting_verification: { bg: 'rgba(245,158,11,0.10)', color: '#b45309', border: 'rgba(245,158,11,0.3)' },
+  verified: { bg: 'rgba(34,197,94,0.10)', color: '#166534', border: 'rgba(34,197,94,0.3)' },
   delivered: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
   collected: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
-  cancelled: { bg: 'rgba(239,68,68,0.10)', color: '#b91c1c', border: 'rgba(239,68,68,0.3)' },
 };
 
 const imgUrl = (url: string) => url.replace('/upload/', '/upload/q_auto,f_auto,w_300/');
@@ -56,24 +59,27 @@ export default function GetOrderById() {
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const { id } = useParams();
+  const router = useRouter();
+
+  const fetchOrder = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const res = await fetch(`${api_url}/api/v1/order/get-order/${id}`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      setOrder(res.ok && data.status === 'success' ? data.data.order : null);
+    } catch {
+      setOrder(null);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    const load = async () => {
-      try {
-        const token = localStorage.getItem('token');
-        const api_url = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${api_url}/api/v1/order/get-order/${id}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
-        const data = await res.json();
-        setOrder(res.ok && data.status === 'success' ? data.data.order : null);
-      } catch {
-        setOrder(null);
-      } finally {
-        setLoading(false);
-      }
-    };
-    load();
+    fetchOrder();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) return (
@@ -129,7 +135,7 @@ export default function GetOrderById() {
             className="text-xs font-semibold px-3 py-1.5 rounded-full border capitalize sec-ff shrink-0"
             style={{ background: ss.bg, color: ss.color, borderColor: ss.border }}
           >
-            {order.orderStatus}
+            {order.orderStatus.replace(/_/g, ' ')}
           </span>
         </div>
 
@@ -145,6 +151,28 @@ export default function GetOrderById() {
             </div>
           ))}
         </div>
+
+        {/* ── Verify Rider ── */}
+        {order.orderStatus === 'awaiting_verification' && (
+          <div style={{ ...card, borderColor: 'rgba(245,158,11,0.25)', backgroundColor: 'rgba(245,158,11,0.04)' }}
+            className="space-y-3 transition-shadow duration-300">
+            <div className="flex items-center gap-2">
+              <ShieldAlert size={15} className="text-amber-500 shrink-0" />
+              <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff">Rider Verification Required</h2>
+            </div>
+            <VerifyRider
+              orderId={order._id}
+              onAccepted={() => {
+                // Refresh order so status updates to verified
+                fetchOrder();
+              }}
+              onRejected={() => {
+                // Order goes back to shipped — navigate away
+                router.push('/dashboard/my-orders');
+              }}
+            />
+          </div>
+        )}
 
         {/* Items */}
         <div className="space-y-3">

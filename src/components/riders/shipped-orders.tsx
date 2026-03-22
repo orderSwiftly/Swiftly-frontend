@@ -1,9 +1,11 @@
+// src/components/riders/shipped-orders.tsx
+
 "use client";
 
 import { useEffect, useState, useCallback } from "react";
-import getShippedOrders, { GetShippedOrder, requestOrder } from "@/lib/rider-order";
+import getShippedOrders, { GetShippedOrder } from "@/lib/rider-order";
 import { Loader2, AlertCircle, BadgeCheck, ShoppingBag } from "lucide-react";
-import CollectOrderButton from "@/components/riders/collect-order";
+import RequestOrderButton from "@/components/riders/request-order";
 
 function formatPrice(price: number) {
     return new Intl.NumberFormat("en-NG", {
@@ -15,34 +17,23 @@ function formatPrice(price: number) {
 
 function OrderCard({
     order,
-    onClaimed,
+    onRequested,
 }: {
     order: GetShippedOrder;
-    onClaimed: (id: string) => void;
-    onDeclined: (id: string) => void;
+    onRequested: (id: string) => void;
 }) {
-    const [claiming, setClaiming] = useState(false);
     const [error, setError] = useState<string | null>(null);
-    const [claimed, setClaimed] = useState(false);
-
-    const handleAccept = async () => {
-        setClaiming(true);
-        setError(null);
-        try {
-            await requestOrder(order._id);
-            setClaimed(true);
-        } catch (e: unknown) {
-            setError(e instanceof Error ? e.message : "Failed to claim order");
-        } finally {
-            setClaiming(false);
-        }
-    };
 
     const firstItem = order.items[0];
     const extraItems = order.items.length - 1;
 
+    const deliveryAddress =
+        order.shippingAddress.building && order.shippingAddress.room
+            ? `${order.shippingAddress.building}, Room ${order.shippingAddress.room}`
+            : order.shippingAddress.addressLine1 || order.shippingAddress.city;
+
     return (
-        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm mb-10">
+        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm">
 
             {/* Top: image + order info */}
             <div className="flex gap-3 p-4">
@@ -94,7 +85,7 @@ function OrderCard({
                     <span className="text-xs text-[#c0c0c0] shrink-0">Deliver To</span>
                     <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
                     <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[140px] truncate text-right">
-                        {order.shippingAddress.building || order.shippingAddress.room}
+                        {deliveryAddress}
                     </span>
                 </div>
 
@@ -111,31 +102,18 @@ function OrderCard({
                 <p className="px-4 pb-2 text-xs text-red-500 text-center">{error}</p>
             )}
 
-            {claimed ? (
-                <div className="px-4 pb-4">
-                    <CollectOrderButton
-                        orderId={order._id}
-                        onSuccess={() => onClaimed(order._id)}
-                        onError={(msg) => setError(msg)}
-                    />
-                </div>
-            ) : (
-                <div className="flex items-center gap-3 px-4 pb-4">
-                    <button
-                        onClick={handleAccept}
-                        disabled={claiming}
-                        className="flex items-center justify-center gap-2 py-3 rounded-xl bg-[#006B4F] hover:bg-[#005540] disabled:opacity-60 text-[var(--txt-clr)] text-sm font-semibold transition-colors w-full cursor-pointer"
-                    >
-                        {claiming ? <Loader2 size={14} className="animate-spin" /> : null}
-                        Accept
-                    </button>
-                </div>
-            )}
+            <div className="px-4 pb-4">
+                <RequestOrderButton
+                    orderId={order._id}
+                    onSuccess={() => onRequested(order._id)}
+                    onError={(msg) => setError(msg)}
+                />
+            </div>
         </div>
     );
 }
 
-export default function NearestOrders() {
+export default function ShippedOrders() {
     const [orders, setOrders] = useState<GetShippedOrder[]>([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState<string | null>(null);
@@ -189,8 +167,7 @@ export default function NearestOrders() {
                     <OrderCard
                         key={order._id}
                         order={order}
-                        onClaimed={removeOrder}
-                        onDeclined={removeOrder}
+                        onRequested={removeOrder}
                     />
                 ))}
             </div>

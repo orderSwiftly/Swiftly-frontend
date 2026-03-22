@@ -38,7 +38,9 @@ export default function GetOrders({
         return orders.filter(
           (o) =>
             o.orderStatus === "confirmed" ||
-            o.orderStatus === "shipped"
+            o.orderStatus === "shipped" ||
+            o.orderStatus === "awaiting_verification" ||
+            o.orderStatus === "verified"
         );
       case "passive":
         return orders.filter(

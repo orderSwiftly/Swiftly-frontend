@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/my-orders/components/order-card.tsx
+
 'use client';
 
 import Image from 'next/image';

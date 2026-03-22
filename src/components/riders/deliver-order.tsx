@@ -4,7 +4,7 @@
 
 import { deliverOrder } from "@/lib/rider-order";
 import { useState } from "react";
-import { Loader2, CheckCircle2 } from "lucide-react";
+import { Loader2, Bike } from "lucide-react";
 import PulseLoader from "../pulse-loader";
 
 export default function DeliverOrderButton({
@@ -34,13 +34,9 @@ export default function DeliverOrderButton({
         <button
             onClick={handleDeliver}
             disabled={loading}
-            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[#006B4F] hover:bg-[#005540] disabled:opacity-60 text-white text-sm font-semibold transition-colors cursor-pointer"
+            className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--bg-clr)] hover:bg-[#8acc2a] disabled:opacity-60 text-[var(--txt-clr)] text-sm font-semibold transition-colors cursor-pointer"
         >
-            {loading ? (
-                <Loader2 size={14} className="animate-spin" />
-            ) : (
-                <CheckCircle2 size={14} />
-            )}
+            {loading ? <Loader2 size={14} className="animate-spin" /> : <Bike size={14} />}
             {loading ? <PulseLoader /> : "Mark as Delivered"}
         </button>
     );
