@@ -2,9 +2,8 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { Toaster } from 'react-hot-toast';
-import PushNotification from "@/components/PushNotification";
 import AuthProvider from "@/components/providers/AuthProvider";
-import AppShell from "@/components/layout/app-shell";
+import ServiceWorker from "@/components/ServiceWorker";
 
 export const metadata: Metadata = {
   title: {
@@ -26,8 +25,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <AuthProvider>
           {children}
           <Toaster position="top-center" />
-          <PushNotification />
         </AuthProvider>
+        <ServiceWorker />
       </body>
     </html>
   );

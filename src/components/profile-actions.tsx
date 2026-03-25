@@ -1,4 +1,4 @@
-import { ShoppingBag, Signpost, Heart, ChevronRight, Wallet } from "lucide-react";
+import { ShoppingBag, Signpost, ChevronRight, Wallet } from "lucide-react";
 import Link from "next/link";
 
 const actions = [
