@@ -1,3 +1,5 @@
+// src/app/(auth)/signup/sign-up.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -7,6 +9,7 @@ import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import Image from 'next/image';
+import { signupUser } from '@/lib/auth';
 
 type Campus = {
   id: number;
@@ -26,8 +29,6 @@ export default function SignupComp() {
   const [campus, setCampus] = useState<Campus | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
-  const api_url = process.env.NEXT_PUBLIC_API_URL;
-
   useEffect(() => {
     const storedCampus = localStorage.getItem('selected-campus');
     if (storedCampus) {
@@ -46,34 +47,16 @@ export default function SignupComp() {
     setLoading(true);
 
     try {
-      const res = await fetch(`${api_url}/api/v1/auth/user/signup`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ fullname, email, password }),
-      });
-
-      const data = await res.json();
-
-      if (!res.ok) {
-        throw new Error(data?.message ?? 'Something went wrong');
-      }
+      await signupUser({ fullname, email, password });
 
       toast.success('Signup successful! Redirecting to login...');
-      setLoading(false); // ✅ stop loading before redirect
+      setLoading(false);
       router.push('/login');
-
-    } catch (err: unknown) {
-      if (err instanceof Error) {
-        toast.error(err.message);
-      } else {
-        toast.error('Something went wrong');
-      }
+    } catch (err) {
+      const message = err instanceof Error ? err.message : 'Something went wrong';
+      toast.error(message);
       setLoading(false);
     }
-  };
-
-  const handleLoginRedirect = () => {
-    router.push('/login');
   };
 
   const inputBase =
@@ -148,10 +131,11 @@ export default function SignupComp() {
                 placeholder="Re-enter your password"
                 value={confirmPassword}
                 onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`${inputBase} pr-10 ${confirmPassword && password !== confirmPassword
+                className={`${inputBase} pr-10 ${
+                  confirmPassword && password !== confirmPassword
                     ? 'border-red-500 focus:ring-red-500'
                     : ''
-                  }`}
+                }`}
                 required
               />
               <button
@@ -181,7 +165,6 @@ export default function SignupComp() {
             />
           </div>
 
-          {/* Terms checkbox */}
           <div className="flex items-center gap-2">
             <input
               type="checkbox"
@@ -210,7 +193,7 @@ export default function SignupComp() {
         <p className="text-sm text-center m-3 text-[var(--pry-clr)] sec-ff">
           Already have an account?{' '}
           <button
-            onClick={handleLoginRedirect}
+            onClick={() => router.push('/login')}
             className="text-[var(--acc-clr)] underline font-medium cursor-pointer"
           >
             Login here

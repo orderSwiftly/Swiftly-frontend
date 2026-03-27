@@ -10,6 +10,7 @@ import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import { useUserStore } from '@/stores/userStore';
 import Link from 'next/link';
+import { loginUser } from '@/lib/auth';
 
 export default function Login() {
   const router = useRouter();
@@ -18,57 +19,32 @@ export default function Login() {
   const [showPass, setShowPass] = useState(false);
   const [loading, setLoading] = useState(false);
 
-const { setUser } = useUserStore();
+  const { setUser } = useUserStore();
 
-  const handleLogin = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setLoading(true);
+const handleLogin = async (e: React.FormEvent) => {
+  e.preventDefault();
+  setLoading(true);
 
-    try {
-      // 1️⃣ Login API
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/auth/user/login`, {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ email, password }),
-      });
+  try {
+    const { token, user } = await loginUser({ email, password });
 
-      const data = await res.json();
+    localStorage.setItem('token', token);
+    setUser(user, token); // ✅ pass user, not UserRole
 
-      if (!res.ok || data.status !== 'success') {
-        throw new Error(data.message || 'Login failed');
-      }
-
-      const token = data.token || data.data?.token || data.data?.user?.token;
-      if (!token) throw new Error('No token received from server');
-
-      const userObj = { ...data.data.user, id: data.data.user._id };
-      delete userObj.token;
-
-      if (userObj.name && !userObj.fullname) {
-        userObj.fullname = userObj.name;
-        delete userObj.name;
-      }
-
-      localStorage.setItem('token', token);
-      setUser(userObj, token);
-
-      // 2️⃣ Navigate immediately
-      router.push('/role-gate');
-
-    } catch (err) {
-      const message = err instanceof Error ? err.message : 'Login failed';
-      toast.error(message);
-    } finally {
-      setLoading(false);
-    }
-  };
+    router.push('/role-gate');
+  } catch (err) {
+    const message = err instanceof Error ? err.message : 'Login failed';
+    toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
   const inputBase =
     'w-full p-3 rounded-md text-[var(--pry-clr)] ' +
     'placeholder:text-[var(--sec-clr)] outline-none ' +
     'border border-[var(--acc-clr)] ' +
     'focus:border-[var(--acc-clr)] focus:ring-1 focus:ring-[var(--acc-clr)]';
-
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] px-4">
@@ -139,8 +115,6 @@ const { setUser } = useUserStore();
           </a>
         </p>
       </div>
-
-      
     </main>
   );
 }
