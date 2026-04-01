@@ -1,17 +1,19 @@
-// src/components/profile-preference.tsx
-
 "use client";
 
-import { Bell, HelpCircle, ChevronRight, LogOut } from "lucide-react";
+import { Bell, HelpCircle, Copy, ChevronRight, LogOut } from "lucide-react";
 import { useState } from "react";
 import LogoutModal from "./logout-modal";
 import { useUserStore } from "@/stores/userStore";
 import Link from "next/link";
-import { NotificationToggle } from "./notification-toggle";
 
 export default function ProfilePreference() {
-  const { logout } = useUserStore();
+  const { logout, user } = useUserStore();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+
+  const handleLogoutClick = () => {
+    setShowLogoutModal(true);
+  };
 
   return (
     <>
@@ -31,8 +33,18 @@ export default function ProfilePreference() {
               </span>
             </div>
 
-            {/* ✅ Replaces the old local-state-only button */}
-            <NotificationToggle />
+            <button
+              onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+              className={`relative w-12 h-6 rounded-full transition-colors ${
+                notificationsEnabled ? "bg-green-600" : "bg-gray-300"
+              }`}
+            >
+              <span
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                  notificationsEnabled ? "translate-x-6" : "translate-x-0"
+                }`}
+              />
+            </button>
           </div>
 
           <Link
@@ -47,11 +59,12 @@ export default function ProfilePreference() {
                 Contact support
               </span>
             </div>
+
             <ChevronRight className="w-4 h-4 text-gray-400" />
           </Link>
 
           <button
-            onClick={() => setShowLogoutModal(true)}
+            onClick={handleLogoutClick}
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-3">
@@ -60,6 +73,7 @@ export default function ProfilePreference() {
               </div>
               <span className="text-sm font-medium text-gray-800">Log Out</span>
             </div>
+
             <ChevronRight className="w-4 h-4 text-gray-400" />
           </button>
         </div>

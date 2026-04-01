@@ -19,7 +19,7 @@ export interface User {
   // Seller-specific
   businessName?: string;
   logo?: string;
-  institution?: unknown;
+  institution?: any;
 
   // Rider-specific (API returns "name" not "fullname")
   name?: string;
