@@ -12,7 +12,7 @@ export default function OrderProgress({ filled }: Readonly<OrderProgressProps>) 
             {Array.from({ length: TOTAL_DOTS }).map((_, i) => (
                 <span
                     key={i}
-                    className={`h-3.5 flex-1 rounded-full transition-colors ${i < filled ? "bg-green-500" : "bg-gray-400/40"
+                    className={`h-3.5 flex-1 rounded-full transition-colors ${i < filled ? "bg-[var(--prof-clr)]" : "bg-gray-400/40"
                         }`}
                 />
             ))}

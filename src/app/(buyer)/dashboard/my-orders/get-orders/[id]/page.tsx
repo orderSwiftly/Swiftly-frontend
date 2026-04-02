@@ -6,9 +6,11 @@ import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, MapPin, Package, CreditCard, Tag, Clock, ShieldAlert } from 'lucide-react';
-import ConfirmDelivery from './confirm-delivery';
+import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert } from 'lucide-react';
+// import ConfirmDelivery from './confirm-delivery';
 import VerifyRider from '../../components/verify-rider';
+// import OrderProgress from '../../components/order-progress';
+// import { ORDER_PROGRESS_MAP, ORDER_STATUS_LABEL } from '@/lib/order-progress';
 
 interface OrderItem {
   productId: string;
@@ -34,14 +36,6 @@ interface Order {
   deliveryCode?: number;
 }
 
-const card: React.CSSProperties = {
-  backgroundColor: '#f6faf3',
-  border: '1px solid rgba(0,107,79,0.1)',
-  boxShadow: '0 2px 16px rgba(0,107,79,0.07)',
-  borderRadius: '16px',
-  padding: '16px',
-};
-
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
   pending: { bg: 'rgba(234,179,8,0.12)', color: '#b45309', border: 'rgba(234,179,8,0.35)' },
   confirmed: { bg: 'rgba(59,130,246,0.10)', color: '#1d4ed8', border: 'rgba(59,130,246,0.3)' },
@@ -53,6 +47,14 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; border: string 
 };
 
 const imgUrl = (url: string) => url.replace('/upload/', '/upload/q_auto,f_auto,w_300/');
+
+const card: React.CSSProperties = {
+  backgroundColor: '#f6faf3',
+  border: '1px solid rgba(0,107,79,0.1)',
+  boxShadow: '0 2px 16px rgba(0,107,79,0.07)',
+  borderRadius: '16px',
+  padding: '16px',
+};
 
 export default function GetOrderById() {
   const [order, setOrder] = useState<Order | null>(null);
@@ -79,7 +81,7 @@ export default function GetOrderById() {
 
   useEffect(() => {
     fetchOrder();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
   if (loading) return (
@@ -108,68 +110,81 @@ export default function GetOrderById() {
     ? [addr.building, addr.room].filter(Boolean).join(', ')
     : [addr.addressLine1, addr.city, addr.state].filter(Boolean).join(', ') || 'N/A';
 
+  // const progressStep = ORDER_PROGRESS_MAP[order.orderStatus] ?? -1;
+  // const statusLabel = ORDER_STATUS_LABEL[order.orderStatus] ?? `Your order is ${order.orderStatus.replace(/_/g, ' ')}`;
+
   const meta = [
     { icon: Clock, label: 'Placed', value: new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) },
     { icon: CreditCard, label: 'Payment', value: order.paymentStatus },
-    { icon: Tag, label: 'Delivery Code', value: order.deliveryCode ? String(order.deliveryCode) : '—' },
+    // { icon: Tag, label: 'Delivery Code', value: order.deliveryCode ? String(order.deliveryCode) : '—' },
   ];
 
   return (
     <div className="min-h-screen bg-[var(--txt-clr)] pb-24">
-      <div className="max-w-5xl px-4 pt-6 space-y-5">
+      <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 space-y-5">
 
-        {/* Back + title */}
-        <Link href="/dashboard/my-orders"
+        {/* Back */}
+        <Link
+          href="/dashboard/my-orders"
           className="inline-flex items-center gap-2 text-[var(--bg-clr)] hover:text-[var(--acc-clr)] transition-colors sec-ff text-sm group"
         >
           <ArrowLeft size={15} className="transition-transform duration-150 group-hover:-translate-x-1" />
           Back to Orders
         </Link>
 
+        {/* Title + badge */}
         <div className="flex items-start justify-between gap-3">
           <div>
-            <h1 className="text-xl sm:text-2xl font-bold text-[var(--pry-clr)] pry-ff">Order Details</h1>
-            <p className="text-sm text-[var(--bg-clr)] sec-ff mt-0.5">{shortId}</p>
+            <h1 className="text-lg sm:text-2xl font-bold text-[var(--pry-clr)] pry-ff">Order Details</h1>
+            <p className="text-xs sm:text-sm text-[var(--bg-clr)] sec-ff mt-0.5">{shortId}</p>
           </div>
           <span
-            className="text-xs font-semibold px-3 py-1.5 rounded-full border capitalize sec-ff shrink-0"
+            className="text-xs font-semibold px-2.5 py-1 sm:px-3 sm:py-1.5 rounded-full border capitalize sec-ff shrink-0"
             style={{ background: ss.bg, color: ss.color, borderColor: ss.border }}
           >
             {order.orderStatus.replace(/_/g, ' ')}
           </span>
         </div>
 
-        {/* Meta strip */}
-        <div className="grid grid-cols-3 gap-3">
+        {/* Progress */}
+        {/* <div style={card} className="space-y-2">
+          <OrderProgress filled={progressStep} />
+          <p className="text-xs sm:text-sm text-[var(--pry-clr)] sec-ff text-center opacity-80">
+            {statusLabel}
+          </p>
+        </div> */}
+
+        {/* Meta strip — stacks to 1 col on very small screens */}
+        <div className="grid grid-cols-2 gap-2 sm:gap-3">
           {meta.map(({ icon: Icon, label, value }) => (
-            <div key={label} style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
+            <div
+              key={label}
+              style={card}
+              className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]"
+            >
               <div className="flex items-center gap-1 mb-1">
                 <Icon size={12} className="text-[var(--bg-clr)] shrink-0" />
                 <span className="text-xs text-[var(--bg-clr)] sec-ff opacity-70 truncate">{label}</span>
               </div>
-              <p className="text-sm font-bold text-[var(--pry-clr)] sec-ff capitalize truncate">{value}</p>
+              <p className="text-xs sm:text-sm font-bold text-[var(--pry-clr)] sec-ff capitalize truncate">{value}</p>
             </div>
           ))}
         </div>
 
-        {/* ── Verify Rider ── */}
+        {/* Verify Rider */}
         {order.orderStatus === 'awaiting_verification' && (
-          <div style={{ ...card, borderColor: 'rgba(245,158,11,0.25)', backgroundColor: 'rgba(245,158,11,0.04)' }}
-            className="space-y-3 transition-shadow duration-300">
+          <div
+            style={{ ...card, borderColor: 'rgba(245,158,11,0.25)', backgroundColor: 'rgba(245,158,11,0.04)' }}
+            className="space-y-3"
+          >
             <div className="flex items-center gap-2">
               <ShieldAlert size={15} className="text-amber-500 shrink-0" />
               <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff">Rider Verification Required</h2>
             </div>
             <VerifyRider
               orderId={order._id}
-              onAccepted={() => {
-                // Refresh order so status updates to verified
-                fetchOrder();
-              }}
-              onRejected={() => {
-                // Order goes back to shipped — navigate away
-                router.push('/dashboard/my-orders');
-              }}
+              onAccepted={() => fetchOrder()}
+              onRejected={() => router.push('/dashboard/my-orders')}
             />
           </div>
         )}
@@ -180,31 +195,54 @@ export default function GetOrderById() {
             <Package size={15} className="text-[var(--bg-clr)]" /> Items
           </h2>
           {order.items.map((item, i) => (
-            <div key={i} style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
+            <div
+              key={i}
+              style={card}
+              className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]"
+            >
               <div className="flex gap-3">
+                {/* Images */}
                 <div className="flex gap-2 shrink-0">
                   {(item.productImg?.slice(0, 2) ?? []).map((img, idx) => (
-                    <div key={idx} className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0"
-                      style={{ border: '1px solid rgba(0,107,79,0.12)' }}>
+                    <div
+                      key={idx}
+                      className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl overflow-hidden shrink-0"
+                      style={{ border: '1px solid rgba(0,107,79,0.12)' }}
+                    >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={imgUrl(img)} alt={item.title} className="w-full h-full object-cover"
-                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }} />
+                      <img
+                        src={imgUrl(img)}
+                        alt={item.title}
+                        className="w-full h-full object-cover"
+                        onError={(e) => { (e.target as HTMLImageElement).style.display = 'none'; }}
+                      />
                     </div>
                   ))}
                   {!item.productImg?.length && (
-                    <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-xl shrink-0" style={{ backgroundColor: 'rgba(0,107,79,0.08)' }} />
+                    <div
+                      className="w-14 h-14 sm:w-20 sm:h-20 rounded-xl shrink-0"
+                      style={{ backgroundColor: 'rgba(0,107,79,0.08)' }}
+                    />
                   )}
                 </div>
-                <div className="flex-1 min-w-0">
-                  <p className="text-sm font-bold text-[var(--pry-clr)] pry-ff truncate">{item.title}</p>
-                  <p className="text-xs text-[var(--bg-clr)] sec-ff mt-0.5 opacity-80">₦{item.price.toLocaleString()} × {item.quantity}</p>
+
+                {/* Info */}
+                <div className="flex-1 min-w-0 flex flex-col justify-between">
+                  <p className="text-sm font-bold text-[var(--pry-clr)] pry-ff line-clamp-2">{item.title}</p>
+                  <p className="text-xs text-[var(--bg-clr)] sec-ff mt-0.5 opacity-80">
+                    ₦{item.price.toLocaleString()} × {item.quantity}
+                  </p>
                   {item.itemStatus && (
-                    <span className="inline-block mt-1.5 text-xs sec-ff capitalize px-2 py-0.5 rounded-full border font-medium"
-                      style={{ background: 'rgba(102,153,23,0.1)', color: 'var(--prof-clr)', borderColor: 'rgba(102,153,23,0.25)' }}>
+                    <span
+                      className="inline-block mt-1.5 text-xs sec-ff capitalize px-2 py-0.5 rounded-full border font-medium w-fit"
+                      style={{ background: 'rgba(102,153,23,0.1)', color: 'var(--prof-clr)', borderColor: 'rgba(102,153,23,0.25)' }}
+                    >
                       {item.itemStatus}
                     </span>
                   )}
                 </div>
+
+                {/* Line total */}
                 <p className="text-sm font-bold text-[var(--bg-clr)] sec-ff whitespace-nowrap self-start">
                   ₦{(item.price * item.quantity).toLocaleString()}
                 </p>
@@ -238,23 +276,32 @@ export default function GetOrderById() {
               </div>
             ))}
           </div>
-          <div className="mt-3 pt-3 flex justify-between items-center" style={{ borderTop: '1px solid rgba(0,107,79,0.12)' }}>
+          <div
+            className="mt-3 pt-3 flex justify-between items-center"
+            style={{ borderTop: '1px solid rgba(0,107,79,0.12)' }}
+          >
             <span className="font-bold text-[var(--pry-clr)] pry-ff">Total</span>
-            <span className="text-xl font-bold text-[var(--bg-clr)] sec-ff">₦{order.pricing.total.toLocaleString()}</span>
+            <span className="text-lg sm:text-xl font-bold text-[var(--bg-clr)] sec-ff">
+              ₦{order.pricing.total.toLocaleString()}
+            </span>
           </div>
         </div>
 
         {/* Actions */}
-        <div className="flex gap-3 justify-end">
-          {order.orderStatus === 'shipped' && (
-            <button onClick={() => setShowPopup(true)}
-              className="bg-[var(--bg-clr)] text-[var(--txt-clr)] font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 sec-ff cursor-pointer transition text-sm">
+        <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
+          {/* {order.orderStatus === 'shipped' && (
+            <button
+              onClick={() => setShowPopup(true)}
+              className="w-full sm:w-auto bg-[var(--bg-clr)] text-[var(--txt-clr)] font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 sec-ff cursor-pointer transition text-sm"
+            >
               Enter Delivery Code
             </button>
-          )}
+          )} */}
           {order.paymentStatus !== 'paid' && (
-            <Link href={`/order/${order._id}/payment`}
-              className="bg-[var(--acc-clr)] text-[var(--pry-clr)] font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 sec-ff cursor-pointer transition text-sm">
+            <Link
+              href={`/order/${order._id}/payment`}
+              className="w-full sm:w-auto text-center bg-[var(--acc-clr)] text-[var(--pry-clr)] font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 sec-ff cursor-pointer transition text-sm"
+            >
               Checkout
             </Link>
           )}
@@ -263,14 +310,21 @@ export default function GetOrderById() {
 
       {/* Popup */}
       {showPopup && (
-        <div className="fixed inset-0 backdrop-blur-sm flex items-center justify-center z-50 px-4"
-          style={{ backgroundColor: 'rgba(10,15,26,0.55)' }}>
-          <div className="w-full max-w-md relative" style={{ ...card, borderRadius: '20px', padding: '24px', boxShadow: '0 20px 60px rgba(0,107,79,0.18)' }}>
-            <button onClick={() => setShowPopup(false)}
-              className="absolute top-4 right-4 text-[var(--bg-clr)] hover:text-[var(--acc-clr)] transition-colors cursor-pointer opacity-70 hover:opacity-100">
+        <div
+          className="fixed inset-0 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 px-4 pb-4 sm:pb-0"
+          style={{ backgroundColor: 'rgba(10,15,26,0.55)' }}
+        >
+          <div
+            className="w-full max-w-md relative"
+            style={{ ...card, borderRadius: '20px', padding: '24px', boxShadow: '0 20px 60px rgba(0,107,79,0.18)' }}
+          >
+            <button
+              onClick={() => setShowPopup(false)}
+              className="absolute top-4 right-4 text-[var(--bg-clr)] hover:text-[var(--acc-clr)] transition-colors cursor-pointer opacity-70 hover:opacity-100"
+            >
               <X size={20} />
             </button>
-            <ConfirmDelivery />
+            {/* <ConfirmDelivery /> */}
           </div>
         </div>
       )}

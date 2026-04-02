@@ -8,7 +8,7 @@ import { ArrowRight, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Order } from '@/types/order';
 import OrderProgress from './order-progress';
-import { ORDER_PROGRESS_MAP } from '@/lib/order-progress';
+import { ORDER_PROGRESS_MAP, ORDER_STATUS_LABEL } from '@/lib/order-progress';
 
 interface Props {
   readonly order: Order;
@@ -38,11 +38,12 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
       {/* Header */}
       <div className="flex flex-col sm:flex-row justify-between gap-2">
         <p className="text-sm text-gray-400 sec-ff">
-          <span className="font-medium text-white">Order ID:</span> {shortId}
+          <span className="font-medium text-[var(--sec-clr)]">Order ID:</span> {shortId}
         </p>
-        <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize sec-ff">
-          {order.orderStatus.replace(/_/g, ' ')}
+        <p className="text-sm text-gray-400 sec-ff">
+          <span className="font-medium text-[var(--sec-clr)]">Placed on:</span> {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
+
       </div>
 
 
@@ -62,14 +63,14 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
               />
             </div>
             <div className="flex-1">
-              <p className="text-sm font-semibold text-[var(--txt-clr)] pry-ff line-clamp-1">
+              <p className="text-sm font-semibold text-[var(--pry-clr)] pry-ff line-clamp-1">
                 {item.title}
               </p>
               <p className="text-xs text-gray-400 sec-ff mt-1">
                 ₦{item.price.toLocaleString()} × {item.quantity}
               </p>
             </div>
-            <p className="text-sm font-bold text-[var(--txt-clr)] sec-ff whitespace-nowrap">
+            <p className="text-sm font-bold text-[var(--pry-clr)] sec-ff whitespace-nowrap">
               ₦{(item.price * item.quantity).toLocaleString()}
             </p>
           </div>
@@ -81,13 +82,16 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
         <p className="text-gray-400 sec-ff text-sm">
           {shippingLabel ? `Shipping to: ${shippingLabel}` : 'Shipping address unavailable'}
         </p>
-        <p className="text-sm font-bold text-[var(--acc-clr)] sec-ff">
+        <p className="text-sm font-bold text-[var(--prof-clr)] sec-ff">
           Total: ₦{orderTotal.toLocaleString()}
         </p>
       </div>
 
             {/* Progress bar */}
       <OrderProgress filled={progressStep} />
+      <p className="text-sm font-semibold text-[var(--pry-clr)] sec-ff text-center">
+        {ORDER_STATUS_LABEL[order.orderStatus] ?? `Your order is ${order.orderStatus.replace(/_/g, ' ')}`}
+      </p>
 
 
       {/* Footer */}
