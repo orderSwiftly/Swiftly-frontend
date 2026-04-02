@@ -105,7 +105,11 @@ export default function SellerOrderCard() {
         }));
     };
 
-    if (loading) return <div className="flex items-center justify-center h-64"><PulseLoader /></div>;
+    if (loading) return (
+        <div className="flex items-center justify-center h-64">
+            <PulseLoader />
+        </div>
+    );
     if (error) return <p className="text-center mt-8 text-red-500">{error}</p>;
     if (!sellerProfile) return <p className="text-center mt-8 text-red-500">Seller profile not found</p>;
 
@@ -121,29 +125,31 @@ export default function SellerOrderCard() {
     };
 
     return (
-        <main className="mt-8 mb-10 space-y-6 pry-ff p-4">
-            <h1 className="text-3xl font-bold text-center text-[var(--pry-clr)] mb-6">
+        <main className="mt-6 mb-24 space-y-6 pry-ff px-4 sm:px-6 max-w-4xl mx-auto">
+            <h1 className="text-2xl sm:text-3xl font-bold text-center text-[var(--pry-clr)]">
                 Seller Orders
             </h1>
 
-            {/* ── Tabs ─────────────────────────────────── */}
+            {/* Tabs */}
             <div className="flex items-center border-b border-[#e8e8e8]">
                 {tabs.map(({ key, label }) => (
                     <button
                         key={key}
                         onClick={() => setActiveTab(key)}
-                        className={`relative flex items-center justify-center gap-2 flex-1 py-3 text-sm font-semibold sec-ff transition-colors ${activeTab === key
+                        className={`relative flex items-center justify-center gap-1.5 flex-1 py-3 text-xs sm:text-sm font-semibold sec-ff transition-colors ${
+                            activeTab === key
                                 ? "text-[#006B4F] border-b-2 border-[#006B4F] -mb-px"
                                 : "text-[#c0c0c0] hover:text-[#0A0F1A]"
-                            }`}
+                        }`}
                     >
                         {label}
                         {counts[key] > 0 && (
                             <span
-                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${activeTab === key
+                                className={`text-[10px] font-bold px-1.5 py-0.5 rounded-full ${
+                                    activeTab === key
                                         ? "bg-[#006B4F] text-white"
                                         : "bg-[#f0f0f0] text-[#c0c0c0]"
-                                    }`}
+                                }`}
                             >
                                 {counts[key]}
                             </span>
@@ -152,13 +158,13 @@ export default function SellerOrderCard() {
                 ))}
             </div>
 
-            {/* ── Orders ───────────────────────────────── */}
+            {/* Orders */}
             {filteredOrders.length === 0 ? (
                 <p className="text-center text-[var(--sec-clr)] sec-ff py-10">
                     {getSellerEmptyMessage(activeTab)}
                 </p>
             ) : (
-                <div className="flex flex-col gap-6">
+                <div className="flex flex-col gap-4 sm:gap-6">
                     {visibleOrders.map((order) => {
                         const orderId = resolveId(order._id);
                         if (!orderId) return null;
@@ -170,7 +176,7 @@ export default function SellerOrderCard() {
                         return (
                             <div
                                 key={orderId}
-                                className="rounded-2xl p-5 flex flex-col gap-4 transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]"
+                                className="rounded-2xl p-4 sm:p-5 flex flex-col gap-4 transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]"
                                 style={{
                                     backgroundColor: "#f6faf3",
                                     border: "1px solid rgba(0,107,79,0.1)",
@@ -178,11 +184,14 @@ export default function SellerOrderCard() {
                                 }}
                             >
                                 {/* Header */}
-                                <div className="flex justify-between items-center flex-wrap gap-2">
-                                    <p className="text-sm text-[var(--sec-clr)] sec-ff">
-                                        Order ID: <span className="font-semibold text-[var(--pry-clr)]">{shortId}</span>
+                                <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-2">
+                                    <p className="text-xs sm:text-sm text-[var(--sec-clr)] sec-ff">
+                                        Order ID:{" "}
+                                        <span className="font-semibold text-[var(--pry-clr)]">
+                                            {shortId}
+                                        </span>
                                     </p>
-                                    <div className="flex items-center gap-2">
+                                    <div className="flex items-center gap-2 flex-wrap">
                                         <span
                                             className="text-xs px-2.5 py-1 rounded-full font-medium sec-ff capitalize"
                                             style={
@@ -205,9 +214,12 @@ export default function SellerOrderCard() {
                                 {/* Items */}
                                 <div className="flex flex-col gap-3">
                                     {order.items.map((item, index) => (
-                                        <div key={resolveId(item.productId) || index} className="flex items-center gap-3">
+                                        <div
+                                            key={resolveId(item.productId) || index}
+                                            className="flex items-center gap-3"
+                                        >
                                             <div
-                                                className="w-14 h-14 sm:w-16 sm:h-16 relative overflow-hidden rounded-xl flex-shrink-0"
+                                                className="w-12 h-12 sm:w-16 sm:h-16 relative overflow-hidden rounded-xl flex-shrink-0"
                                                 style={{ border: "1px solid rgba(0,107,79,0.12)" }}
                                             >
                                                 <Image
@@ -218,12 +230,17 @@ export default function SellerOrderCard() {
                                                 />
                                             </div>
                                             <div className="flex-1 min-w-0">
-                                                <h4 className="font-semibold text-[var(--pry-clr)] text-sm truncate pry-ff">{item.title}</h4>
+                                                <h4 className="font-semibold text-[var(--pry-clr)] text-xs sm:text-sm truncate pry-ff">
+                                                    {item.title}
+                                                </h4>
                                                 <p className="text-[var(--bg-clr)] text-xs sec-ff opacity-80 mt-0.5">
                                                     Qty: {item.quantity} · ₦{item.lineTotal?.toLocaleString()}
                                                 </p>
                                                 {item.itemStatus === "shipped" && (
-                                                    <span className="text-xs font-medium sec-ff" style={{ color: "var(--prof-clr)" }}>
+                                                    <span
+                                                        className="text-xs font-medium sec-ff"
+                                                        style={{ color: "var(--prof-clr)" }}
+                                                    >
                                                         Shipped ✓
                                                     </span>
                                                 )}
@@ -234,7 +251,7 @@ export default function SellerOrderCard() {
 
                                 {/* Footer */}
                                 <div
-                                    className="flex justify-between items-center flex-wrap gap-2 pt-2"
+                                    className="flex flex-col sm:flex-row sm:justify-between sm:items-center gap-3 pt-2"
                                     style={{ borderTop: "1px solid rgba(0,107,79,0.1)" }}
                                 >
                                     <p className="text-sm font-bold text-[var(--bg-clr)] sec-ff">
@@ -252,7 +269,7 @@ export default function SellerOrderCard() {
                         );
                     })}
 
-                    {/* ── Load More ────────────────────────── */}
+                    {/* Load More */}
                     {hasMore && (
                         <button
                             onClick={handleLoadMore}
