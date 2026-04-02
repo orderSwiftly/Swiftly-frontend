@@ -1,3 +1,5 @@
+// src/app/seller/dashboard/my-products/add-products.tsx
+
 'use client';
 
 import { useState } from 'react';
@@ -10,7 +12,7 @@ interface Props {
   closeModal: () => void;
 }
 
-export default function AddProducts({ closeModal }: Props) {
+export default function AddProducts({ closeModal }: Readonly<Props>) {
   const [formData, setFormData] = useState({
     title: '',
     description: '',
@@ -25,18 +27,12 @@ export default function AddProducts({ closeModal }: Props) {
   const [loading, setLoading] = useState(false);
 
   const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>
   ) => {
     const { name, value, type } = e.target;
-
     setFormData(prev => ({
       ...prev,
-      [name]:
-        type === 'checkbox'
-          ? (e.target as HTMLInputElement).checked
-          : value,
+      [name]: type === 'checkbox' ? (e.target as HTMLInputElement).checked : value,
     }));
   };
 
@@ -74,7 +70,6 @@ export default function AddProducts({ closeModal }: Props) {
       Object.entries(formData).forEach(([key, value]) =>
         payload.append(key, String(value))
       );
-
       images.forEach(file => payload.append('productImg', file));
 
       const token = localStorage.getItem('token');
@@ -84,21 +79,19 @@ export default function AddProducts({ closeModal }: Props) {
         `${process.env.NEXT_PUBLIC_API_URL}/api/v1/product/new-product`,
         {
           method: 'POST',
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
           body: payload,
         }
       );
 
       const data = await res.json();
-      if (!res.ok) throw new Error(data.message);
+      if (!res.ok) throw new Error(data.message ?? 'Something went wrong');
 
       toast.success('Product added successfully');
       closeModal();
     } catch (err) {
       console.error(err);
-      toast.error('Something went wrong');
+      toast.error(err instanceof Error ? err.message : 'Something went wrong');
     } finally {
       setLoading(false);
     }
@@ -107,7 +100,7 @@ export default function AddProducts({ closeModal }: Props) {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/60 backdrop-blur-sm">
       <div className="bg-[var(--bg-clr)] text-[var(--txt-clr)] rounded-xl shadow-xl w-full max-w-md p-6 relative animate-fadeIn max-h-[90vh] overflow-y-auto scroll-smooth scrollbar-hide">
-        {/* Close Button */}
+        {/* Close */}
         <button
           onClick={closeModal}
           className="absolute top-4 right-4 text-[var(--txt-clr)] cursor-pointer"
@@ -116,12 +109,8 @@ export default function AddProducts({ closeModal }: Props) {
         </button>
 
         {/* Header */}
-        <h2 className="text-2xl md:text-3xl font-bold pry-ff mb-2">
-          Add New Product
-        </h2>
-        <p className="text-sm md:text-base sec-ff mb-6">
-          Fill in the details of your product below.
-        </p>
+        <h2 className="text-2xl md:text-3xl font-bold pry-ff mb-2">Add New Product</h2>
+        <p className="text-sm md:text-base sec-ff mb-6">Fill in the details of your product below.</p>
 
         {/* Form */}
         <form onSubmit={handleSubmit} className="flex flex-col gap-4 sec-ff">
@@ -144,7 +133,6 @@ export default function AddProducts({ closeModal }: Props) {
             required
           />
 
-          {/* CATEGORY SELECT (HARDCODED) */}
           <select
             name="categoryName"
             value={formData.categoryName}
@@ -152,13 +140,9 @@ export default function AddProducts({ closeModal }: Props) {
             className="w-full p-3 rounded-lg bg-[var(--txt-clr)]/60 outline-none focus:ring-2 ring-[var(--acc-clr)] text-[var(--pry-clr)]"
             required
           >
-            <option value="" disabled>
-              Select Category
-            </option>
+            <option value="" disabled>Select Category</option>
             {CATEGORIES.map((category: string) => (
-              <option key={category} value={category}>
-              {category}
-              </option>
+              <option key={category} value={category}>{category}</option>
             ))}
           </select>
 
@@ -217,7 +201,7 @@ export default function AddProducts({ closeModal }: Props) {
           <button
             type="submit"
             disabled={loading}
-            className="mt-2 bg-[var(--acc-clr)] flex items-center justify-center px-6 py-3 rounded-lg font-semibold"
+            className="mt-2 bg-[var(--acc-clr)] flex items-center justify-center px-6 py-3 rounded-lg font-semibold disabled:opacity-50 cursor-pointer transition"
           >
             {loading ? <PulseLoader /> : 'Submit Product'}
           </button>

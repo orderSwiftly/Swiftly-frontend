@@ -8,7 +8,7 @@ import PulseLoader from '@/components/pulse-loader';
 
 type Review = {
   _id: string;
-  user: { fullName: string };
+  user: { fullname: string };
   rating: number;
   comment: string;
   createdAt: string;
@@ -17,6 +17,12 @@ type Review = {
 type Category = {
   _id: string;
   name: string;
+};
+
+type Seller = {
+  _id: string;
+  fullname: string;
+  photo?: string;
 };
 
 type Product = {
@@ -30,6 +36,8 @@ type Product = {
   productStatus: string;
   averageRating?: number;
   category?: Category;
+  seller?: Seller;
+  reviews?: Review[];
 };
 
 export default function ProductDetails() {
@@ -46,26 +54,24 @@ export default function ProductDetails() {
       try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;
         const token = localStorage.getItem('token');
-        if (!token) {
-          throw new Error('No token found');
-        }
-        const res = await fetch(
-          `${api_url}/api/v1/product/get-product/${id}`, {
-            method: 'GET',
-            headers: {
-              'Authorization': `Bearer ${token}`,
-            }
+        if (!token) throw new Error('No token found');
+
+        const res = await fetch(`${api_url}/api/v1/product/get-product/${id}`, {
+          method: 'GET',
+          headers: { Authorization: `Bearer ${token}` },
         });
 
         const data = await res.json();
+
         if (!res.ok || data.status !== 'success') {
           toast.error(data.message ?? 'Failed to fetch product');
           return;
         }
 
-        setProduct(data.data.product);
-        setMainImage(data.data.product.productImg?.[0] ?? '/fallback.jpg');
-        setReviews(data.data.reviews ?? []);
+        const p: Product = data.data.product;
+        setProduct(p);
+        setMainImage(p.productImg?.[0] ?? '/fallback.jpg');
+        setReviews(p.reviews ?? []);
       } catch (error) {
         toast.error('Error fetching product');
         console.error(error);
@@ -77,17 +83,19 @@ export default function ProductDetails() {
     fetchProduct();
   }, [id]);
 
-  if (loading)
-    return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--light-bg)] text-[var(--txt-clr)]">
-        <PulseLoader />
-      </div>
-    );
+  if (loading) return (
+    <div className="flex items-center justify-center min-h-screen bg-[var(--light-bg)]">
+      <PulseLoader />
+    </div>
+  );
 
-  if (!product) return <p className="text-center py-10 text-red-500">Product not found.</p>;
+  if (!product) return (
+    <p className="text-center py-10 text-red-500">Product not found.</p>
+  );
 
   return (
     <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)] pt-[70px] pb-20">
+
       {/* Title */}
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 pry-ff">{product.title}</h1>
 
@@ -119,31 +127,55 @@ export default function ProductDetails() {
       )}
 
       {/* Product Details */}
-      <div className="bg-[var(--light-bg)] dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700 mb-6">
-        <p className="text-gray-700 dark:text-gray-300 mb-4 sec-ff leading-relaxed">
+      <div className="bg-[var(--light-bg)] dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700 mb-6 space-y-3">
+        <p className="text-gray-700 dark:text-gray-300 sec-ff leading-relaxed">
           {product.description}
         </p>
 
+        {/* Category */}
         {product.category?.name && (
-          <span className="inline-block text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md mb-1">
+          <span className="inline-block text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md">
             {product.category.name}
           </span>
         )}
 
+        {/* Seller */}
+        {product.seller?.fullname && (
+          <div className="flex items-center gap-2">
+            {product.seller.photo ? (
+              <Image
+                src={product.seller.photo}
+                alt={product.seller.fullname}
+                width={24}
+                height={24}
+                className="rounded-full object-cover"
+              />
+            ) : (
+              <div className="w-6 h-6 rounded-full bg-gray-300 dark:bg-white/10 flex items-center justify-center text-xs text-gray-600 font-semibold">
+                {product.seller.fullname.charAt(0).toUpperCase()}
+              </div>
+            )}
+            <span className="text-sm text-gray-500 dark:text-gray-400 sec-ff">
+              {product.seller.fullname}
+            </span>
+          </div>
+        )}
 
+        {/* Average Rating */}
         {typeof product.averageRating === 'number' && (
-          <div className="text-yellow-500 text-sm mb-4 sec-ff">
+          <div className="text-yellow-500 text-sm sec-ff">
             <span className="font-medium">{product.averageRating.toFixed(1)}</span>
             <span className="text-xs text-gray-500 dark:text-gray-400 ml-1">/5 rating</span>
           </div>
         )}
 
+        {/* Info Grid */}
         <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300 sec-ff">
           <p><span className="font-medium">Price:</span> ₦{product.price.toLocaleString()}</p>
           <p><span className="font-medium">Stock:</span> {product.stock}</p>
           <p><span className="font-medium">Location:</span> {product.location}</p>
           <p>
-            <span className="font-medium">Status:</span>{' '}
+            <span className="font-medium">Status: </span>
             <span
               className={`capitalize font-semibold ${
                 product.productStatus === 'approved'
@@ -159,7 +191,7 @@ export default function ProductDetails() {
         </div>
       </div>
 
-      {/* Reviews Section */}
+      {/* Reviews */}
       <div className="bg-white dark:bg-[var(--bg-clr)] p-6 rounded-xl shadow border border-gray-200 dark:border-gray-700">
         <h2 className="text-lg font-bold mb-4 pry-ff">Customer Reviews</h2>
         {reviews.length === 0 ? (
@@ -167,14 +199,22 @@ export default function ProductDetails() {
         ) : (
           <ul className="space-y-4">
             {reviews.map((review) => (
-              <li key={review._id} className="border-b pb-4">
-                <p className="font-semibold text-[var(--txt-clr)]">{review.user.fullName}</p>
+              <li key={review._id} className="border-b pb-4 last:border-b-0">
+                <p className="font-semibold text-[var(--txt-clr)] sec-ff">
+                  {review.user?.fullname ?? 'Anonymous'}
+                </p>
                 <div className="text-yellow-500 text-sm mb-1">
-                  {'★'.repeat(review.rating)}{' '}
+                  {'★'.repeat(review.rating)}
                   {'☆'.repeat(5 - review.rating)}
                 </div>
-                <p className="text-sm text-gray-600 dark:text-gray-400">{review.comment}</p>
-                <p className="text-xs text-gray-400 mt-1">{new Date(review.createdAt).toLocaleDateString()}</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 sec-ff">{review.comment}</p>
+                <p className="text-xs text-gray-400 mt-1">
+                  {new Date(review.createdAt).toLocaleDateString('en-GB', {
+                    day: 'numeric',
+                    month: 'short',
+                    year: 'numeric',
+                  })}
+                </p>
               </li>
             ))}
           </ul>
