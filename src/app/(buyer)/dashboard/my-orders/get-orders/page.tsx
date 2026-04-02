@@ -7,6 +7,7 @@ import OrderCard from "../components/order-card";
 import { useState } from "react";
 import { Order } from "@/types/order";
 import { getEmptyMessageByTab } from "@/lib/order-utils";
+import { ORDER_PROGRESS_MAP } from "@/lib/order-progress";
 
 type Tab = "pending orders" | "active" | "passive";
 
@@ -22,6 +23,15 @@ function resolveId(id: string | { $oid: string } | undefined): string {
   return typeof id === "string" ? id : id.$oid;
 }
 
+// Sort by progress step ascending so earlier stages appear first
+function sortByProgress(orders: Order[]): Order[] {
+  return [...orders].sort(
+    (a, b) =>
+      (ORDER_PROGRESS_MAP[a.orderStatus] ?? -1) -
+      (ORDER_PROGRESS_MAP[b.orderStatus] ?? -1)
+  );
+}
+
 export default function GetOrders({
   orders = [],
   currentUserId,
@@ -30,25 +40,23 @@ export default function GetOrders({
 }: Props) {
   const [activeTab, setActiveTab] = useState<Tab>("pending orders");
 
-  const getFilteredOrders = () => {
+  const getFilteredOrders = (): Order[] => {
     switch (activeTab) {
       case "pending orders":
-        return orders.filter((o) => o.orderStatus === "pending");
+        return sortByProgress(
+          orders.filter((o) => o.orderStatus === "pending")
+        );
       case "active":
-        return orders.filter(
-          (o) =>
-            o.orderStatus === "confirmed" ||
-            o.orderStatus === "shipped" ||
-            o.orderStatus === "awaiting_verification" ||
-            o.orderStatus === "verified"
+        return sortByProgress(
+          orders.filter((o) =>
+            ["confirmed", "shipped", "awaiting_verification", "verified"].includes(o.orderStatus)
+          )
         );
       case "passive":
-        return orders.filter(
-          (o) =>
-            o.orderStatus === "delivered" ||
-            o.orderStatus === "collected" ||
-            o.orderStatus === "cancelled" ||
-            o.orderStatus === "returned"
+        return sortByProgress(
+          orders.filter((o) =>
+            ["delivered", "collected", "cancelled", "returned"].includes(o.orderStatus)
+          )
         );
       default:
         return orders;

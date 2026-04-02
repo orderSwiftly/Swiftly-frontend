@@ -6,6 +6,7 @@ import { toast } from 'sonner';
 import { Trash2 } from 'lucide-react';
 import AddToCart from './add-to-cart';
 import Link from 'next/link';
+import PulseLoader from '@/components/pulse-loader';
 
 type Product = {
   title: string;
@@ -115,7 +116,7 @@ export default function GetCartComp() {
   const subtotal = allItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
   const isEmpty = allItems.length === 0;
 
-  if (loading) return <p className="text-center mt-8 pry-ff">Loading...</p>;
+  if (loading) return <div className="flex items-center justify-center"><PulseLoader /></div>;
   if (error) return <p className="text-red-500 text-center mt-8 pry-ff">{error}</p>;
   if (isEmpty) {
     return (

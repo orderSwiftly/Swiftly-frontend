@@ -7,6 +7,8 @@ import Link from 'next/link';
 import { ArrowRight, Truck } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Order } from '@/types/order';
+import OrderProgress from './order-progress';
+import { ORDER_PROGRESS_MAP } from '@/lib/order-progress';
 
 interface Props {
   readonly order: Order;
@@ -20,17 +22,16 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
 
   const isOwner = order.items?.some(item => item.productOwnerId === currentUserId);
 
-  // Only show institution-style addresses (building + room)
   const { building, room } = order.shippingAddress ?? {};
   const shippingLabel = building || room
     ? [building, room].filter(Boolean).join(', ')
     : null;
 
-  // Support both old totalPrice and new pricing.total
   const orderTotal = order.pricing?.total ?? order.totalPrice ?? 0;
-
-  // Shorten the ID for display: last 8 chars uppercased
   const shortId = order._id ? `#${order._id.slice(-8).toUpperCase()}` : '—';
+
+  // Resolve progress step; unknown statuses fall back to -1 (all dots unfilled)
+  const progressStep = ORDER_PROGRESS_MAP[order.orderStatus] ?? -1;
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5">
@@ -40,9 +41,10 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
           <span className="font-medium text-white">Order ID:</span> {shortId}
         </p>
         <p className="text-sm font-semibold text-[var(--acc-clr)] capitalize sec-ff">
-          {order.orderStatus}
+          {order.orderStatus.replace(/_/g, ' ')}
         </p>
       </div>
+
 
       {/* Items */}
       <div className="space-y-4">
@@ -83,6 +85,10 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
           Total: ₦{orderTotal.toLocaleString()}
         </p>
       </div>
+
+            {/* Progress bar */}
+      <OrderProgress filled={progressStep} />
+
 
       {/* Footer */}
       <div className="flex items-center pt-2">

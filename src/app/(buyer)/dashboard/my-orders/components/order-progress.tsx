@@ -4,8 +4,8 @@ interface OrderProgressProps {
     filled: number;
 }
 
-export default function OrderProgress({ filled }: OrderProgressProps) {
-    const TOTAL_DOTS = 5;
+export default function OrderProgress({ filled }: Readonly<OrderProgressProps>) {
+    const TOTAL_DOTS = 6;
 
     return (
         <div className="flex w-full gap-2">

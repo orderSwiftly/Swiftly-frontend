@@ -1,17 +1,26 @@
-'use client';
+// src/components/ui/spinner.tsx
 
-import { motion } from 'framer-motion';
+interface SpinnerProps {
+    size?: "sm" | "md" | "lg";
+    className?: string;
+}
 
-export default function PulseLoader() {
-  return (
-    <motion.div
-      className="w-6 h-6 rounded-full border-4 border-t-transparent border-[var(--bg-clr)] border-opacity-30"
-      animate={{ rotate: 360 }}
-      transition={{
-        repeat: Infinity,
-        duration: 1,
-        ease: 'linear',
-      }}
-    />
-  );
+const sizeMap = {
+    sm: "w-4 h-4 border-2",
+    md: "w-6 h-6 border-2",
+    lg: "w-8 h-8 border-[3px]",
+};
+
+export default function Spinner({ size = "md", className = "" }: Readonly<SpinnerProps>) {
+    return (
+        <div
+            className={`animate-spin rounded-full border-transparent ${sizeMap[size]} ${className}`}
+            style={{
+                borderTopColor: "var(--bg-clr)",
+                borderRightColor: "var(--bg-clr)",
+                borderBottomColor: "transparent",
+                borderLeftColor: "transparent",
+            }}
+        />
+    );
 }
