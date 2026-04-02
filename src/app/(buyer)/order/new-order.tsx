@@ -59,8 +59,8 @@ export default function NewOrder() {
       if (res.ok && data.status === 'success') {
         const cart = data.cart ?? {};
         const flatItems: CartItem[] = Array.isArray(cart)
-          ? cart
-          : (Object.values(cart) as CartItem[][]).flat();
+  ? cart
+  : (Object.values(cart) as { seller: unknown; items: CartItem[] }[]).flatMap(g => g.items);
         const cartWithProducts = flatItems.map((item) => ({
           ...item,
           product: item.product || {
