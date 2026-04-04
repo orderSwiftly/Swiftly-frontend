@@ -32,7 +32,9 @@ export default function AddressPage() {
         } else {
           toast.error(data?.message ?? "Failed to load addresses");
         }
+      // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
+        // console.error("Error fetching addresses:", err);
         toast.error("Something went wrong");
       } finally {
         setLoading(false);
@@ -80,7 +82,7 @@ export default function AddressPage() {
 
   return (
     <div className="min-h-screen w-full bg-gray-50 pry-ff">
-      <header className="bg-white border-b border-gray-200 px-4 py-4">
+      <header className="bg-white border-b border-gray-200 px-4 py-1 flex items-center justify-center">
         <h1 className="text-2xl text-center font-bold text-[#0A0A0A]">
           My Addresses
         </h1>
