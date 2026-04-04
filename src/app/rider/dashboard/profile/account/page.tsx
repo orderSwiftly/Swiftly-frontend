@@ -1,13 +1,14 @@
 "use client";
-import { fetchRiderDetails } from "@/lib/rider";
-import { useEffect, useState } from "react";
+import { fetchRiderDetails, uploadProfile } from "@/lib/rider";
+import { useEffect, useState, useRef } from "react";
 import Spinner from "@/components/pulse-loader";
-import { User, Mail, Building2, CircleDot } from "lucide-react";
+import { User, Mail, Building2, CircleDot, Camera } from "lucide-react";
 
 interface RiderDetails {
   user_data: {
     name: string;
     email: string;
+    photo?: string;
     institution: {
       id: string;
       name: string;
@@ -23,12 +24,16 @@ export default function RiderAccount() {
   const [rider, setRider] = useState<RiderDetails | null>(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [uploading, setUploading] = useState(false);
+  const [photo, setPhoto] = useState<string | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const load = async () => {
       try {
         const data = await fetchRiderDetails();
         setRider(data);
+        setPhoto(data.user_data.photo || null);
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -38,13 +43,31 @@ export default function RiderAccount() {
     load();
   }, []);
 
-    if (loading) {
-        return (
-            <div className="flex items-center sec-ff w-full justify-center py-10">
-                <Spinner />
-            </div>
-        )
+  const handlePhotoChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    if (file.size > 5 * 1024 * 1024) {
+      alert("Photo must be under 5MB");
+      return;
     }
+    try {
+      setUploading(true);
+      const res = await uploadProfile(file);
+      setPhoto(res.data.photo);
+    } catch {
+      alert("Failed to upload photo");
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (loading) {
+    return (
+      <div className="flex items-center sec-ff w-full justify-center py-10">
+        <Spinner />
+      </div>
+    );
+  }
   if (error) return <p className="text-sm text-red-400 sec-ff">{error}</p>;
   if (!rider) return <p className="text-sm text-(--sec-clr) sec-ff">No rider data found.</p>;
 
@@ -55,11 +78,34 @@ export default function RiderAccount() {
 
       {/* Avatar + name */}
       <div className="flex flex-col items-center gap-3 py-6 rounded-2xl bg-(--bg-clr)">
-        <div className="w-20 h-20 rounded-full bg-(--acc-clr) flex items-center justify-center">
-          <span className="text-3xl font-bold sec-ff text-(--pry-clr)">
-            {rider.user_data.name.charAt(0).toUpperCase()}
-          </span>
+        <div
+          className="relative w-20 h-20 cursor-pointer"
+          onClick={() => fileInputRef.current?.click()}
+        >
+          <div className="w-20 h-20 rounded-full bg-(--acc-clr) flex items-center justify-center overflow-hidden">
+            {uploading ? (
+              <Spinner />
+            ) : photo ? (
+              <img src={photo} alt="Profile" className="w-full h-full object-cover" />
+            ) : (
+              <span className="text-3xl font-bold sec-ff text-(--pry-clr)">
+                {rider.user_data.name.charAt(0).toUpperCase()}
+              </span>
+            )}
+          </div>
+          <div className="absolute bottom-0 right-0 w-6 h-6 rounded-full bg-(--pry-clr) flex items-center justify-center">
+            <Camera size={12} color="#9BDD37" />
+          </div>
         </div>
+
+        <input
+          ref={fileInputRef}
+          type="file"
+          accept="image/*"
+          className="hidden"
+          onChange={handlePhotoChange}
+        />
+
         <div className="text-center">
           <p className="text-lg font-semibold sec-ff text-(--txt-clr)">{rider.user_data.name}</p>
           <p className="text-sm sec-ff text-(--sec-clr)">{rider.user_data.email}</p>

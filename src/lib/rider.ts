@@ -123,3 +123,17 @@ export async function getEarnings(): Promise<EarningsData> {
   }
 }
 
+export async function uploadProfile(file: File) {
+  const formData = new FormData();
+  formData.append('photo', file);
+
+  const token = localStorage.getItem('token');
+  const res = await axios.patch(`${API_BASE_URL}/api/v1/rider/add-photo`, formData, {
+    headers: {
+      Authorization: `Bearer ${token}`,
+      'Content-Type': 'multipart/form-data',
+    },
+  });
+
+  return res.data;
+}
