@@ -1,3 +1,5 @@
+// src/app/(auth)/forgot-password/forgot-psw.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -33,10 +35,10 @@ export default function ForgotPassword() {
   };
 
   return (
-    <main className="flex items-center justify-center min-h-screen bg-[var(--light-bg)]">
+    <main className="flex items-center justify-center min-h-screen">
       <form
         onSubmit={handleSubmit}
-        className="w-full max-w-md bg-white/5 backdrop-blur-md p-8 rounded-2xl shadow-lg"
+        className="w-full max-w-md bg-[var(--txt-clr)] p-8 rounded-2xl shadow-lg"
       >
         <h1 className="text-xl font-semibold text-[var(--pry-clr)] mb-4 pry-ff">
           Reset Password
