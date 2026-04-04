@@ -1,7 +1,12 @@
-import { ChevronRight, Wallet, BikeIcon } from "lucide-react";
+import { ChevronRight, Wallet, BikeIcon, UserCircle2 } from "lucide-react";
 import Link from "next/link";
 
 const actions = [
+    {
+        link: "/rider/dashboard/profile/account",
+        label: "Profile",
+        icon: UserCircle2,
+    },
     {
         link: "/rider/dashboard/profile/wallet",
         label: "Account Settings",

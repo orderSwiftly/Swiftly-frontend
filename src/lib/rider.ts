@@ -17,3 +17,17 @@ export async function fetchRiderBankDetails() {
     throw new Error(error.response?.data?.message ?? "Failed to fetch bank details");
   }
 }
+
+export async function fetchRiderDetails() {
+  try {
+    const response = await axios.get(`${API_BASE_URL}/api/v1/rider`, {
+      headers: {
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+    });
+    return response.data.data;
+  } catch (err) {
+    const error = err as AxiosError<{ message: string }>;
+    throw new Error(error.response?.data?.message ?? "Failed to fetch rider details");
+  }
+}

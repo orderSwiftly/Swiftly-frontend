@@ -2,6 +2,7 @@
 import { fetchRiderBankDetails } from "@/lib/rider";
 import { useEffect, useState } from "react";
 import { Banknote, Building2, CircleCheck, Eye, EyeOff, Hash, User } from "lucide-react";
+import Spinner from "../pulse-loader";
 
 interface BankDetails {
   accountNumber: string;
@@ -34,11 +35,13 @@ export default function RiderBankDetails() {
     `${"•".repeat(num.length - 4)}${num.slice(-4)}`;
 
   if (loading)
-    return <p className="text-base text-(--sec-clr) sec-ff">Loading bank details...</p>;
+    return <div className="flex items-center sec-ff w-full justify-center py-10">
+      <Spinner />
+    </div>;
   if (error)
-    return <p className="text-base text-red-400 sec-ff">{error}</p>;
+    return <div className="flex items-center sec-ff w-full justify-center text-base text-red-400 sec-ff">{error}</div>;
   if (!bankDetails)
-    return <p className="text-base text-(--sec-clr) sec-ff">No bank details found.</p>;
+    return <div className="flex items-center sec-ff w-full justify-center text-base text-(--sec-clr) sec-ff">No bank details found.</div>;
 
   return (
     <div className="rounded-2xl p-6 space-y-5 bg-(--txt-clr)">

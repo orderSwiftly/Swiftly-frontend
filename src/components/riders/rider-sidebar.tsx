@@ -16,9 +16,9 @@ import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from '../sidebar-context';
 
 const navItems = [
-    { label: 'Home', href: '/rider/dashboard/home', icon: HomeIcon },
-    { label: 'Deliveries', href: '/rider/dashboard/deliveries', icon: Bike },
-    { label: 'Profile', href: '/rider/dashboard/profile', icon: UserCircle },
+    { label: 'Home', href: '/rider/dashboard/home', icon: HomeIcon, exact: true },
+    { label: 'Deliveries', href: '/rider/dashboard/deliveries', icon: Bike, exact: false },
+    { label: 'Profile', href: '/rider/dashboard/profile', icon: UserCircle, exact: false },
 ];
 
 export default function Sidebar() {
@@ -82,8 +82,8 @@ export default function Sidebar() {
 
                 {/* Nav Items */}
                 <nav className="flex-1 px-3 py-6 space-y-1 sec-ff">
-                    {navItems.map(({ label, href, icon: Icon }) => {
-                        const isActive = pathname === href;
+                    {navItems.map(({ label, href, icon: Icon, exact }) => {
+                        const isActive = exact ? pathname === href : pathname.startsWith(href);
                         return (
                             <Link
                                 key={href}
@@ -150,8 +150,8 @@ export default function Sidebar() {
             {/* Mobile Bottom Nav */}
             <nav className="md:hidden fixed bottom-0 left-0 right-0 z-50 bg-[var(--txt-clr)] border-t border-[var(--sec-clr)] sec-ff">
                 <div className="flex justify-around items-center py-2 px-4">
-                    {navItems.map(({ label, href, icon: Icon }) => {
-                        const isActive = pathname === href;
+                    {navItems.map(({ label, href, icon: Icon, exact }) => {
+                        const isActive = exact ? pathname === href : pathname.startsWith(href);
                         return (
                             <Link
                                 key={href}
