@@ -11,6 +11,7 @@
         "Paystack",
         "Subaccount",
         "Tredia",
-        "Waitlist"
+        "Waitlist",
+        "webpush"
     ]
 }

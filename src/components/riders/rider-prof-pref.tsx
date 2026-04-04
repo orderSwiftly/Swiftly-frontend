@@ -1,15 +1,45 @@
 "use client";
 
-import { Bell, HelpCircle, Copy, ChevronRight, LogOut } from "lucide-react";
-import { useState } from "react";
+import { Bell, ChevronRight, LogOut } from "lucide-react";
+import { useState, useEffect } from "react";
 import LogoutModal from "@/components/logout-modal";
 import { useUserStore } from "@/stores/userStore";
-import Link from "next/link";
+import { subscribeToPush, unsubscribeFromPush, isSubscribed } from "@/lib/push";
+import { toast } from "sonner";
 
 export default function ProfilePreference() {
-  const { logout, user } = useUserStore();
+  const { logout } = useUserStore();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(true);
+  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
+  const [notifLoading, setNotifLoading] = useState(false);
+
+  useEffect(() => {
+    isSubscribed().then(setNotificationsEnabled);
+  }, []);
+
+  const handleNotifToggle = async () => {
+    setNotifLoading(true);
+    try {
+      if (notificationsEnabled) {
+        await unsubscribeFromPush();
+        setNotificationsEnabled(false);
+        toast.success("Notifications turned off");
+      } else {
+        await subscribeToPush();
+        const subscribed = await isSubscribed();
+        setNotificationsEnabled(subscribed);
+        if (subscribed) {
+          toast.success("Notifications turned on");
+        } else {
+          toast.error("Permission denied — enable notifications in your browser settings");
+        }
+      }
+    } catch {
+      toast.error("Something went wrong, try again");
+    } finally {
+      setNotifLoading(false);
+    }
+  };
 
   const handleLogoutClick = () => {
     setShowLogoutModal(true);
@@ -34,10 +64,11 @@ export default function ProfilePreference() {
             </div>
 
             <button
-              onClick={() => setNotificationsEnabled(!notificationsEnabled)}
+              onClick={handleNotifToggle}
+              disabled={notifLoading}
               className={`relative w-12 h-6 rounded-full transition-colors ${
                 notificationsEnabled ? "bg-green-600" : "bg-gray-300"
-              }`}
+              } disabled:opacity-50`}
             >
               <span
                 className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
@@ -46,22 +77,6 @@ export default function ProfilePreference() {
               />
             </button>
           </div>
-
-          {/* <Link
-            href="/rider/dashboard/profile/support"
-            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
-          >
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                <HelpCircle className="w-5 h-5 text-white" />
-              </div>
-              <span className="text-sm font-medium text-gray-800">
-                Contact support
-              </span>
-            </div>
-
-            <ChevronRight className="w-4 h-4 text-gray-400" />
-          </Link> */}
 
           <button
             onClick={handleLogoutClick}
