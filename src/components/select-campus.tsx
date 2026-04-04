@@ -5,7 +5,7 @@ import { Search } from 'lucide-react';
 import Image from 'next/image';
 
 import { GetCampusList, selectCampus } from '@/lib/campus';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 
 export interface Institution {
   _id: string;

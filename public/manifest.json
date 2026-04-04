@@ -1,4 +1,5 @@
 {
+  "id": "/login",
   "name": "Swiftly",
   "short_name": "Swiftly",
   "start_url": "/login",

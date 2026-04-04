@@ -5,7 +5,7 @@ import { useState, useEffect } from "react";
 import LogoutModal from "@/components/logout-modal";
 import { useUserStore } from "@/stores/userStore";
 import { subscribeToPush, unsubscribeFromPush, isSubscribed } from "@/lib/push";
-import { toast } from "sonner";
+import { toast } from "react-hot-toast";
 
 export default function ProfilePreference() {
   const { logout } = useUserStore();

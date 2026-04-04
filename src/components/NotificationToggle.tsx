@@ -6,7 +6,7 @@
 
 import { useState, useEffect } from 'react'
 import { subscribeToPush, unsubscribeFromPush, isSubscribed } from '@/lib/push'
-import { toast } from 'sonner'
+import { toast } from 'react-hot-toast'
 
 export function NotificationToggle() {
   const [enabled, setEnabled] = useState(false)

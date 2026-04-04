@@ -3,7 +3,7 @@ import "./globals.css";
 import { Toaster } from 'react-hot-toast';
 import AuthProvider from "@/components/providers/AuthProvider";
 import InstallBanner from "@/components/InstallBanner";
-
+import RegisterSW from "@/components/RegisterSW";
 
 export const metadata: Metadata = {
   title: {
@@ -17,6 +17,13 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
   return (
     <html lang="en">
       <head>
+<script dangerouslySetInnerHTML={{ __html: `
+  window.__installPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    window.__installPrompt = e;
+  });
+` }} />
         <link href="https://fonts.cdnfonts.com/css/mona-sans" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Manrope&display=swap" rel="stylesheet" />
         <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital@0;1&display=swap" rel="stylesheet" />
@@ -28,6 +35,7 @@ export default function RootLayout({ children }: Readonly<{ children: React.Reac
           {children}
           <Toaster position="top-center" />
           <InstallBanner />
+          <RegisterSW />
         </AuthProvider>
       </body>
     </html>

@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
-import { toast } from 'sonner';
+import { toast } from 'react-hot-toast';
 import { Trash2 } from 'lucide-react';
 import AddToCart from './add-to-cart';
 import Link from 'next/link';

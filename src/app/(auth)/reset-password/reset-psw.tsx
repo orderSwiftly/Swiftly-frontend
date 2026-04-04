@@ -3,7 +3,7 @@
 import { useState, useRef, useEffect } from 'react';
 import { ResetPsw } from "@/lib/reset-psw";
 import { useRouter } from "next/navigation";
-import { toast } from "sonner"; // or your toast library
+import { toast } from "react-hot-toast"; // or your toast library
 
 const OTP_LENGTH = 6;
 
