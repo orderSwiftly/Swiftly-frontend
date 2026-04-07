@@ -10,7 +10,7 @@ export const metadata: Metadata = {
     default: "Swiftly",
     template: "%s | Swiftly",
   },
-  description: "Trust-first commerce for university trade and beyond",
+  description: "Order Swiftly",
 };
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
