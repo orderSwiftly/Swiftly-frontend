@@ -63,7 +63,7 @@ export default function PaymentCallbackPage() {
     async function verifyPayment() {
       try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${api_url}/api/v1/paystack/verify?reference=${reference}`, {
+        const res = await fetch(`${api_url}/api/v1/flutterwave/verify?reference=${reference}`, {
           method: 'GET',
           headers: { 'Content-Type': 'application/json' },
           signal: controller.signal,

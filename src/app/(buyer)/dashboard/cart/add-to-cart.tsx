@@ -1,4 +1,4 @@
-// components/AddToCart.tsx
+// src/app/(buyer)/dashboard/cart/add-to-cart.tsx
 import { Plus, Minus } from "lucide-react";
 
 type Props = {

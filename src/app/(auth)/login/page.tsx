@@ -1,4 +1,9 @@
-import LoginComp from './login'
+import type { Metadata } from 'next';
+import LoginComp from './login';
+
+export const metadata: Metadata = {
+    title: 'Login to your account',
+};
 
 export default function LoginPage() {
     return (

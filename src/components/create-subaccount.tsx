@@ -31,7 +31,7 @@ export default function CreateSubaccountPage({ onSubaccountCreated }: CreateSuba
   useEffect(() => {
     const fetchBanks = async () => {
       try {
-        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/paystack/banks`);
+        const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/v1/flutterwave/banks`);
         const data = await res.json();
 
         if (res.ok && data.status === 'success') {

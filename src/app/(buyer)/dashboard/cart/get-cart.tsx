@@ -5,90 +5,72 @@ import Image from 'next/image';
 import { toast } from 'react-hot-toast';
 import { Trash2 } from 'lucide-react';
 import AddToCart from './add-to-cart';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import PulseLoader from '@/components/pulse-loader';
+import { fetchCart, updateCartItemQuantity, removeCartItem, getCartTotals, isCartEmpty, type GroupedCart, type CartItem } from '@/lib/cart';
+import { calculateStoreTotals } from '@/lib/checkout';
 
-type Product = {
-  title: string;
-  productImg: string[];
-  price: number;
-  stock: number;
-};
-
-type CartItem = {
-  productId: string;
+interface StoreWithTotals {
   sellerId: string;
-  quantity: number;
-  price: number;
-  addedAt: string;
-  product: Product;
-};
-
-type SellerGroup = {
-  seller: { _id: string; name: string };
+  sellerName: string;
   items: CartItem[];
-};
-
-type GroupedCart = Record<string, SellerGroup>;
+  subtotal: number;
+  totals: {
+    subtotal: number;
+    serviceFee: number;
+    deliveryFee: number;
+    total: number;
+  };
+}
 
 export default function GetCartComp() {
   const [groupedCart, setGroupedCart] = useState<GroupedCart>({});
+  const [storesWithTotals, setStoresWithTotals] = useState<StoreWithTotals[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
+  const router = useRouter();
 
-  const refetchCart = async () => {
+  const loadCart = async () => {
     try {
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token found');
-
-      const res = await fetch(`${api_url}/api/v1/cart/get`, {
-        method: 'GET',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok) throw new Error(data?.message ?? 'Failed to load cart');
-
-      const cart = data.cart ?? {};
-      if (Array.isArray(cart)) {
-        setGroupedCart({});
-      } else {
-        setGroupedCart(cart as GroupedCart);
-      }
-
+      setLoading(true);
+      const cart = await fetchCart();
+      setGroupedCart(cart);
+      
+      // Calculate totals for each store
+      const stores = await Promise.all(
+        Object.entries(cart).map(async ([sellerId, group]) => {
+          const subtotal = group.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+          const totals = await calculateStoreTotals(subtotal);
+          return {
+            sellerId,
+            sellerName: group.seller.name,
+            items: group.items,
+            subtotal,
+            totals,
+          };
+        })
+      );
+      
+      setStoresWithTotals(stores);
       setError('');
     } catch (err) {
       console.error(err);
-      toast.error('Error refreshing cart');
+      toast.error('Failed to load cart');
       setError('Failed to load cart.');
+    } finally {
+      setLoading(false);
     }
   };
 
   useEffect(() => {
-    const fetchCart = async () => {
-      setLoading(true);
-      await refetchCart();
-      setLoading(false);
-    };
-    fetchCart();
+    loadCart();
   }, []);
 
   const handleQuantityChange = async (productId: string, action: 'increment' | 'decrement') => {
     try {
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token found');
-
-      const res = await fetch(`${api_url}/api/v1/cart/update/${productId}`, {
-        method: 'PATCH',
-        headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${token}` },
-        body: JSON.stringify({ action }),
-      });
-      const data = await res.json();
-      if (!res.ok || data.status !== 'success') throw new Error(data?.message || 'Failed to update cart');
-
+      await updateCartItemQuantity(productId, action);
       toast.success('Cart updated');
-      await refetchCart();
+      await loadCart();
     } catch (err) {
       console.error(err);
       toast.error('Error updating quantity');
@@ -97,28 +79,24 @@ export default function GetCartComp() {
 
   const handleRemove = async (productId: string) => {
     try {
-      const api_url = process.env.NEXT_PUBLIC_API_URL;
-      const token = localStorage.getItem('token');
-      if (!token) throw new Error('No token found');
-
-      const res = await fetch(`${api_url}/api/v1/cart/remove/${productId}`, {
-        method: 'DELETE',
-        headers: { Authorization: `Bearer ${token}` },
-      });
-      const data = await res.json();
-      if (!res.ok || data.status !== 'success') throw new Error(data?.message || 'Failed to remove item');
-
+      await removeCartItem(productId);
       toast.success('Item removed');
-      await refetchCart();
+      await loadCart();
     } catch (err) {
       console.error(err);
       toast.error('Error removing item');
     }
   };
 
-  const allItems = Object.values(groupedCart).flatMap(g => g.items);
-  const subtotal = allItems.reduce((acc, item) => acc + item.quantity * item.price, 0);
-  const isEmpty = allItems.length === 0;
+  const handleCheckoutStore = (storeId: string) => {
+    // Store the selected store ID in localStorage or sessionStorage
+    // const { subtotal: cartSubtotal, itemCount } = getCartTotals(groupedCart);
+    sessionStorage.setItem('checkoutStoreId', storeId);
+    router.push('/order');
+  };
+
+  const { itemCount } = getCartTotals(groupedCart);
+  const empty = isCartEmpty(groupedCart);
 
   if (loading) return (
     <div className="flex items-center justify-center min-h-[40vh]">
@@ -130,7 +108,7 @@ export default function GetCartComp() {
     <p className="text-red-500 text-center mt-8 pry-ff">{error}</p>
   );
 
-  if (isEmpty) {
+  if (empty) {
     return (
       <div className="text-center mt-8 pry-ff flex flex-col items-center text-[var(--sec-clr)]">
         <Image src="/cart.png" alt="Empty Cart" width={150} height={150} className="mx-auto mb-4" />
@@ -141,34 +119,42 @@ export default function GetCartComp() {
 
   return (
     <div className="px-4 sm:px-6 md:px-8 bg-gray-50 min-h-screen pry-ff mb-20">
-      <h1 className="text-xl sm:text-2xl font-bold mb-6">Your Cart</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-6">Your Cart ({itemCount} items)</h1>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
-
-        {/* Cart Groups */}
+        {/* Cart Groups - Each store has its own section with checkout button */}
         <div className="flex-1 w-full space-y-8">
-          {Object.entries(groupedCart).map(([sellerId, group]) => (
-            <div key={sellerId}>
-
-              {/* Seller header */}
-              <div className="flex items-center gap-2 mb-3">
-                <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
-                  Store:
-                </span>
-                <span className="text-sm font-semibold text-gray-700">
-                  {group.seller.name}
-                </span>
+          {storesWithTotals.map((store) => (
+            <div key={store.sellerId} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+              {/* Store header */}
+              <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xs font-semibold text-gray-400 uppercase tracking-wide">
+                      Store:
+                    </span>
+                    <span className="text-base font-bold text-gray-800">
+                      {store.sellerName}
+                    </span>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-sm text-gray-500">Store Subtotal</p>
+                    <p className="text-lg font-bold text-gray-800">
+                      ₦{store.subtotal.toLocaleString()}
+                    </p>
+                  </div>
+                </div>
               </div>
 
               {/* Items */}
-              <div className="space-y-4">
-                {group.items.map((item) => (
+              <div className="p-4 space-y-4">
+                {store.items.map((item) => (
                   <div
                     key={item.productId}
-                    className="flex flex-col sm:flex-row items-center sm:items-start gap-4 bg-white p-4 rounded-xl border border-gray-200"
+                    className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 rounded-xl border border-gray-100 hover:shadow-sm transition"
                   >
                     {/* Image */}
-                    <div className="w-24 h-24 sm:w-28 sm:h-28 relative rounded-lg overflow-hidden flex-shrink-0">
+                    <div className="w-24 h-24 sm:w-28 sm:h-28 relative rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                       <Image
                         src={item.product?.productImg?.[0] || '/fallback.jpg'}
                         alt={item.product?.title ?? 'Product'}
@@ -211,49 +197,70 @@ export default function GetCartComp() {
                 ))}
               </div>
 
-              {/* Seller subtotal */}
-              <p className="text-right text-sm text-gray-400 mt-2">
-                Seller subtotal:{' '}
-                <span className="font-semibold text-gray-600">
-                  ₦{group.items.reduce((acc, item) => acc + item.quantity * item.price, 0).toLocaleString()}
-                </span>
-              </p>
+              {/* Store Order Summary & Checkout Button */}
+              <div className="bg-gray-50 px-6 py-4 border-t border-gray-200">
+                <div className="space-y-3">
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Subtotal</span>
+                    <span className="font-medium text-gray-800">₦{store.totals.subtotal.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Service fee</span>
+                    <span className="font-medium text-gray-800">₦{store.totals.serviceFee.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-sm">
+                    <span className="text-gray-600">Delivery fee</span>
+                    <span className="font-medium text-gray-800">₦{store.totals.deliveryFee.toLocaleString()}</span>
+                  </div>
+                  <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-200">
+                    <span>Total for {store.sellerName}</span>
+                    <span className="text-green-600">₦{store.totals.total.toLocaleString()}</span>
+                  </div>
+                  
+                  <button
+                    onClick={() => handleCheckoutStore(store.sellerId)}
+                    className="w-full mt-4 py-3 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition cursor-pointer text-sm"
+                  >
+                    Proceed to Checkout - ₦{store.totals.total.toLocaleString()}
+                  </button>
+                </div>
+              </div>
             </div>
           ))}
         </div>
 
-        {/* Summary */}
-        <div className="w-full lg:w-80 lg:sticky lg:top-6">
+        {/* 
+          ==========================================
+          OPTIONAL: Overall Cart Summary (Commented Out)
+          Uncomment the section below if you want to show
+          a global cart summary on the right side
+          ==========================================
+        */}
+        
+        {/* <div className="w-full lg:w-80 lg:sticky lg:top-6">
           <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-            <h2 className="text-base font-bold text-gray-800">Order Summary</h2>
-
+            <h2 className="text-base font-bold text-gray-800">Cart Summary</h2>
+            
             <div className="space-y-2">
-              {Object.values(groupedCart).map((group) => (
-                <div key={group.seller._id} className="flex justify-between text-sm text-gray-500">
-                  <span className="truncate max-w-[60%]">{group.seller.name}</span>
-                  <span className="font-medium text-gray-700">
-                    ₦{group.items.reduce((acc, item) => acc + item.quantity * item.price, 0).toLocaleString()}
-                  </span>
+              {storesWithTotals.map((store) => (
+                <div key={store.sellerId} className="flex justify-between text-sm">
+                  <span className="text-gray-600 truncate max-w-[60%]">{store.sellerName}</span>
+                  <span className="font-medium text-gray-800">₦{store.subtotal.toLocaleString()}</span>
                 </div>
               ))}
             </div>
-
-            <div
-              className="flex justify-between text-base font-bold text-gray-800 pt-3"
-              style={{ borderTop: '1px solid #e5e7eb' }}
-            >
-              <span>Subtotal</span>
-              <span>₦{subtotal.toLocaleString()}</span>
+            
+            <div className="flex justify-between text-base font-bold text-gray-800 pt-3 border-t border-gray-200">
+              <span>Total</span>
+              <span>₦{cartSubtotal.toLocaleString()}</span>
             </div>
-
-            <Link href="/order">
-              <button className="w-full mt-2 py-3 rounded-xl bg-green-600 text-white font-semibold hover:opacity-90 transition cursor-pointer text-sm">
-                Proceed to Checkout
-              </button>
-            </Link>
+            
+            <p className="text-xs text-gray-500 text-center mt-2">
+              You&apos;ll checkout each store separately
+            </p>
           </div>
-        </div>
-
+        </div> */}
+        
       </div>
     </div>
   );

@@ -1,4 +1,4 @@
-// components/AddToCart.tsx
+// src/app/(buyer)/dashboard/cart/remove.tsx
 import { Trash2 } from "lucide-react";
 
 type Props = {

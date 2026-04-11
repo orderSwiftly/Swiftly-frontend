@@ -6,7 +6,7 @@ export async function initPayment(orderId: string) {
         if (!token) {
             throw new Error('No token found');
         }
-        const res = await fetch(`${apiUrl}/api/v1/paystack/initialize/${orderId}`, {
+        const res = await fetch(`${apiUrl}/api/v1/flutterwave/initialize/${orderId}`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',

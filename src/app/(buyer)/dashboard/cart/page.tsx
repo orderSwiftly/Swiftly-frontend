@@ -1,4 +1,9 @@
-import GetCartComp from "./get-cart"
+import type { Metadata } from "next";
+import GetCartComp from "./get-cart";
+
+export const metadata: Metadata = {
+    title: 'Your Cart',
+};
 
 export default function CartPage() {
   return (
