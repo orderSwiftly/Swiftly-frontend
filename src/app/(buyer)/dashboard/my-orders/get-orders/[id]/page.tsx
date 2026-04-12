@@ -22,6 +22,13 @@ interface OrderItem {
   itemStatus?: string;
 }
 
+interface OrderDetails { 
+  "buyer": {
+    name: string;
+    phone: string;
+  },
+}
+
 interface Order {
   _id: string;
   items: OrderItem[];
@@ -34,6 +41,7 @@ interface Order {
     addressLine1?: string; city?: string; state?: string;
   };
   deliveryCode?: number;
+  orderDetails: OrderDetails;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {

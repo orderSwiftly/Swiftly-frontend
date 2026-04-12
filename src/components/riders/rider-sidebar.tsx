@@ -17,7 +17,7 @@ import { useSidebar } from '../sidebar-context';
 
 const navItems = [
     { label: 'Home', href: '/rider/dashboard/home', icon: HomeIcon, exact: true },
-    { label: 'Deliveries', href: '/rider/dashboard/deliveries', icon: Bike, exact: false },
+    { label: 'Deliveries', href: '/rider/dashboard/orders', icon: Bike, exact: false },
     { label: 'Profile', href: '/rider/dashboard/profile', icon: UserCircle, exact: false },
 ];
 

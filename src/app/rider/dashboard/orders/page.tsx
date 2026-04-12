@@ -1,4 +1,4 @@
-// src/app/rider/dashboard/deliveries/page.tsx
+// src/app/rider/dashboard/orders/page.tsx
 "use client";
 
 import { useState } from "react";

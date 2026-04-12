@@ -4,7 +4,8 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { getDeliveredOrders, GetShippedOrder } from "@/lib/rider-order";
-import { Loader2, AlertCircle, PackageCheck, ChevronLeft, ChevronRight } from "lucide-react";
+import { Loader2, AlertCircle, PackageCheck, ChevronLeft, ChevronRight, Eye } from "lucide-react";
+import Link from "next/link";
 
 function formatPrice(price: number) {
     return new Intl.NumberFormat("en-NG", {
@@ -22,7 +23,7 @@ function formatDate(dateStr: string) {
     });
 }
 
-function DeliveredOrderCard({ order }: { order: GetShippedOrder }) {
+function DeliveredOrderCard({ order }: Readonly<{ order: GetShippedOrder }>) {
     const firstItem = order.items[0];
     const extraItems = order.items.length - 1;
 
@@ -40,7 +41,7 @@ function DeliveredOrderCard({ order }: { order: GetShippedOrder }) {
                     Delivered
                 </span>
                 <span className="text-[10px] text-[#c0c0c0] font-medium">
-                    #{order._id.slice(-6).toUpperCase()}
+                    #{order._id.slice(-8).toUpperCase()}
                 </span>
             </div>
 
@@ -72,7 +73,7 @@ function DeliveredOrderCard({ order }: { order: GetShippedOrder }) {
             {/* Dotted rows */}
             <div className="px-4 pb-4 flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-[#c0c0c0] shrink-0">Seller</span>
+                    <span className="text-xs text-[#c0c0c0] shrink-0">Store name</span>
                     <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
                     <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[160px] truncate text-right">
                         {order.seller_name}
@@ -95,6 +96,16 @@ function DeliveredOrderCard({ order }: { order: GetShippedOrder }) {
                     </div>
                 )}
             </div>
+            {/* Add View Details button at the bottom */}
+        <div className="px-4 pb-4 pt-2">
+        <Link
+          href={`/rider/dashboard/orders/${order._id}`}
+          className="w-full flex items-center justify-center gap-2 text-xs font-medium text-[#669917] bg-[#f3fae5] border border-[#d4edaa] px-3 py-2 rounded-xl hover:bg-[#e8f5db] transition-colors"
+        >
+          <Eye size={14} />
+          View Order Details
+        </Link>
+      </div>
         </div>
     );
 }

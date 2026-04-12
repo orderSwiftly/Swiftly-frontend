@@ -9,7 +9,7 @@ const actions = [
     },
     {
         link: "/rider/dashboard/profile/wallet",
-        label: "Account Settings",
+        label: "Account Details",
         icon: Wallet,
     },
     {
