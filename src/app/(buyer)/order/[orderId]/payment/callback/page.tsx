@@ -7,6 +7,7 @@ import Link from 'next/link';
 import successAnimation from '@/animations/success.json';
 import failedAnimation from '@/animations/failure.json';
 import { CheckCircle2, Download, Share2 } from 'lucide-react';
+import { verifyPayment, type OrderData } from '@/lib/payment';
 
 type ErrorBlockProps = {
   title: string;
@@ -15,11 +16,11 @@ type ErrorBlockProps = {
 };
 
 const ErrorBlock = ({ title, message, reference }: ErrorBlockProps) => (
-  <div className="min-h-screen flex items-center justify-center flex-col text-center space-y-4 px-4" style={{ backgroundColor: 'var(--pry-clr)' }}>
+  <div className="min-h-screen flex items-center justify-center flex-col text-center space-y-4 px-4" style={{ backgroundColor: 'var(--txt-clr)' }}>
     <div className="w-24 h-24 relative">
       <Lottie animationData={failedAnimation} loop={false} />
     </div>
-    <h2 className="text-2xl font-bold text-red-500 pry-ff">{title}</h2>
+    <h2 className="text-2xl font-bold pry-ff" style={{ color: 'var(--pry-clr)' }}>{title}</h2>
     <p className="sec-ff text-sm" style={{ color: 'var(--sec-clr)' }}>{message}</p>
     {reference && (
       <p className="text-xs font-mono mt-2" style={{ color: 'var(--sec-clr)' }}>
@@ -32,36 +33,19 @@ const ErrorBlock = ({ title, message, reference }: ErrorBlockProps) => (
   </div>
 );
 
-interface Pricing {
-  subtotal: number;
-  serviceFee: number;
-  deliveryFee: number;
-  total: number;
-}
-
-type OrderData = {
-  _id?: string;
-  pricing?: Pricing;
-  deliveryCode?: string;
-  createdAt?: string;
-  storeName?: string;
-  sellerName?: string;
-  sellerAccount?: string;
-  sellerBank?: string;
-  paymentMethod?: string;
-  transactionReference?: string;
-};
-
 export default function PaymentCallbackPage() {
   const [status, setStatus] = useState<'loading' | 'success' | 'error' | 'timeout' | 'missing'>('loading');
   const [message, setMessage] = useState('');
   const [orderData, setOrderData] = useState<OrderData | null>(null);
+  const [isSharing, setIsSharing] = useState(false);
   const searchParams = useSearchParams();
-  const reference = searchParams.get('reference') ?? undefined;
-  const transactionId = searchParams.get('transaction_id') ?? undefined;
-  const statusParam = searchParams.get('status') ?? undefined;
+  const referenceParam = searchParams.get('reference');
+  const transactionId = searchParams.get('transaction_id');
+  const statusParam = searchParams.get('status');
 
   useEffect(() => {
+    const reference = referenceParam;
+    
     if (!reference) {
       setStatus('missing');
       setMessage('Missing payment reference. Please check your payment confirmation email.');
@@ -77,48 +61,20 @@ export default function PaymentCallbackPage() {
       setMessage('Payment verification took too long. Please try again or contact support.');
     }, 15000);
 
-    async function verifyPayment() {
+    async function handleVerification() {
       try {
-        const api_url = process.env.NEXT_PUBLIC_API_URL;
-        const token = localStorage.getItem('token');
-        
-        console.log('Verifying payment with reference:', reference);
-        
-        const res = await fetch(`${api_url}/api/v1/flutterwave/verify?reference=${reference}`, {
-          method: 'GET',
-          headers: { 
-            'Content-Type': 'application/json',
-            'Authorization': token ? `Bearer ${token}` : '',
-          },
-          signal: controller.signal,
-        });
-
-        const data = await res.json();
-        console.log('Verification response:', { status: res.status, data });
+        // Use non-null assertion since we've already checked reference exists
+        const result = await verifyPayment(reference as string);
         
         clearTimeout(timeoutId);
 
-        if (res.ok && data.status === 'success') {
+        if (result.success && result.orderData) {
           setStatus('success');
-          setMessage(data.message || 'Payment confirmed successfully!');
-          setOrderData({
-            _id: data.data?.order?._id,
-            pricing: data.data?.order?.pricing,
-            deliveryCode: data.data?.order?.deliveryCode,
-            createdAt: data.data?.order?.createdAt,
-            storeName: data.data?.order?.storeName || data.data?.order?.sellerName || 'Swiftly Store',
-            sellerName: data.data?.order?.sellerName || 'Swiftly Merchant',
-            sellerAccount: data.data?.order?.sellerAccount || '****1234',
-            sellerBank: data.data?.order?.sellerBank || 'Access Bank',
-            paymentMethod: 'Card Payment',
-            transactionReference: reference,
-          });
-        } else if (res.status === 404) {
-          setStatus('error');
-          setMessage('Order not found. Please contact support with your payment reference.');
+          setMessage(result.message);
+          setOrderData(result.orderData);
         } else {
           setStatus('error');
-          setMessage(data.message || 'Payment verification failed. Please contact support.');
+          setMessage(result.message);
         }
       } catch (err) {
         if ((err as Error)?.name === 'AbortError') return;
@@ -129,13 +85,13 @@ export default function PaymentCallbackPage() {
       }
     }
 
-    verifyPayment();
+    handleVerification();
 
     return () => {
       clearTimeout(timeoutId);
       controller.abort();
     };
-  }, [reference, transactionId, statusParam]);
+  }, [referenceParam, transactionId, statusParam]);
 
   const formatDate = (dateString?: string) => {
     if (!dateString) return 'Apr 5th, 2026 · 22:21:21';
@@ -151,25 +107,68 @@ export default function PaymentCallbackPage() {
     });
   };
 
+  const handleShare = async () => {
+    setIsSharing(true);
+    
+    const shareText = `Swiftly Payment Receipt\n\n` +
+      `Amount: ₦${orderData?.pricing?.total?.toLocaleString()}\n` +
+      `Store: ${orderData?.store_name || 'Swiftly Store'}\n` +
+      `Order ID: ${orderData?._id?.slice(-12) || 'N/A'}\n` +
+      `Status: Successful\n` +
+      `Date: ${formatDate(orderData?.createdAt)}\n\n` +
+      `View receipt: ${window.location.href}`;
+    
+    const shareData = {
+      title: 'Swiftly Payment Receipt',
+      text: `Payment of ₦${orderData?.pricing?.total?.toLocaleString()} to ${orderData?.store_name || 'Swiftly Store'} was successful.`,
+      url: window.location.href,
+    };
+
+    if (navigator.share && navigator.canShare?.(shareData)) {
+      try {
+        await navigator.share(shareData);
+      } catch (err) {
+        if ((err as Error).name !== 'AbortError') {
+          console.error('Share failed:', err);
+          await fallbackCopyToClipboard(shareText);
+        }
+      }
+    } else {
+      await fallbackCopyToClipboard(shareText);
+    }
+    
+    setIsSharing(false);
+  };
+
+  const fallbackCopyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('✓ Receipt information copied to clipboard!\n\nYou can now paste and share it anywhere.');
+    } catch (err) {
+      console.error('Failed to copy:', err);
+      alert('Unable to share. Please take a screenshot of this receipt.');
+    }
+  };
+
   if (status === 'loading') {
     return (
-      <div className="min-h-screen flex items-center justify-center flex-col text-center space-y-4" style={{ backgroundColor: 'var(--pry-clr)' }}>
+      <div className="min-h-screen flex items-center justify-center flex-col text-center space-y-4" style={{ backgroundColor: 'var(--txt-clr)' }}>
         <div className="w-16 h-16 border-4 border-[var(--acc-clr)] border-t-transparent rounded-full animate-spin"></div>
         <p className="text-xl font-semibold sec-ff" style={{ color: 'var(--acc-clr)' }}>Verifying payment...</p>
         <p className="text-sm sec-ff" style={{ color: 'var(--sec-clr)' }}>Please wait while we confirm your payment</p>
-        {reference && (
-          <p className="text-xs font-mono" style={{ color: 'var(--sec-clr)' }}>Reference: {reference}</p>
+        {referenceParam && (
+          <p className="text-xs font-mono" style={{ color: 'var(--sec-clr)' }}>Reference: {referenceParam}</p>
         )}
       </div>
     );
   }
 
-  if (status === 'timeout') return <ErrorBlock title="Verification Timed Out" message={message} reference={reference} />;
-  if (status === 'error') return <ErrorBlock title="Payment Verification Failed" message={message} reference={reference} />;
+  if (status === 'timeout') return <ErrorBlock title="Verification Timed Out" message={message} reference={referenceParam || undefined} />;
+  if (status === 'error') return <ErrorBlock title="Payment Verification Failed" message={message} reference={referenceParam || undefined} />;
   if (status === 'missing') return <ErrorBlock title="Missing Reference" message={message} />;
 
   return (
-    <div className="min-h-screen py-8 px-4" style={{ backgroundColor: 'var(--pry-clr)' }}>
+    <div className="min-h-screen py-8 px-4" style={{ backgroundColor: 'var(--txt-clr)' }}>
       <div className="max-w-2xl mx-auto">
         {/* Success Animation */}
         <div className="flex justify-center mb-6">
@@ -210,19 +209,6 @@ export default function PaymentCallbackPage() {
 
           {/* Details */}
           <div className="p-6 space-y-4">
-            {/* Recipient */}
-            <div className="flex justify-between items-start">
-              <span className="text-sm sec-ff" style={{ color: 'var(--sec-clr)' }}>Recipient</span>
-              <div className="text-right">
-                <p className="text-sm font-semibold sec-ff" style={{ color: 'var(--txt-clr)' }}>
-                  {orderData?.sellerName || 'Swiftly Merchant'}
-                </p>
-                <p className="text-xs sec-ff" style={{ color: 'var(--sec-clr)' }}>
-                  {orderData?.sellerBank || 'Access Bank'} · {orderData?.sellerAccount || '****1234'}
-                </p>
-              </div>
-            </div>
-
             {/* Sender */}
             <div className="flex justify-between items-start">
               <span className="text-sm sec-ff" style={{ color: 'var(--sec-clr)' }}>Sender</span>
@@ -234,15 +220,15 @@ export default function PaymentCallbackPage() {
               </div>
             </div>
 
-            {/* Remark/Store */}
+            {/* Store */}
             <div className="flex justify-between items-start">
               <span className="text-sm sec-ff" style={{ color: 'var(--sec-clr)' }}>Store</span>
               <p className="text-sm sec-ff text-right" style={{ color: 'var(--txt-clr)' }}>
-                {orderData?.storeName || 'Swiftly Store'}
+                {orderData?.store_name || 'Swiftly Store'}
               </p>
             </div>
 
-            {/* Order ID (instead of Transaction no.) */}
+            {/* Order ID */}
             <div className="flex justify-between items-start">
               <span className="text-sm sec-ff" style={{ color: 'var(--sec-clr)' }}>Order ID</span>
               <p className="text-sm sec-ff font-mono text-right" style={{ color: 'var(--txt-clr)' }}>
@@ -250,11 +236,11 @@ export default function PaymentCallbackPage() {
               </p>
             </div>
 
-            {/* Session ID / Reference */}
+            {/* Reference */}
             <div className="flex justify-between items-start">
               <span className="text-sm sec-ff" style={{ color: 'var(--sec-clr)' }}>Reference</span>
               <p className="text-xs sec-ff font-mono text-right break-all max-w-[60%]" style={{ color: 'var(--sec-clr)' }}>
-                {reference || 'N/A'}
+                {referenceParam || 'N/A'}
               </p>
             </div>
 
@@ -297,16 +283,15 @@ export default function PaymentCallbackPage() {
                 <span className="sec-ff text-sm font-medium" style={{ color: 'var(--txt-clr)' }}>Download</span>
               </button>
               <button 
-                onClick={() => navigator.share?.({
-                  title: 'Swiftly Receipt',
-                  text: `Payment of ₦${orderData?.pricing?.total?.toLocaleString()} to ${orderData?.storeName}`,
-                  url: window.location.href,
-                }).catch(() => {})}
-                className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-opacity hover:opacity-80"
+                onClick={handleShare}
+                disabled={isSharing}
+                className="flex-1 py-3 rounded-xl flex items-center justify-center gap-2 transition-opacity hover:opacity-80 disabled:opacity-50"
                 style={{ backgroundColor: 'var(--bg-clr)' }}
               >
                 <Share2 size={18} style={{ color: 'var(--txt-clr)' }} />
-                <span className="sec-ff text-sm font-medium" style={{ color: 'var(--txt-clr)' }}>Share</span>
+                <span className="sec-ff text-sm font-medium" style={{ color: 'var(--txt-clr)' }}>
+                  {isSharing ? 'Sharing...' : 'Share'}
+                </span>
               </button>
             </div>
 
