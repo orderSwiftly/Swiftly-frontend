@@ -50,6 +50,8 @@ interface Order {
     institutionId?: string;
   };
   deliveryCode?: number;
+  store_name: string;
+  store_address: string;
   seller_name: string;
   buyer: {
     name: string;
@@ -205,7 +207,13 @@ export default function RiderOrderDetails() {
             <div className="flex items-center gap-2">
               <Store size={14} className="text-[var(--bg-clr)] opacity-60" />
               <span className="text-sm text-[var(--pry-clr)] sec-ff">
-                <span className="opacity-60">Store:</span> {order.seller_name}
+                <span className="opacity-60">Store:</span> {order.store_name}
+              </span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin size={14} className="text-[var(--bg-clr)] opacity-60" />
+              <span className="text-sm text-[var(--pry-clr)] sec-ff">
+                <span className="opacity-60">Address:</span> {order.store_address}
               </span>
             </div>
             {order.deliveryCode && (

@@ -4,7 +4,7 @@ import DeliveryWindow from "./delivery-window";
 
 export default function RiderDashboard() {
     return (
-        <div className="min-h-screen bg-gray-100 sec-ff">
+        <div className="min-h-screen bg-gray-100 sec-ff mb-20">
             <main className="p-4 max-w-7xl mx-auto">
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* Earnings Section - takes 1/3 on large screens */}
