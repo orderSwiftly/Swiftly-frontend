@@ -66,6 +66,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Expl
         }
         setProducts((data.products ?? []).filter((p: Product) => p.stock > 0));
       } catch (err) {
+        console.error(err);
         setError("An error occurred while fetching products");
       } finally {
         setLoading(false);
@@ -91,6 +92,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Expl
         if (res.ok && data.status === "success") setProducts((data.products ?? []).filter((p: Product) => p.stock > 0));
         else setError(data?.message ?? "No matching products found.");
       } catch (err) {
+        console.error(err);
         setError("Failed to load products.");
       } finally {
         setLoading(false);

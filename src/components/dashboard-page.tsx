@@ -20,6 +20,7 @@ export default function DashboardPage() {
     const [activeCategory, setActiveCategory] = React.useState('');
 
     const Categories = [
+        { name: 'All', icon: LayoutGrid, bg: 'bg-gray-100', color: 'text-gray-700' },
         { name: 'Food', icon: Utensils, bg: 'bg-orange-100', color: 'text-orange-600' },
         { name: 'Fashion', icon: Shirt, bg: 'bg-pink-100', color: 'text-pink-600' },
         { name: 'Beauty', icon: Sparkles, bg: 'bg-purple-100', color: 'text-purple-600' },
@@ -27,7 +28,6 @@ export default function DashboardPage() {
         { name: 'Electronics', icon: Cpu, bg: 'bg-indigo-100', color: 'text-indigo-600' },
         { name: 'Stationeries', icon: PenTool, bg: 'bg-yellow-100', color: 'text-yellow-600' },
         { name: 'Care', icon: HeartPulse, bg: 'bg-red-100', color: 'text-red-600' },
-        { name: 'Others', icon: LayoutGrid, bg: 'bg-gray-200', color: 'text-gray-700' },
     ];
 
     const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -38,9 +38,16 @@ export default function DashboardPage() {
     };
 
     const handleCategoryClick = (categoryName: string) => {
-        setActiveSearch('');
-        setSearchInput('');
-        setActiveCategory(prev => prev === categoryName ? '' : categoryName);
+        if (categoryName === 'All') {
+            // Clear all filters
+            setActiveCategory('');
+            setActiveSearch('');
+            setSearchInput('');
+        } else {
+            setActiveSearch('');
+            setSearchInput('');
+            setActiveCategory(prev => prev === categoryName ? '' : categoryName);
+        }
     };
 
     return (
@@ -68,7 +75,7 @@ export default function DashboardPage() {
                     </h2>
                 </div>
 
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-8 gap-4">
+                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-4">
                     {Categories.map((cat) => (
                         <button
                             key={cat.name}
@@ -76,11 +83,19 @@ export default function DashboardPage() {
                             className="flex flex-col items-center gap-2 group cursor-pointer"
                         >
                             <div
-                                className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 ${cat.bg} ${activeCategory === cat.name ? 'ring-2 ring-green-500' : ''}`}
+                                className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 ${cat.bg} ${
+                                    (cat.name === 'All' && !activeCategory) || activeCategory === cat.name 
+                                        ? 'ring-2 ring-green-500' 
+                                        : ''
+                                }`}
                             >
                                 <cat.icon className={`w-6 h-6 ${cat.color}`} />
                             </div>
-                            <span className={`text-xs md:text-sm font-medium transition-colors text-center ${activeCategory === cat.name ? 'text-green-600 font-semibold' : 'text-gray-600 group-hover:text-gray-900'}`}>
+                            <span className={`text-xs md:text-sm font-medium transition-colors text-center ${
+                                (cat.name === 'All' && !activeCategory) || activeCategory === cat.name 
+                                    ? 'text-green-600 font-semibold' 
+                                    : 'text-gray-600 group-hover:text-gray-900'
+                            }`}>
                                 {cat.name}
                             </span>
                         </button>
