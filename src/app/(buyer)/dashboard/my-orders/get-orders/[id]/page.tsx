@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert, User, Phone } from 'lucide-react';
 // import ConfirmDelivery from './confirm-delivery';
 import VerifyRider from '../../components/verify-rider';
 // import OrderProgress from '../../components/order-progress';
@@ -22,11 +22,9 @@ interface OrderItem {
   itemStatus?: string;
 }
 
-interface OrderDetails { 
-  "buyer": {
-    name: string;
-    phone: string;
-  },
+interface Buyer {
+  name: string;
+  phone: string;
 }
 
 interface Order {
@@ -41,7 +39,11 @@ interface Order {
     addressLine1?: string; city?: string; state?: string;
   };
   deliveryCode?: number;
-  orderDetails: OrderDetails;
+  delivery_window?: {
+    start: string;
+    end: string;
+  };
+  buyer: Buyer;  // Buyer is at root level, not inside orderDetails
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
@@ -79,6 +81,7 @@ export default function GetOrderById() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
+      console.log('Order data:', data); // Debug log
       setOrder(res.ok && data.status === 'success' ? data.data.order : null);
     } catch {
       setOrder(null);
@@ -118,14 +121,20 @@ export default function GetOrderById() {
     ? [addr.building, addr.room].filter(Boolean).join(', ')
     : [addr.addressLine1, addr.city, addr.state].filter(Boolean).join(', ') || 'N/A';
 
-  // const progressStep = ORDER_PROGRESS_MAP[order.orderStatus] ?? -1;
-  // const statusLabel = ORDER_STATUS_LABEL[order.orderStatus] ?? `Your order is ${order.orderStatus.replace(/_/g, ' ')}`;
-
-  const meta = [
+  // Create meta items array
+  const metaItems = [
     { icon: Clock, label: 'Placed', value: new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) },
     { icon: CreditCard, label: 'Payment', value: order.paymentStatus },
-    // { icon: Tag, label: 'Delivery Code', value: order.deliveryCode ? String(order.deliveryCode) : '—' },
   ];
+
+  // Add delivery window to meta items if it exists
+  if (order.delivery_window) {
+    metaItems.push({
+      icon: Clock,
+      label: 'Delivery Window',
+      value: `${order.delivery_window.start} - ${order.delivery_window.end}`
+    });
+  }
 
   return (
     <div className="min-h-screen bg-[var(--txt-clr)] pb-24">
@@ -154,17 +163,9 @@ export default function GetOrderById() {
           </span>
         </div>
 
-        {/* Progress */}
-        {/* <div style={card} className="space-y-2">
-          <OrderProgress filled={progressStep} />
-          <p className="text-xs sm:text-sm text-[var(--pry-clr)] sec-ff text-center opacity-80">
-            {statusLabel}
-          </p>
-        </div> */}
-
-        {/* Meta strip — stacks to 1 col on very small screens */}
-        <div className="grid grid-cols-2 gap-2 sm:gap-3">
-          {meta.map(({ icon: Icon, label, value }) => (
+        {/* Meta strip */}
+        <div className={`grid gap-2 sm:gap-3 ${metaItems.length === 2 ? 'grid-cols-2' : metaItems.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'}`}>
+          {metaItems.map(({ icon: Icon, label, value }) => (
             <div
               key={label}
               style={card}
@@ -178,6 +179,29 @@ export default function GetOrderById() {
             </div>
           ))}
         </div>
+
+        {/* Buyer Information */}
+        {order.buyer && (
+          <div style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
+            <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2 mb-3">
+              <User size={15} className="text-[var(--bg-clr)]" /> Buyer Information
+            </h2>
+            <div className="space-y-2">
+              <div className="flex items-center gap-2">
+                <User size={14} className="text-[var(--bg-clr)] opacity-60" />
+                <span className="text-sm text-[var(--pry-clr)] sec-ff">
+                  <span className="opacity-60">Name:</span> {order.buyer.name}
+                </span>
+              </div>
+              <div className="flex items-center gap-2">
+                <Phone size={14} className="text-[var(--bg-clr)] opacity-60" />
+                <span className="text-sm text-[var(--pry-clr)] sec-ff">
+                  <span className="opacity-60">Phone:</span> {order.buyer.phone}
+                </span>
+              </div>
+            </div>
+          </div>
+        )}
 
         {/* Verify Rider */}
         {order.orderStatus === 'awaiting_verification' && (
@@ -297,14 +321,6 @@ export default function GetOrderById() {
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
-          {/* {order.orderStatus === 'shipped' && (
-            <button
-              onClick={() => setShowPopup(true)}
-              className="w-full sm:w-auto bg-[var(--bg-clr)] text-[var(--txt-clr)] font-semibold px-5 py-2.5 rounded-xl hover:opacity-90 sec-ff cursor-pointer transition text-sm"
-            >
-              Enter Delivery Code
-            </button>
-          )} */}
           {order.paymentStatus !== 'paid' && (
             <Link
               href={`/order/${order._id}/payment`}

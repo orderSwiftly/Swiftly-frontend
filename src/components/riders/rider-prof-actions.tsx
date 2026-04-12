@@ -13,7 +13,7 @@ const actions = [
         icon: Wallet,
     },
     {
-        link: "/rider/dashboard/deliveries",
+        link: "/rider/dashboard/orders",
         label: "Deliveries",
         icon: BikeIcon,
     },
