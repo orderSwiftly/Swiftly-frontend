@@ -6,7 +6,7 @@ import Lottie from 'lottie-react';
 import Link from 'next/link';
 import successAnimation from '@/animations/success.json';
 import failedAnimation from '@/animations/failure.json';
-import { CheckCircle2, Download, Share2 } from 'lucide-react';
+import { CheckCircle2, Download, Share2, Clock } from 'lucide-react';
 import { verifyPayment, type OrderData } from '@/lib/payment';
 
 type ErrorBlockProps = {
@@ -115,12 +115,13 @@ export default function PaymentCallbackPage() {
       `Store: ${orderData?.store_name || 'Swiftly Store'}\n` +
       `Order ID: ${orderData?._id?.slice(-12) || 'N/A'}\n` +
       `Status: Successful\n` +
-      `Date: ${formatDate(orderData?.createdAt)}\n\n` +
-      `View receipt: ${window.location.href}`;
+      `Date: ${formatDate(orderData?.createdAt)}\n` +
+      `${orderData?.delivery_window ? `Delivery Window: ${orderData.delivery_window.start} - ${orderData.delivery_window.end}\n` : ''}` +
+      `\nView receipt: ${window.location.href}`;
     
     const shareData = {
       title: 'Swiftly Payment Receipt',
-      text: `Payment of ₦${orderData?.pricing?.total?.toLocaleString()} to ${orderData?.store_name || 'Swiftly Store'} was successful.`,
+      text: `Payment of ₦${orderData?.pricing?.total?.toLocaleString()} to ${orderData?.store_name || 'Swiftly Store'} was successful.${orderData?.delivery_window ? ` Delivery window: ${orderData.delivery_window.start} - ${orderData.delivery_window.end}` : ''}`,
       url: window.location.href,
     };
 
@@ -243,6 +244,18 @@ export default function PaymentCallbackPage() {
                 {referenceParam || 'N/A'}
               </p>
             </div>
+
+            {/* Delivery Window */}
+            {orderData?.delivery_window && (
+              <div className="flex justify-between items-start">
+                <span className="text-sm sec-ff flex items-center gap-1" style={{ color: 'var(--sec-clr)' }}>
+                  <Clock size={14} /> Delivery Window
+                </span>
+                <p className="text-sm sec-ff text-right font-medium" style={{ color: 'var(--acc-clr)' }}>
+                  {orderData.delivery_window.start} - {orderData.delivery_window.end}
+                </p>
+              </div>
+            )}
 
             {/* Delivery Code if available */}
             {orderData?.deliveryCode && (
