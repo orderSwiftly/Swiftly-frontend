@@ -72,7 +72,7 @@ export default function GetEarnings() {
 
 function StatCard({ label, value, sub }: { label: string; value: string; sub?: string }) {
   return (
-    <div className="rounded-lg bg-muted p-4">
+    <div className="rounded-lg bg-white shadow-lg p-4">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
       <p className="text-2xl font-medium">{value}</p>
       {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
