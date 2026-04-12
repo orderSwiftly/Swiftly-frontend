@@ -1,6 +1,8 @@
+// src/components/riders/rider-sidebar.tsx
+
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import {
@@ -14,6 +16,23 @@ import {
 import Image from 'next/image';
 import { useUserStore } from '@/stores/userStore';
 import { useSidebar } from '../sidebar-context';
+import { fetchRiderDetails } from '@/lib/rider';
+
+interface RiderDetails {
+    user_data: {
+        name: string;
+        email: string;
+        photo?: string;
+        institution: {
+            id: string;
+            name: string;
+        };
+    };
+    rider_data: {
+        status: string;
+        active_order_ids: string[];
+    };
+}
 
 const navItems = [
     { label: 'Home', href: '/rider/dashboard/home', icon: HomeIcon, exact: true },
@@ -25,12 +44,20 @@ export default function Sidebar() {
     const { collapsed, setCollapsed } = useSidebar();
     const pathname = usePathname();
     const { user, isLoading, fetchUser, logout } = useUserStore();
+    const [riderPhoto, setRiderPhoto] = useState<string | null>(null);
 
     useEffect(() => {
         if (typeof window === 'undefined') return;
         const token = localStorage.getItem('token');
         if (token && !user && !isLoading) {
             fetchUser();
+        }
+        if (token) {
+            fetchRiderDetails()
+                .then((data: RiderDetails) => {
+                    if (data?.user_data?.photo) setRiderPhoto(data.user_data.photo);
+                })
+                .catch(() => {});
         }
     }, []);
 
@@ -40,7 +67,7 @@ export default function Sidebar() {
         'R';
 
     const displayName = user?.fullname || 'Rider';
-    const userAvatar = user?.photo || null;
+    const userAvatar = riderPhoto || user?.photo || null;
 
     return (
         <>
