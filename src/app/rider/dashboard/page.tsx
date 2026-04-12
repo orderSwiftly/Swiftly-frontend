@@ -3,8 +3,6 @@
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
 
-import DashboardPage from '@/components/dashboard-page';
-import ComplaintModal from '@/components/complaint-modal';
 import WelcomeScreen from '@/components/welcome-screen';
 import Onboarding from '@/components/onboarding';
 import SelectCampus from '@/components/select-campus';
@@ -17,7 +15,6 @@ export default function DashboardHome() {
 
     const { showCampus, openCampus, closeCampus } = useUIStore();
 
-    const [showComplaint, setShowComplaint] = useState(false);
     const [showWelcome, setShowWelcome] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
 

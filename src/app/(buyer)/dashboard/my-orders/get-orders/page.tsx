@@ -49,13 +49,13 @@ export default function GetOrders({
       case "active":
         return sortByProgress(
           orders.filter((o) =>
-            ["confirmed", "shipped", "awaiting_verification", "verified"].includes(o.orderStatus)
+            ["confirmed", "shipped", "awaiting_verification", "verified", "collected"].includes(o.orderStatus)
           )
         );
       case "passive":
         return sortByProgress(
           orders.filter((o) =>
-            ["delivered", "collected", "cancelled", "returned"].includes(o.orderStatus)
+            ["delivered", "cancelled", "returned"].includes(o.orderStatus)
           )
         );
       default:
