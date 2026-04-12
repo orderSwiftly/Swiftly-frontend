@@ -10,9 +10,24 @@ import {
     PenTool,
     HeartPulse,
     LayoutGrid,
+    Clock,
+    Package,
+    Truck,
+    Calendar,
+    AlertCircle,
 } from 'lucide-react';
 
 import ExplorePage from '@/app/(buyer)/explore/exploreComp';
+
+// Delivery window data
+const deliveryWindows = [
+    { orderWindow: "7:00 - 9:00 AM", deliveryWindow: "10:00 - 11:30 AM" },
+    { orderWindow: "9:00 - 11:00 AM", deliveryWindow: "12:00 - 1:30 PM" },
+    { orderWindow: "11:00 - 1:00 PM", deliveryWindow: "2:00 - 3:30 PM" },
+    { orderWindow: "1:00 - 3:00 PM", deliveryWindow: "4:00 - 5:30 PM" },
+    { orderWindow: "3:00 - 5:00 PM", deliveryWindow: "6:00 - 7:30 PM" },
+    { orderWindow: "5:00 - 7:00 PM", deliveryWindow: "7:30 - 8:00 PM" },
+];
 
 export default function DashboardPage() {
     const [searchInput, setSearchInput] = React.useState('');
@@ -39,7 +54,6 @@ export default function DashboardPage() {
 
     const handleCategoryClick = (categoryName: string) => {
         if (categoryName === 'All') {
-            // Clear all filters
             setActiveCategory('');
             setActiveSearch('');
             setSearchInput('');
@@ -67,8 +81,68 @@ export default function DashboardPage() {
                 </div>
             </div>
 
+            {/* Responsive Grid Delivery Window */}
+            <section className="mt-6 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl">
+                <div className="bg-gradient-to-r from-blue-50 to-indigo-50 rounded-xl p-4 shadow-sm border border-blue-100">
+                    {/* Header */}
+                    <div className="flex items-center gap-2 mb-4">
+                        <div className="w-6 h-6 bg-blue-500 rounded-lg flex items-center justify-center">
+                            <Clock className="w-3.5 h-3.5 text-white" />
+                        </div>
+                        <div>
+                            <h3 className="text-sm font-semibold text-gray-800">Delivery Schedule</h3>
+                            <p className="text-xs text-gray-500">Order windows & delivery times</p>
+                        </div>
+                    </div>
+
+                    {/* Responsive Grid */}
+                    <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-3 lg:grid-cols-6 gap-2">
+                        {deliveryWindows.map((slot, index) => (
+                            <div
+                                key={index}
+                                className="bg-white rounded-lg p-2.5 shadow-sm border border-gray-100 hover:shadow-md transition-shadow"
+                            >
+                                {/* Order Window */}
+                                <div className="mb-2 pb-1.5 border-b border-gray-50">
+                                    <div className="flex items-center gap-1 mb-1">
+                                        <Calendar className="w-3 h-3 text-blue-400" />
+                                        <span className="text-[10px] font-medium text-gray-500">Order</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Clock className="w-3 h-3 text-blue-500" />
+                                        <span className="text-xs font-semibold text-gray-800">
+                                            {slot.orderWindow}
+                                        </span>
+                                    </div>
+                                </div>
+
+                                {/* Delivery Window */}
+                                <div>
+                                    <div className="flex items-center gap-1 mb-1">
+                                        <Truck className="w-3 h-3 text-green-400" />
+                                        <span className="text-[10px] font-medium text-gray-500">Delivery</span>
+                                    </div>
+                                    <div className="flex items-center gap-1">
+                                        <Package className="w-3 h-3 text-green-500" />
+                                        <span className="text-xs font-semibold text-gray-700">
+                                            {slot.deliveryWindow}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+
+                    {/* Info Note */}
+                    <div className="flex items-center gap-1.5 mt-4 text-xs text-gray-500 bg-white/50 rounded-lg p-2">
+                        <AlertCircle className="w-3 h-3 text-blue-400 flex-shrink-0" />
+                        <p className="text-[11px]">Order before 7PM for same-day delivery</p>
+                    </div>
+                </div>
+            </section>
+
             {/* Categories Section */}
-            <section className="mt-12 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl">
+            <section className="mt-8 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl">
                 <div className="flex items-center justify-between mb-6">
                     <h2 className="text-xl md:text-2xl font-semibold text-gray-800 pry-ff">
                         Categories
@@ -104,7 +178,7 @@ export default function DashboardPage() {
             </section>
 
             {/* Explore Section */}
-            <section className="mt-14 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl">
+            <section className="mt-10 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl mb-5">
                 <ExplorePage searchTerm={activeSearch} categoryName={activeCategory} />
             </section>
 
