@@ -3,7 +3,7 @@
 "use client";
 
 import { useState } from "react";
-import { ForgotPsw } from "@/lib/forgot-psw";
+import { forgotPassword } from "@/lib/auth";
 import toast from "react-hot-toast";
 import { useRouter } from "next/navigation";
 import PulseLoader from "@/components/pulse-loader";
@@ -13,26 +13,30 @@ export default function ForgotPassword() {
   const [loading, setLoading] = useState(false);
   const router = useRouter();
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) {
-      toast.error("Please enter your email");
-      return;
-    }
+const handleSubmit = async (e: React.FormEvent) => {
+  e.preventDefault();
+  if (!email) {
+    toast.error("Please enter your email");
+    return;
+  }
 
-    try {
-      setLoading(true);
-      const res = await ForgotPsw(email);
-      toast.success(res?.message || "Password reset OTP sent to your email");
-      setEmail("");
-      router.push('/reset-password');
-    } catch (error) {
-      console.log(error)
-      toast.error("Failed to send reset email");
-    } finally {
-      setLoading(false);
-    }
-  };
+  try {
+    setLoading(true);
+    const res = await forgotPassword(email); // Fixed import
+    toast.success(res?.message || "Password reset OTP sent to your email");
+    
+    // Save email for reset page
+    localStorage.setItem('reset_email', email);
+    
+    setEmail("");
+    router.push('/reset-password');
+  } catch (error) {
+    console.log(error)
+    toast.error(error instanceof Error ? error.message : "Failed to send reset email");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <main className="flex items-center justify-center min-h-screen">
