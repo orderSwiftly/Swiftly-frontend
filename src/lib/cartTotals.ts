@@ -1,4 +1,4 @@
-const DELIVERY_FEE = 600;
+const DELIVERY_FEE = 500;
 
 function calculateServiceFee(subtotal: number): number {
   if (subtotal < 1000) return 0;
