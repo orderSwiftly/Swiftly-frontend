@@ -1,3 +1,5 @@
+// src/components/InstallBanner.tsx
+
 'use client'
 
 import { useEffect, useState } from 'react'

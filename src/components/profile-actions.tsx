@@ -1,11 +1,11 @@
-import { ShoppingBag, Signpost, ChevronRight, Wallet } from "lucide-react";
+import { ShoppingBag, Signpost, ChevronRight, UserCog } from "lucide-react";
 import Link from "next/link";
 
 const actions = [
   {
     link: "/dashboard/profile/account",
     label: "My Account",
-    icon: Wallet,
+    icon: UserCog,
   },
   {
     link: "/dashboard/my-orders",

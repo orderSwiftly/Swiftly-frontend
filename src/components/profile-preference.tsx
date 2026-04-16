@@ -1,45 +1,24 @@
+// src/components/profile-preference
+
 "use client";
 
 import { Bell, HelpCircle, ChevronRight, LogOut } from "lucide-react";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import LogoutModal from "./logout-modal";
 import { useUserStore } from "@/stores/userStore";
-import { subscribeToPush, unsubscribeFromPush, isSubscribed } from "@/lib/push";
+import { usePushNotifications } from "@/hooks/usePushNotifications";
 import { toast } from "react-hot-toast";
 import Link from "next/link";
 
 export default function ProfilePreference() {
   const { logout } = useUserStore();
   const [showLogoutModal, setShowLogoutModal] = useState(false);
-  const [notificationsEnabled, setNotificationsEnabled] = useState(false);
-  const [notifLoading, setNotifLoading] = useState(false);
+  const { enabled, loading, toggleNotifications } = usePushNotifications();
 
-  useEffect(() => {
-    isSubscribed().then(setNotificationsEnabled);
-  }, []);
-
-  const handleNotifToggle = async () => {
-    setNotifLoading(true);
-    try {
-      if (notificationsEnabled) {
-        await unsubscribeFromPush();
-        setNotificationsEnabled(false);
-        toast.success("Notifications turned off");
-      } else {
-        await subscribeToPush();
-        const subscribed = await isSubscribed();
-        setNotificationsEnabled(subscribed);
-        if (subscribed) {
-          toast.success("Notifications turned on");
-        } else {
-          toast.error("Permission denied — enable notifications in your browser settings");
-        }
-      }
-    } catch {
-      toast.error("Something went wrong, try again");
-    } finally {
-      setNotifLoading(false);
-    }
+  const handleLogout = async () => {
+    await logout();
+    // Don't unsubscribe on logout - keep subscription for next login
+    toast.success("Logged out successfully");
   };
 
   return (
@@ -61,15 +40,15 @@ export default function ProfilePreference() {
             </div>
 
             <button
-              onClick={handleNotifToggle}
-              disabled={notifLoading}
+              onClick={toggleNotifications}
+              disabled={loading}
               className={`relative w-12 h-6 rounded-full transition-colors ${
-                notificationsEnabled ? "bg-green-600" : "bg-gray-300"
+                enabled ? "bg-green-600" : "bg-gray-300"
               } disabled:opacity-50`}
             >
               <span
                 className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
-                  notificationsEnabled ? "translate-x-6" : "translate-x-0"
+                  enabled ? "translate-x-6" : "translate-x-0"
                 }`}
               />
             </button>
@@ -110,7 +89,7 @@ export default function ProfilePreference() {
       {showLogoutModal && (
         <LogoutModal
           onClose={() => setShowLogoutModal(false)}
-          onLogout={logout}
+          onLogout={handleLogout}
         />
       )}
     </>

@@ -1,3 +1,5 @@
+// public/web-push-service-worker.js
+
 self.addEventListener('push', (event) => {
   const data = event.data.json()
   event.waitUntil(

@@ -2,8 +2,6 @@
 
 'use client'
 
-'use client'
-
 import { useState, useEffect } from 'react'
 import { subscribeToPush, unsubscribeFromPush, isSubscribed } from '@/lib/push'
 import { toast } from 'react-hot-toast'
