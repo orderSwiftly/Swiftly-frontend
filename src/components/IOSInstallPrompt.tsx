@@ -45,10 +45,10 @@ export default function IOSInstallPrompt() {
   if (!visible || !isIOS || isStandalone) return null
 
   return (
-    <div className="fixed bottom-4 left-4 right-4 z-50 bg-white border border-gray-200 rounded-xl shadow-lg p-4 md:left-auto md:right-6 md:w-96 animate-in slide-in-from-bottom-5 duration-300">
+    <div className="fixed bottom-4 left-4 right-4 z-50 bg-(--txt-clr) border border-gray-200 rounded-xl shadow-lg p-4 md:left-auto md:right-6 md:w-96 animate-in slide-in-from-bottom-5 duration-300">
       <div className="flex items-start gap-3">
-        <div className="w-10 h-10 rounded-lg bg-gray-900 flex items-center justify-center shrink-0">
-          <NavigationIcon className="w-5 h-5 text-white" />
+        <div className="w-10 h-10 rounded-lg bg-(--prof-clr) flex items-center justify-center shrink-0">
+          <NavigationIcon className="w-5 h-5 text-(--txt-clr)" />
         </div>
         <div className="flex-1">
           <div className="flex items-center justify-between">
