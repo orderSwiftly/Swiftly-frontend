@@ -1,7 +1,7 @@
-const DELIVERY_FEE = 500;
+const DELIVERY_FEE = 600;
 
 function calculateServiceFee(subtotal: number): number {
-  if (subtotal < 1000) return 0;
+  if (subtotal < 100) return 0;
   const capped = Math.min(subtotal, 2999999);
   const steps = Math.floor(capped / 10000);
   return 50 + 50 * steps;
