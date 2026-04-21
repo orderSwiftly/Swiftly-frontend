@@ -15,7 +15,6 @@ export default function DashboardHome() {
 
     const { showCampus, openCampus, closeCampus } = useUIStore();
 
-    const [showComplaint, setShowComplaint] = useState(false);
     const [showWelcome, setShowWelcome] = useState(false);
     const [showOnboarding, setShowOnboarding] = useState(false);
 
@@ -74,9 +73,7 @@ export default function DashboardHome() {
             )}
 
             {!showWelcome && !showOnboarding && !showCampus && (
-                <>
-                    <DashboardPage />
-                </>
+                <DashboardPage />
             )}
         </>
     );

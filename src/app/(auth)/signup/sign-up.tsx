@@ -4,35 +4,39 @@
 
 import { useEffect, useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff, GraduationCap } from 'lucide-react';
+import { Eye, EyeOff } from 'lucide-react';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
 import Image from 'next/image';
 import { signupUser } from '@/lib/auth';
-
-type Campus = {
-  id: number;
-  name: string;
-  location: string;
-};
+import WelcomeScreen from '@/components/welcome-screen';
+import Onboarding from '@/components/onboarding';
 
 export default function SignupComp() {
   const router = useRouter();
+
+  const [step, setStep] = useState<'welcome' | 'onboarding' | 'form' | null>(null);
   const [fullname, setFullname] = useState('');
   const [email, setEmail] = useState('');
+  const [phone, setPhone] = useState('');
   const [password, setPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
   const [showPass, setShowPass] = useState(false);
   const [showConfirmPass, setShowConfirmPass] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [campus, setCampus] = useState<Campus | null>(null);
   const [agreedToTerms, setAgreedToTerms] = useState(false);
 
   useEffect(() => {
-    const storedCampus = localStorage.getItem('selected-campus');
-    if (storedCampus) {
-      setCampus(JSON.parse(storedCampus));
+    const seenWelcome = sessionStorage.getItem('seen-welcome');
+    const seenOnboarding = localStorage.getItem('seen-onboarding');
+
+    if (!seenWelcome) {
+      setStep('welcome');
+    } else if (!seenOnboarding) {
+      setStep('onboarding');
+    } else {
+      setStep('form');
     }
   }, []);
 
@@ -47,14 +51,13 @@ export default function SignupComp() {
     setLoading(true);
 
     try {
-      await signupUser({ fullname, email, password });
-
+      await signupUser({ fullname, email, phone, password });
       toast.success('Signup successful! Redirecting to login...');
-      setLoading(false);
       router.push('/login');
     } catch (err) {
       const message = err instanceof Error ? err.message : 'Something went wrong';
       toast.error(message);
+    } finally {
       setLoading(false);
     }
   };
@@ -64,6 +67,30 @@ export default function SignupComp() {
     'placeholder:text-[var(--sec-clr)] outline-none ' +
     'border border-[var(--acc-clr)] ' +
     'focus:border-[var(--acc-clr)] focus:ring-1 focus:ring-[var(--acc-clr)]';
+
+  if (step === 'welcome') {
+    return (
+      <WelcomeScreen
+        onFinish={() => {
+          sessionStorage.setItem('seen-welcome', 'true');
+          setStep('onboarding');
+        }}
+      />
+    );
+  }
+
+  if (step === 'onboarding') {
+    return (
+      <Onboarding
+        onFinish={() => {
+          localStorage.setItem('seen-onboarding', 'true');
+          setStep('form');
+        }}
+      />
+    );
+  }
+
+  if (step !== 'form') return null;
 
   return (
     <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] px-4">
@@ -100,6 +127,18 @@ export default function SignupComp() {
                 required
               />
             </div>
+          </div>
+
+          <div>
+            <label className="text-sm mb-1 block">Phone number</label>
+            <input
+              type="tel"
+              placeholder="08012345678"
+              value={phone}
+              onChange={(e) => setPhone(e.target.value)}
+              className={inputBase}
+              required
+            />
           </div>
 
           <div>
@@ -149,20 +188,6 @@ export default function SignupComp() {
             {confirmPassword && password !== confirmPassword && (
               <p className="text-red-500 text-xs mt-1">Passwords do not match</p>
             )}
-          </div>
-
-          <div className="group cursor-pointer flex items-center justify-between gap-3 border border-dashed border-[var(--sec-clr)] rounded-lg p-3 bg-[var(--sec-clr)] transition">
-            <div className="flex flex-col gap-1">
-              {campus ? (
-                <p className="pry-ff text-sm">{campus.name}</p>
-              ) : (
-                <p className="text-sm opacity-70 sec-ff">Select your campus</p>
-              )}
-            </div>
-            <GraduationCap
-              size={20}
-              className="text-[var(--acc-clr)] group-hover:scale-110 transition"
-            />
           </div>
 
           <div className="flex items-center gap-2">

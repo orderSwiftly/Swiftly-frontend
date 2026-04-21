@@ -1,3 +1,5 @@
+// src/app/(auth)/login/page.tsx
+
 import type { Metadata } from 'next';
 import LoginComp from './login';
 

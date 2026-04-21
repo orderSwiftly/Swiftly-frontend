@@ -1,3 +1,5 @@
+// src/app/(auth)/signup/page.tsx
+
 import type { Metadata } from "next";
 import SignupComp from "./sign-up";
 

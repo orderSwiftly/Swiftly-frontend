@@ -50,7 +50,7 @@ const SelectCampus: React.FC<Props> = ({ onFinish }) => {
   };
 
   return (
-    <main className="fixed inset-0 z-[997] bg-white flex flex-col items-center pt-8 px-6 pb-24 overflow-y-auto pry-ff">
+    <main className="fixed inset-0 z-[997] bg-(--txt-clr) flex flex-col items-center pt-8 px-6 pb-24 overflow-y-auto pry-ff">
       <h2 className="text-2xl font-bold text-gray-800 mb-4">
         Select Your Campus
       </h2>

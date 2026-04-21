@@ -108,12 +108,12 @@ const handleLogin = async (e: React.FormEvent) => {
           </button>
         </form>
 
-        <p className="text-sm text-center text-[var(--pry-clr)] sec-ff">
-          Don&apos;t have an account?{' '}
-          <a href="/signup" className="text-[var(--acc-clr)] font-medium underline">
-            Sign up
-          </a>
-        </p>
+<p className="text-sm text-center text-[var(--pry-clr)] sec-ff">
+  Don&apos;t have an account?{' '}
+  <Link href="/signup" className="text-[var(--acc-clr)] font-medium underline">
+    Sign up
+  </Link>
+</p>
       </div>
     </main>
   );
