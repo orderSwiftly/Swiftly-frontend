@@ -186,6 +186,16 @@ export default function PaymentCallbackPage() {
           <p className="sec-ff text-sm" style={{ color: 'var(--sec-clr)' }}>{message}</p>
         </div>
 
+        {/* Delivery Window */}
+        {orderData?.delivery_window && (
+          <div className="flex items-center justify-center gap-2 mb-8 bg-(--bg-clr) p-2 rounded-lg">
+            <Clock size={16} style={{ color: 'var(--acc-clr)' }} />
+            <span className="text-lg sec-ff" style={{ color: 'var(--acc-clr)' }}>
+              Your delivery window is from <strong>{orderData.delivery_window.start}</strong> to <strong>{orderData.delivery_window.end}</strong>.
+            </span>
+          </div>
+        )}
+
         {/* Receipt Card */}
         <div className="rounded-2xl overflow-hidden" style={{ backgroundColor: 'var(--dark-bg)' }}>
           {/* Header */}
