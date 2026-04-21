@@ -93,10 +93,10 @@ export default function SignupComp() {
   if (step !== 'form') return null;
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] px-4">
-      <div className="w-full max-w-md bg-[var(--txt-clr)] p-8 rounded-2xl shadow-lg text-[var(--pry-clr)]">
+    <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] py-4">
+      <div className="w-full max-w-2xl bg-[var(--txt-clr)] p-8 rounded-2xl shadow-lg text-[var(--pry-clr)]">
         <div className='flex flex-col items-center'>
-          <Image src="/swiftly.png" alt="Swiftly Logo" width={100} height={100} />
+          <Image src="/brand-logo.png" alt="Swiftly Logo" width={40} height={40} />
           <h1 className="text-xl font-bold text-center mb-4 pry-ff">
             Register with Swiftly
           </h1>
