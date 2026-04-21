@@ -51,11 +51,11 @@ const handleLogin = async (e: React.FormEvent) => {
       <div className="w-full max-w-md bg-[var(--txt-clr)] p-8 sm:p-10 rounded-2xl shadow-2xl text-[var(--txt-clr)] space-y-4">
         <div className="flex justify-center">
           <Link href="/dashboard">
-            <Image src="/swiftly.png" alt="Swiftly Logo" width={80} height={80} className="rounded-full" priority />
+            <Image src="/brand-logo.png" alt="Swiftly Logo" width={40} height={40} className="rounded-full" priority />
           </Link>
         </div>
 
-        <h1 className="text-2xl font-bold text-center pry-ff text-black">Welcome Back to Swiftly</h1>
+        <h1 className="text-2xl font-bold text-center pry-ff text-[var(--pry-clr)]">Welcome back to Swiftly</h1>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-5 sec-ff">
           <div className="flex flex-col gap-1">

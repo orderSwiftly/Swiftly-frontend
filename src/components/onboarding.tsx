@@ -17,12 +17,6 @@ const Onboarding: React.FC<Props> = ({ onFinish }) => {
       img: '/marketplace_vector.png',
     },
     {
-      title: 'Discover with Market Map',
-      desc: 'See vendor clusters around campus and find what’s near you.',
-      btn: 'Next',
-      img: '/Share_location.png',
-    },
-    {
       title: 'Ready?',
       desc: 'Welcome to your campus marketplace. Discover a faster, smarter way to campus life.',
       btn: 'Next',
@@ -33,6 +27,10 @@ const Onboarding: React.FC<Props> = ({ onFinish }) => {
   const handleNext = () => {
     if (step === slides.length - 1) onFinish();
     else setStep(prev => prev + 1);
+  };
+
+  const handleDotClick = (index: number) => {
+    setStep(index);
   };
 
   return (
@@ -47,14 +45,21 @@ const Onboarding: React.FC<Props> = ({ onFinish }) => {
       </div>
       <div className="flex gap-2 mt-2 mb-4">
         {slides.map((_, i) => (
-          <span key={i} className={`w-2 h-2 rounded-full ${i === step ? 'bg-[#7bd140]' : 'bg-gray-300'}`} />
+          <button
+            key={i}
+            onClick={() => handleDotClick(i)}
+            className={`w-2 h-2 rounded-full transition-all cursor-pointer ${
+              i === step ? 'bg-[#7bd140]' : 'bg-gray-300'
+            }`}
+            aria-label={`Go to slide ${i + 1}`}
+          />
         ))}
       </div>
       <div className="w-full max-w-xs flex flex-col gap-3 sec-ff">
-        <button onClick={handleNext} className="w-full bg-[#7bd140] text-white py-3 rounded-lg font-semibold">
+        <button onClick={handleNext} className="w-full bg-[#7bd140] text-white py-3 rounded-lg font-semibold cursor-pointer">
           {slides[step].btn}
         </button>
-        <button onClick={onFinish} className="w-full py-2 text-sm text-gray-500">
+        <button onClick={onFinish} className="w-full py-2 text-sm text-gray-500 cursor-pointer">
           Skip
         </button>
       </div>

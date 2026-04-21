@@ -45,22 +45,25 @@ export default function InstallBanner() {
   if (!visible) return null
 
   return (
-    <div className="fixed bottom-23 left-4 right-4 z-50 bg-(--txt-clr) border border-gray-200 rounded-xl shadow-lg px-4 py-3 flex items-center gap-3 md:left-auto md:right-6 md:w-80 sec-ff">
-      <div className="w-10 h-10 rounded-lg bg-(--prof-clr) flex items-center justify-center shrink-0">
-        <Download className="w-5 h-5 text-(--txt-clr)" />
-      </div>
-      <div className="flex-1">
-        <p className="text-sm font-semibold text-gray-800">Install Swiftly</p>
-        <p className="text-xs text-gray-500">Add to home screen for a better experience</p>
-      </div>
-      <div className="flex gap-1 shrink-0">
-        <button onClick={handleInstall} className="text-xs font-semibold text-(--prof-clr) hover:text-(--prof-clr) cursor-pointer">
-          Install
-        </button>
-        <button onClick={handleDismiss} className="text-xs text-gray-400 hover:text-gray-600 cursor-pointer">
-          <X className="w-3 h-3" />
+    <div className="fixed bottom-1 right-2 z-50 bg-(--txt-clr) border border-gray-200 rounded-xl shadow-lg p-3 w-64 sec-ff">
+      <div className="flex items-start gap-2">
+        <div className="w-8 h-8 rounded-lg bg-(--prof-clr) flex items-center justify-center shrink-0">
+          <Download className="w-4 h-4 text-(--txt-clr)" />
+        </div>
+        <div className="flex-1">
+          <p className="text-sm font-semibold text-gray-800">Install Swiftly</p>
+          <p className="text-xs text-gray-500">Add to home screen</p>
+        </div>
+        <button onClick={handleDismiss} className="text-gray-400 hover:text-gray-600 cursor-pointer -mt-1">
+          <X className="w-3.5 h-3.5" />
         </button>
       </div>
+      <button 
+        onClick={handleInstall} 
+        className="mt-2 w-full text-xs font-semibold text-(--prof-clr) hover:text-(--prof-clr) cursor-pointer py-1.5 px-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+      >
+        Install App
+      </button>
     </div>
   )
 }
