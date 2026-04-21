@@ -4,7 +4,7 @@ import { useState, useRef } from "react";
 import { X, Paperclip, Send } from "lucide-react";
 import { CreateComplaint } from "@/lib/create-complaint";
 import PulseLoader from "./pulse-loader";
-import toast from "react-hot-toast";
+import toast from "creact-hot-toast";
 
 export default function ComplaintForm() {
   const [subject, setSubject] = useState("");

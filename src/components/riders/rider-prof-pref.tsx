@@ -1,7 +1,8 @@
 "use client";
 
-import { Bell, ChevronRight, LogOut } from "lucide-react";
+import { Bell, ChevronRight, LogOut, Headphones } from "lucide-react";
 import { useState, useEffect } from "react";
+import Link from "next/link";
 import LogoutModal from "@/components/logout-modal";
 import { useUserStore } from "@/stores/userStore";
 import { subscribeToPush, unsubscribeFromPush, isSubscribed } from "@/lib/push";
@@ -51,8 +52,24 @@ export default function ProfilePreference() {
         <h3 className="text-sm font-semibold text-gray-700 mb-2">
           Preferences
         </h3>
+        
 
         <div className="bg-white rounded-xl border border-gray-200 divide-y">
+          <Link 
+            href="/rider/dashboard/profile/support"
+            className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
+          >
+            <div className="flex items-center gap-3">
+              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
+                <Headphones className="w-5 h-5 text-white" />
+              </div>
+              <span className="text-sm font-medium text-gray-800">
+                Contact Support
+              </span>
+            </div>
+            <ChevronRight className="w-4 h-4 text-gray-400" />
+          </Link>
+          
           <div className="w-full flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
               <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
