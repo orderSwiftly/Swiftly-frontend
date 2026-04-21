@@ -2,7 +2,7 @@
 import { create } from "zustand";
 import { persist, createJSONStorage } from "zustand/middleware";
 
-export type UserRole = "buyer" | "seller" | "rider";
+export type UserRole = "buyer" | "rider";
 
 export interface User {
   _id: string;
@@ -15,11 +15,6 @@ export interface User {
   fullname?: string;
   photo?: string;
   university?: string;
-
-  // Seller-specific
-  businessName?: string;
-  logo?: string;
-  institution?: any;
 
   // Rider-specific (API returns "name" not "fullname")
   name?: string;
@@ -196,7 +191,6 @@ export const useUserStore = create<UserState>()(
       getDisplayName: () => {
         const user = get().user;
         if (!user) return "";
-        if (user.role === "seller") return user.businessName || "";
         if (user.role === "rider") return user.name || user.fullname || "";
         return user.fullname || "";
       },
@@ -204,7 +198,7 @@ export const useUserStore = create<UserState>()(
       getAvatar: () => {
         const user = get().user;
         if (!user) return "";
-        return user.role === "seller" ? user.logo || "" : user.photo || "";
+        return user.photo || "";
       },
     }),
     {

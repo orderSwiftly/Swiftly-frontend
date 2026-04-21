@@ -39,24 +39,24 @@ export default function PrePermissionPrompt({ onAccept, onDismiss }: PrePermissi
   if (!visible) return null
 
   return (
-    <div className="fixed bottom-24 left-4 right-4 z-50 bg-white border border-gray-200 rounded-xl shadow-lg px-4 py-3 flex items-center gap-3 md:left-auto md:right-6 md:w-80 animate-in slide-in-from-bottom-5 duration-300">
-      <div className="w-10 h-10 rounded-lg bg-blue-600 flex items-center justify-center shrink-0">
-        <Bell className="w-5 h-5 text-white" />
+    <div className="fixed bottom-24 left-4 right-4 z-50 bg-(--txt-clr) border border-gray-200 rounded-xl shadow-lg px-4 py-3 flex items-center gap-3 md:left-auto md:right-6 md:w-80 animate-in slide-in-from-bottom-5 duration-300">
+      <div className="w-10 h-10 rounded-lg bg-(--prof-clr) flex items-center justify-center shrink-0">
+        <Bell className="w-5 h-5 text-(--txt-clr)" />
       </div>
       <div className="flex-1">
-        <p className="text-sm font-semibold text-gray-800">Stay updated</p>
-        <p className="text-xs text-gray-500">Get real-time order updates and offers</p>
+        <p className="text-sm font-semibold text-gray-800 pry-ff">Stay updated</p>
+        <p className="text-xs text-gray-500 sec-ff">Get real-time order updates and offers</p>
       </div>
       <div className="flex gap-2 shrink-0">
         <button
           onClick={handleAccept}
-          className="px-3 py-1.5 text-xs font-semibold bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+          className="px-3 py-1.5 text-xs font-semibold bg-(--prof-clr) text-(--txt-clr) rounded-lg hover:bg-(--prof-hover-clr) transition cursor-pointer sec-ff"
         >
           Allow
         </button>
         <button
           onClick={handleDismiss}
-          className="p-1.5 text-gray-400 hover:text-gray-600 transition"
+          className="p-1.5 text-gray-400 hover:text-gray-600 transition cursor-pointer"
         >
           <X className="w-4 h-4" />
         </button>
