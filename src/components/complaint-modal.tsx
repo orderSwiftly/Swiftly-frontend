@@ -1,7 +1,7 @@
 "use client";
 
-import { useState, useRef } from "react";
-import { X, Paperclip, Send } from "lucide-react";
+import { useState } from "react";
+import { Send } from "lucide-react";
 import { CreateComplaint } from "@/lib/create-complaint";
 import PulseLoader from "./pulse-loader";
 import toast from "react-hot-toast";
@@ -9,35 +9,16 @@ import toast from "react-hot-toast";
 export default function ComplaintForm() {
   const [subject, setSubject] = useState("");
   const [content, setContent] = useState("");
-  const [attachments, setAttachments] = useState<File[]>([]);
   const [loading, setLoading] = useState(false);
-
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
-
-  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files) {
-      const files = Array.from(e.target.files);
-      if (files.length + attachments.length > 4) {
-        toast.error("You can only upload up to 4 attachments");
-        return;
-      }
-      setAttachments((prev) => [...prev, ...files]);
-    }
-  };
-
-  const removeAttachment = (index: number) => {
-    setAttachments((prev) => prev.filter((_, i) => i !== index));
-  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
     try {
-      await CreateComplaint({ subject, content, attachments });
+      await CreateComplaint({ subject, content, attachments: [] });
       toast.success("Complaint submitted successfully");
       setSubject("");
       setContent("");
-      setAttachments([]);
     } catch (err) {
       console.error("Error submitting complaint:", err);
       toast.error("Failed to submit complaint");
@@ -81,56 +62,6 @@ export default function ComplaintForm() {
             className="w-full border border-[var(--pry-clr)]/15 bg-[var(--pry-clr)]/5 text-[var(--pry-clr)] rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-[var(--acc-clr)]/50 focus:border-[var(--acc-clr)] transition sec-ff placeholder:text-[var(--pry-clr)]/30 resize-none"
             placeholder="Describe your issue in detail..."
           />
-        </div>
-
-        {/* File Upload */}
-        <div>
-          <label className="block text-xs font-semibold text-[var(--pry-clr)]/50 sec-ff mb-2 uppercase tracking-wider">
-            Attachments{" "}
-            <span className="normal-case font-normal">(optional, max 4)</span>
-          </label>
-
-          <input
-            ref={fileInputRef}
-            type="file"
-            multiple
-            accept="image/*"
-            onChange={handleFileChange}
-            className="hidden"
-          />
-
-          <button
-            type="button"
-            onClick={() => fileInputRef.current?.click()}
-            className="flex items-center gap-2 px-4 py-2 border border-dashed border-[var(--bg-clr)]/50 rounded-xl text-sm text-[var(--bg-clr)] hover:border-[var(--bg-clr)] hover:bg-[var(--bg-clr)]/5 transition duration-200 sec-ff"
-          >
-            <Paperclip size={15} />
-            Choose Files
-          </button>
-
-          {attachments.length > 0 && (
-            <div className="flex flex-wrap gap-3 mt-3">
-              {attachments.map((file, index) => (
-                <div
-                  key={index}
-                  className="relative w-20 h-20 rounded-xl overflow-hidden border border-[var(--pry-clr)]/10 shadow-sm"
-                >
-                  <img
-                    src={URL.createObjectURL(file)}
-                    alt={file.name}
-                    className="w-full h-full object-cover"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => removeAttachment(index)}
-                    className="absolute top-1 right-1 bg-[var(--pry-clr)]/70 text-[var(--txt-clr)] rounded-full p-0.5 hover:bg-[var(--pry-clr)] transition"
-                  >
-                    <X size={11} />
-                  </button>
-                </div>
-              ))}
-            </div>
-          )}
         </div>
 
         {/* Submit */}

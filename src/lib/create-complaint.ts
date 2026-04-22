@@ -8,7 +8,7 @@ interface ComplaintData {
 
 export async function CreateComplaint(data: ComplaintData) {
   try {
-    const api_url = process.env.NEXT_PUBLIC_API_URL || "https://tredia-be.onrender.com";
+    const api_url = process.env.NEXT_PUBLIC_API_URL;
     const rawToken = localStorage.getItem("token");
 
     if (!rawToken) throw new Error("No auth token found in localStorage");
