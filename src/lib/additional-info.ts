@@ -1,3 +1,5 @@
+// src/lib/additional-info.ts
+
 import axios from "axios";
 
 export async function AdditionalInfo(formData: {
@@ -11,6 +13,7 @@ export async function AdditionalInfo(formData: {
   if (!token) throw new Error("No token found");
 
   const data = new FormData();
+  
   if (formData.phoneNumber) data.append("phoneNumber", formData.phoneNumber);
   if (formData.photo) data.append("photo", formData.photo);
   if (formData.gender) data.append("gender", formData.gender);

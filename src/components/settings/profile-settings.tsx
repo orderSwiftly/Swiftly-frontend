@@ -11,7 +11,7 @@ type SettingsFormData = {
   name: string;
   email: string;
   bio: string;
-  phoneNumber: string;
+  phoneNumber: string;  // ✅ Use phoneNumber
   gender: string;
   photo?: File;
 };
@@ -24,14 +24,14 @@ export default function ProfileSettings() {
     name: "",
     email: "",
     bio: "",
-    phoneNumber: "",
+    phoneNumber: "",  // ✅ Use phoneNumber
     gender: "",
   });
 
   const [preview, setPreview] = useState<string | null>(null);
   const [imgError, setImgError] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [photoLoading, setPhotoLoading] = useState(false); // ✅ photo spinner
+  const [photoLoading, setPhotoLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   useEffect(() => {
@@ -42,7 +42,7 @@ export default function ProfileSettings() {
           name: user.fullname || "",
           email: user.email || "",
           bio: "",
-          phoneNumber: user.phoneNumber || "",
+          phoneNumber: user.phoneNumber || "",  // ✅ Direct mapping
           gender: user.gender || "",
         });
         if (user.photo) setPreview(optimizeCloudinaryUrl(user.photo));
@@ -61,7 +61,7 @@ export default function ProfileSettings() {
     const file = e.target.files?.[0];
     if (file) {
       setFormData((prev) => ({ ...prev, photo: file }));
-      setPreview(URL.createObjectURL(file)); // show local preview immediately
+      setPreview(URL.createObjectURL(file));
       setImgError(false);
     }
   };
@@ -70,12 +70,16 @@ export default function ProfileSettings() {
     e.preventDefault();
     try {
       setLoading(true);
-      // ✅ if a new photo is being uploaded, start photo spinner too
       if (formData.photo) setPhotoLoading(true);
 
-      const updatedUser = await AdditionalInfo(formData);
+      const updateData = {
+        phoneNumber: formData.phoneNumber,  // ✅ Send phoneNumber
+        gender: formData.gender,
+        photo: formData.photo,
+      };
 
-      // ✅ once done, update preview with the real Cloudinary URL
+      const updatedUser = await AdditionalInfo(updateData);
+
       if (updatedUser?.photo) {
         setPreview(optimizeCloudinaryUrl(updatedUser.photo));
       }
@@ -86,20 +90,19 @@ export default function ProfileSettings() {
       toast.error("Failed to update profile");
     } finally {
       setLoading(false);
-      setPhotoLoading(false); // ✅ stop photo spinner
+      setPhotoLoading(false);
     }
   };
 
   return (
     <div className="p-6">
 
-      {/* ── Profile header ──────────────────────────── */}
+      {/* Profile header */}
       <div className="flex items-center gap-4 mb-8">
 
         {/* Avatar */}
         <div className="relative group w-16 h-16 shrink-0">
           {photoLoading ? (
-            // ✅ spinner overlay while photo is uploading
             <div className="w-16 h-16 rounded-full bg-[#9BDD37]/10 ring-2 ring-[#9BDD37]/40 flex items-center justify-center">
               <Loader2 size={20} className="text-[#9BDD37] animate-spin" />
             </div>
@@ -116,7 +119,6 @@ export default function ProfileSettings() {
               <User size={24} className="text-[#9BDD37]" />
             </div>
           )}
-          {/* hide camera button while uploading */}
           {!photoLoading && (
             <button
               type="button"
@@ -145,7 +147,7 @@ export default function ProfileSettings() {
         </div>
       </div>
 
-      {/* ── Form ────────────────────────────────────── */}
+      {/* Form */}
       <form onSubmit={handleSubmit} className="space-y-5">
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -183,8 +185,8 @@ export default function ProfileSettings() {
             Phone Number
           </label>
           <input
-            type="text"
-            name="phoneNumber"
+            type="tel"
+            name="phoneNumber"  // ✅ Use phoneNumber
             value={formData.phoneNumber}
             onChange={handleChange}
             placeholder="Enter your phone number"

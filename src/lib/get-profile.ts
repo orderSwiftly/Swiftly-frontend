@@ -14,7 +14,8 @@ export async function GetProfile() {
                 Authorization: `Bearer ${token}`,
             },
         });
-        return res.data.data.user;
+        
+        return res.data.data.user;  // ✅ Direct return, no mapping needed
     } catch (err: unknown) {
         if (err instanceof Error) {
             console.error("GetProfile error:", err.message);
@@ -23,5 +24,6 @@ export async function GetProfile() {
         } else {
             console.error("GetProfile error:", "Something went wrong");
         }
+        return null;
     }
 }
