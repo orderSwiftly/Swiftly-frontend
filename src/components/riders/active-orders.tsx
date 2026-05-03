@@ -122,7 +122,7 @@ function ActiveOrderCard({
                     </span>
                 </div>
                 {/* Only show delivery code when collected */}
-                {status === "collected" && (
+                {/* {status === "collected" && (
                     <div className="flex items-center justify-between gap-2">
                         <span className="text-xs text-[#c0c0c0] shrink-0">Delivery Code</span>
                         <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
@@ -130,7 +130,7 @@ function ActiveOrderCard({
                             {order.deliveryCode}
                         </span>
                     </div>
-                )}
+                )} */}
             </div>
 
             {error && (

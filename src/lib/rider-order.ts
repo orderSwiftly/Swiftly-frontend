@@ -157,14 +157,14 @@ export async function collectOrder(orderId: string): Promise<void> {
 
 // ─── Deliver to buyer ──────────────────────────────────────────────────────
 
-export async function deliverOrder(orderId: string): Promise<void> {
+export async function deliverOrder(orderId: string, deliveryCode: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
     await axios.post(
       `${apiUrl}/api/v1/rider/deliver/${orderId}`,
-      {},
+      { delivery_code: deliveryCode },
       { headers: { Authorization: `Bearer ${token}` } }
     );
   } catch (error) {
