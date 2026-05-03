@@ -157,18 +157,28 @@ export async function collectOrder(orderId: string): Promise<void> {
 
 // ─── Deliver to buyer ──────────────────────────────────────────────────────
 
+// src/lib/rider-order.ts
+
 export async function deliverOrder(orderId: string, deliveryCode: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
+    // Convert the delivery code to a number since it's stored as a number in the DB
+    const payload = {
+      delivery_code: parseInt(deliveryCode, 10) // Send as number, not string
+    };
+
+    console.log("Sending delivery code:", payload); // Should show { delivery_code: 314773 }
+
     await axios.post(
       `${apiUrl}/api/v1/rider/deliver/${orderId}`,
-      { delivery_code: deliveryCode },
+      payload,
       { headers: { Authorization: `Bearer ${token}` } }
     );
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
+    console.error("Delivery error:", err.response?.data);
     throw new Error(
       err.response?.data?.message || err.message || "Failed to deliver order"
     );

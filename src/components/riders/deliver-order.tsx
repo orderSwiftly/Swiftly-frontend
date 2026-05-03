@@ -4,8 +4,9 @@
 
 import { deliverOrder } from "@/lib/rider-order";
 import { useState } from "react";
-import { Loader2, Bike, X, Clipboard } from "lucide-react";
+import { Loader2, X, Clipboard } from "lucide-react";
 import PulseLoader from "../pulse-loader";
+import toast from "react-hot-toast";
 
 export default function DeliverOrderButton({
     orderId,
@@ -27,27 +28,33 @@ export default function DeliverOrderButton({
         setCodeError("");
     };
 
-    const handleSubmit = async () => {
-        if (!enteredCode || enteredCode.length !== 6) {
-            setCodeError("Please enter a valid 6-digit delivery code");
-            return;
-        }
+// In deliver-order.tsx, the handleSubmit function is fine, but ensure:
+const handleSubmit = async () => {
+    if (!enteredCode || enteredCode.length !== 6) {
+        setCodeError("Please enter a valid 6-digit delivery code");
+        toast.error("Please enter a valid 6-digit delivery code")
+        return;
+    }
 
-        console.log("order id", orderId);
-
-        setLoading(true);
-        setCodeError("");
-        
-        try {
-            await deliverOrder(orderId, enteredCode);
-            setShowModal(false);
-            onSuccess();
-        } catch (e: unknown) {
-            onError(e instanceof Error ? e.message : "Failed to deliver order");
-        } finally {
-            setLoading(false);
-        }
-    };
+    setLoading(true);
+    setCodeError("");
+    
+    try {
+        // The enteredCode is a string like "314773"
+        // It will be converted to number 314773 in the deliverOrder function
+        await deliverOrder(orderId, enteredCode);
+        setShowModal(false);
+        onSuccess();
+        toast.success("Order marked as delivered successfully!");
+    } catch (e: unknown) {
+        const errorMessage = e instanceof Error ? e.message : "Failed to deliver order";
+        setCodeError(errorMessage);
+        onError(errorMessage);
+        toast.error(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+};
 
     return (
         <>
@@ -56,8 +63,7 @@ export default function DeliverOrderButton({
                 disabled={loading}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-xl bg-[var(--bg-clr)] hover:bg-[#8acc2a] disabled:opacity-60 text-[var(--txt-clr)] text-sm font-semibold transition-colors cursor-pointer"
             >
-                {loading ? <Loader2 size={14} className="animate-spin" /> : <Bike size={14} />}
-                {loading ? <PulseLoader /> : "Mark as Delivered"}
+                {loading ? <PulseLoader /> : "Enter Delivery Code"}
             </button>
 
             {/* Modal */}
