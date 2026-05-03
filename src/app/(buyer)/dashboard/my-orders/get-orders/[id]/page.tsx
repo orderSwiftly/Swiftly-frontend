@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert, User, Phone } from 'lucide-react';
+import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert } from 'lucide-react';
 // import ConfirmDelivery from './confirm-delivery';
 import VerifyRider from '../../components/verify-rider';
 // import OrderProgress from '../../components/order-progress';
@@ -49,7 +49,7 @@ interface Order {
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
   pending: { bg: 'rgba(234,179,8,0.12)', color: '#b45309', border: 'rgba(234,179,8,0.35)' },
   confirmed: { bg: 'rgba(59,130,246,0.10)', color: '#1d4ed8', border: 'rgba(59,130,246,0.3)' },
-  shipped: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
+  prepared: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
   awaiting_verification: { bg: 'rgba(245,158,11,0.10)', color: '#b45309', border: 'rgba(245,158,11,0.3)' },
   verified: { bg: 'rgba(34,197,94,0.10)', color: '#166534', border: 'rgba(34,197,94,0.3)' },
   delivered: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
@@ -181,7 +181,7 @@ export default function GetOrderById() {
         </div>
 
         {/* Buyer Information */}
-        {order.buyer && (
+        {/* {order.buyer && (
           <div style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
             <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2 mb-3">
               <User size={15} className="text-[var(--bg-clr)]" /> Buyer Information
@@ -201,7 +201,7 @@ export default function GetOrderById() {
               </div>
             </div>
           </div>
-        )}
+        )} */}
 
         {/* Verify Rider */}
         {order.orderStatus === 'awaiting_verification' && (

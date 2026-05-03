@@ -4,7 +4,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Truck } from 'lucide-react';
+import { ArrowRight, Package } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Order } from '@/types/order';
 import OrderProgress from './order-progress';
@@ -115,12 +115,12 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
                 {shippingLoading === order._id ? (
                   <>
                     <div className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
-                    <span>Shipping...</span>
+                    <span>Preparing...</span>
                   </>
                 ) : (
                   <>
-                    <Truck size={16} />
-                    <span>Ship Order</span>
+                    <Package size={16} />
+                    <span>Prepare Order</span>
                   </>
                 )}
               </button>

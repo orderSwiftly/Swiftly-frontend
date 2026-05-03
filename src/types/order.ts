@@ -48,7 +48,7 @@ export interface Order {
   orderStatus:
     | "pending"
     | "confirmed"
-    | "shipped"
+    | "prepared"
     | "awaiting_verification"
     | "verified"
     | "collected"

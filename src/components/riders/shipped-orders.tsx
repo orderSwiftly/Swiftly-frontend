@@ -133,7 +133,7 @@ export default function ShippedOrders() {
         return (
             <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
                 <Loader2 size={36} className="animate-spin text-[#006B4F]" />
-                <p className="text-sm">Loading shipped orders…</p>
+                <p className="text-sm">Loading prepared orders…</p>
             </div>
         );
     }
@@ -151,7 +151,7 @@ export default function ShippedOrders() {
         return (
             <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
                 <BadgeCheck size={40} strokeWidth={1.5} className="text-[#9BDD37]" />
-                <p className="text-sm">No shipped orders at the moment</p>
+                <p className="text-sm">No prepared orders at the moment</p>
             </div>
         );
     }
@@ -159,7 +159,7 @@ export default function ShippedOrders() {
     return (
         <div className="sec-ff">
             <div className="flex items-baseline justify-between mb-5">
-                <h2 className="text-lg font-semibold text-[#0A0F1A]">Shipped Orders</h2>
+                <h2 className="text-lg font-semibold text-[#0A0F1A]">Prepared Orders</h2>
                 <span className="text-[#c0c0c0] text-sm">{orders.length} available</span>
             </div>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">

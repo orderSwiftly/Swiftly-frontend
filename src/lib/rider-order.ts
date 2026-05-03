@@ -35,7 +35,7 @@ export interface GetShippedOrder {
     postalCode: string;
     country: string;
   };
-  orderStatus: "shipped" | "awaiting_verification" | "verified" | "collected" | "delivered";
+  orderStatus: "prepared" | "awaiting_verification" | "verified" | "collected" | "delivered";
   paymentStatus: string;
   escrowStatus: "held" | "released" | "refunded";
   createdAt: string;
@@ -89,7 +89,7 @@ export default async function getShippedOrders(): Promise<GetShippedOrder[]> {
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
-      err.response?.data?.message || err.message || "Failed to fetch shipped orders"
+      err.response?.data?.message || err.message || "Failed to fetch prepared orders"
     );
   }
 }

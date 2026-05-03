@@ -20,7 +20,7 @@ export function checkCanShipOrder(order: Order, sellerId: string): boolean {
   return order.items.some(
     (item) =>
       toStringId(item.productOwnerId) === sellerId &&
-      item.itemStatus !== "shipped"
+      item.itemStatus !== "prepared"
   );
 }
 
@@ -50,7 +50,7 @@ export const filterOrdersByTab = (
         return status === "confirmed";
       case "active":
         return (
-          status === "shipped" ||
+          status === "prepared" ||
           status === "collected"
         );
       case "delivered":

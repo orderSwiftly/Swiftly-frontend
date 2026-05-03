@@ -1,4 +1,5 @@
 // src/lib/ship.ts
+// now prepare order
 
 import axios, { AxiosError } from "axios";
 
@@ -10,8 +11,8 @@ export async function ShipOrders(orderId: string) {
             throw new Error('No token found');
         }
 
-        console.log('Attempting to ship order:', orderId);
-        console.log('API URL:', `${api_url}/api/v1/order/${orderId}/ship-order`);
+        // console.log('Attempting to prepare order:', orderId);
+        // console.log('API URL:', `${api_url}/api/v1/order/${orderId}/ship-order`);
 
         // Fix: Pass headers in the config object, not request body
         const res = await axios.patch(
@@ -32,7 +33,7 @@ export async function ShipOrders(orderId: string) {
         return res.data;
         
     } catch (error: unknown) {
-        console.error('Error shipping order:', error);
+        console.error('Error preparing order:', error);
         if (error && typeof error === 'object' && 'response' in error) {
             const err = error as AxiosError;
             console.error('Error response:', err.response?.data);

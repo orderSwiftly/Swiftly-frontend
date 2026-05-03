@@ -62,7 +62,7 @@ interface Order {
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
   pending: { bg: 'rgba(234,179,8,0.12)', color: '#b45309', border: 'rgba(234,179,8,0.35)' },
   confirmed: { bg: 'rgba(59,130,246,0.10)', color: '#1d4ed8', border: 'rgba(59,130,246,0.3)' },
-  shipped: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
+  prepared: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
   awaiting_verification: { bg: 'rgba(245,158,11,0.10)', color: '#b45309', border: 'rgba(245,158,11,0.3)' },
   verified: { bg: 'rgba(34,197,94,0.10)', color: '#166534', border: 'rgba(34,197,94,0.3)' },
   delivered: { bg: 'rgba(102,153,23,0.12)', color: '#669917', border: 'rgba(102,153,23,0.3)' },

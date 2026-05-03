@@ -1,4 +1,4 @@
-import { Clock, X, CheckCircle, Truck, Package, RotateCcw, PackageCheck } from 'lucide-react';
+import { Clock, X, CheckCircle, Package, RotateCcw, PackageCheck } from 'lucide-react';
 
 interface ToggleNavProps {
   activeTab: string;
@@ -32,10 +32,10 @@ export default function ToggleNav({ activeTab, onTabChange }: ToggleNavProps) {
       status: 'ready-to-ship'
     },
     { 
-      key: 'shipped', 
-      label: 'Shipped Orders', 
-      icon: Truck,
-      status: 'shipped'
+      key: 'prepared', 
+      label: 'Prepared Orders', 
+      icon: Package,
+      status: 'prepared'
     },
     { 
       key: 'delivered', 
