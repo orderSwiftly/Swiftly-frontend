@@ -14,8 +14,7 @@ import {
   User, 
   Phone,
   Store,
-  Calendar,
-  CheckCircle
+  Calendar
 } from 'lucide-react';
 import PulseLoader from '@/components/pulse-loader';
 
@@ -216,14 +215,14 @@ export default function RiderOrderDetails() {
                 <span className="opacity-60">Address:</span> {order.store_address}
               </span>
             </div>
-            {order.deliveryCode && (
+            {/* {order.deliveryCode && (
               <div className="flex items-center gap-2">
                 <CheckCircle size={14} className="text-[var(--bg-clr)] opacity-60" />
                 <span className="text-sm text-[var(--pry-clr)] sec-ff">
                   <span className="opacity-60">Delivery Code:</span> <span className="font-mono font-bold">{order.deliveryCode}</span>
                 </span>
               </div>
-            )}
+            )} */}
           </div>
         </div>
 
@@ -322,9 +321,9 @@ export default function RiderOrderDetails() {
         {/* Pricing Summary */}
         <div style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
           <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2 mb-3">
-            <CreditCard size={15} className="text-[var(--bg-clr)]" /> Pricing Summary
+            <CreditCard size={15} className="text-[var(--bg-clr)]" /> Order Price
           </h2>
-          <div className="space-y-1.5">
+          {/* <div className="space-y-1.5">
             <div className="flex justify-between text-sm sec-ff">
               <span className="text-[var(--pry-clr)] opacity-60">Subtotal</span>
               <span className="text-[var(--pry-clr)] font-medium">₦{order.pricing.subtotal.toLocaleString()}</span>
@@ -339,7 +338,7 @@ export default function RiderOrderDetails() {
                 <span className="text-[var(--pry-clr)] font-medium">₦{order.pricing.serviceFee.toLocaleString()}</span>
               </div>
             )}
-          </div>
+          </div> */}
           <div
             className="mt-3 pt-3 flex justify-between items-center"
             style={{ borderTop: '1px solid rgba(0,107,79,0.12)' }}
