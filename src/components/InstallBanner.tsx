@@ -60,7 +60,7 @@ export default function InstallBanner() {
       </div>
       <button 
         onClick={handleInstall} 
-        className="mt-2 w-full text-xs font-semibold text-(--prof-clr) hover:text-(--prof-clr) cursor-pointer py-1.5 px-2 rounded-lg bg-gray-50 hover:bg-gray-100 transition-colors"
+        className="mt-2 w-full text-xs font-semibold text-(--prof-clr) hover:text-(--prof-clr) cursor-pointer py-1.5 px-2 rounded-lg bg-gray-200 hover:bg-gray-300 transition-colors"
       >
         Install App
       </button>
