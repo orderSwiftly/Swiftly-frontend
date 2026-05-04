@@ -10,7 +10,7 @@ export default function SupportPage() {
             <div className="max-w-2xl mx-auto mb-10">
 
                 {/* Header */}
-                <div className="mb-10">c
+                <div className="mb-10">
                     <div className="flex items-center gap-3 mb-3">
                         <div className="w-10 h-10 rounded-xl bg-[var(--acc-clr)]/15 flex items-center justify-center">
                             <Headphones size={20} className="text-[var(--acc-clr)]" />

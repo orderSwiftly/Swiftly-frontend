@@ -6,8 +6,13 @@ export default function SupportPage() {
     const supportPhone = "08128488623";
     const formattedPhone = supportPhone.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
 
+    const handleCall = () => {
+        // Directly open dialer - this works on mobile devices
+        window.location.href = `tel:${supportPhone}`;
+    };
+
     return (
-        <main className="min-h-screen bg-[var(--txt-clr)] px-4 py-10 shadow-md rounded-2xl w-full pry-ff">
+        <main className="min-h-screen bg-[var(--txt-clr)] px-4 py-10 w-full pry-ff mb-20">
             <div className="max-w-4xl mx-auto">
                 {/* Header */}
                 <div className="mb-10">
@@ -28,21 +33,22 @@ export default function SupportPage() {
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-6 border border-blue-100 mb-6">
                     <div className="flex items-center gap-4 mb-6">
                         <div className="w-16 h-16 rounded-full bg-gradient-to-br from-[var(--acc-clr)] to-green-600 flex items-center justify-center shadow-lg">
-                            <User size={32} className="text-white" />
+                            <User size={32} className="text-[var(--txt-clr)]" />
                         </div>
                         <div>
-                            <h3 className="text-xl font-bold text-gray-800">Support Team</h3>
+                            <h3 className="text-xl font-bold text-gray-800">Swiftly Support Team</h3>
                             <p className="text-sm text-gray-600">Customer Care Representative</p>
                         </div>
                     </div>
 
                     <div className="space-y-4">
-                        <div className="flex items-center gap-3 p-3 bg-white rounded-xl">
+                        <div className="flex items-center gap-3 p-3 bg-[var(--txt-clr)] rounded-xl">
                             <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
                                 <Phone size={18} className="text-green-600" />
                             </div>
                             <div>
                                 <p className="text-xs text-gray-500">Phone Number</p>
+                                {/* Direct tel: link - this will open dialer directly */}
                                 <a 
                                     href={`tel:${supportPhone}`}
                                     className="text-lg font-semibold text-gray-800 hover:text-[var(--acc-clr)] transition-colors"
@@ -52,22 +58,22 @@ export default function SupportPage() {
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 bg-white rounded-xl">
+                        <div className="flex items-center gap-3 p-3 bg-[var(--txt-clr)] rounded-xl">
                             <div className="w-10 h-10 rounded-full bg-blue-100 flex items-center justify-center">
                                 <Mail size={18} className="text-blue-600" />
                             </div>
                             <div>
                                 <p className="text-xs text-gray-500">Email</p>
                                 <a 
-                                    href="mailto:support@swifly.com"
+                                    href="mailto:hello@orderswiftly.com"
                                     className="text-sm font-medium text-gray-800 hover:text-[var(--acc-clr)] transition-colors"
                                 >
-                                    support@swifly.com
+                                    hello@orderswiftly.com
                                 </a>
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-3 p-3 bg-white rounded-xl">
+                        <div className="flex items-center gap-3 p-3 bg-[var(--txt-clr)] rounded-xl">
                             <div className="w-10 h-10 rounded-full bg-purple-100 flex items-center justify-center">
                                 <Clock size={18} className="text-purple-600" />
                             </div>
@@ -83,8 +89,8 @@ export default function SupportPage() {
                     {/* Quick Actions */}
                     <div className="mt-6 pt-4 border-t border-blue-200">
                         <button
-                            onClick={() => window.location.href = `tel:${supportPhone}`}
-                            className="w-full py-3 bg-[var(--acc-clr)] hover:bg-[#7ab825] text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2"
+                            onClick={handleCall}
+                            className="w-full py-3 bg-[var(--acc-clr)] hover:bg-[#7ab825] text-[var(--txt-clr)] rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <Phone size={18} />
                             Call Now
@@ -108,7 +114,7 @@ export default function SupportPage() {
 
                 {/* Note */}
                 <div className="mt-6 p-3 bg-amber-50 rounded-lg border border-amber-100 flex gap-2 items-start">
-                    <PhoneCall size={16} className="text-amber-700 mb-2" />
+                    <PhoneCall size={16} className="text-amber-700 shrink-0 mt-0.5" />
                     <p className="text-xs text-amber-700">
                         For urgent matters, please call our support line for immediate assistance.
                         Our team is ready to help you resolve issues quickly.

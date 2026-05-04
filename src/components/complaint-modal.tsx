@@ -28,7 +28,7 @@ export default function ComplaintForm() {
   };
 
   return (
-    <div className="bg-[var(--txt-clr)] rounded-2xl border border-[var(--pry-clr)]/10 shadow-sm p-6 w-full">
+    <div className="bg-[var(--txt-clr)] rounded-2xl border border-[var(--pry-clr)]/10 shadow-sm p-6 w-full mb-10">
       <p className="text-sm text-[var(--pry-clr)]/60 sec-ff mb-6">
         Describe your issue and our team will get back to you shortly.
       </p>
