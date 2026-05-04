@@ -5,6 +5,7 @@ import { resetPsw, forgotPassword } from "@/lib/auth";
 import { useRouter } from "next/navigation";
 import { toast } from "react-hot-toast";
 import PulseLoader from "@/components/pulse-loader";
+import { Eye, EyeOff, ArrowRight, ArrowLeft, RefreshCw } from 'lucide-react';
 
 const OTP_LENGTH = 6;
 const COUNTDOWN_MINUTES = 10;
@@ -17,6 +18,8 @@ export default function ResetPassword() {
   const [otp, setOtp] = useState<string[]>(Array(OTP_LENGTH).fill(''));
   const [newPassword, setNewPassword] = useState('');
   const [confirmPassword, setConfirmPassword] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [timer, setTimer] = useState(COUNTDOWN_SECONDS);
   const [loading, setLoading] = useState(false);
   const inputsRef = useRef<HTMLInputElement[]>([]);
@@ -70,7 +73,6 @@ export default function ResetPassword() {
       return;
     }
     
-    // Move to password step
     setStep('password');
   };
 
@@ -155,139 +157,191 @@ export default function ResetPassword() {
   const isExpired = timer === 0;
 
   return (
-    <div className="flex items-center justify-center min-h-screen bg-gray-50 sec-ff p-4">
-      <div className="flex flex-col gap-6 max-w-md w-full p-6 md:p-8 bg-white rounded-2xl shadow-xl">
-        {/* Header */}
-        <div className="text-center">
-          <h1 className="text-2xl md:text-3xl font-bold text-[var(--pry-clr)] mb-2">
-            Reset Password
-          </h1>
-          <p className="text-gray-600 text-sm">
-            {step === 'otp' 
-              ? 'Enter the 6-digit code sent to your email' 
-              : 'Create your new password'}
-          </p>
-        </div>
+    <div className="min-h-screen flex items-center justify-center sec-ff p-3 md:p-4">
+      <div className="w-full max-w-md mx-auto">
+        {/* Card Container - Optimized for mobile */}
+        <div className="bg-[var(--txt-clr)] rounded-2xl shadow-lg overflow-hidden">
+          {/* Header with better spacing for mobile */}
+          <div className="px-5 pt-8 pb-4 md:px-8 md:pt-10 md:pb-6 text-center border-b border-gray-100">
+            <h1 className="text-xl md:text-2xl lg:text-3xl font-bold mb-2 text-[var(--prof-clr)]">
+              Reset Password
+            </h1>
+            <p className="text-gray-500 text-xs md:text-sm">
+              {step === 'otp' 
+                ? 'Enter the 6-digit code sent to your email' 
+                : 'Create your new password'}
+            </p>
+          </div>
 
-        {/* Timer Display */}
-        <div className="flex justify-center">
-          <div className={`px-4 py-2 rounded-full text-sm font-semibold ${
-            isExpired 
-              ? 'bg-red-100 text-red-600' 
-              : timer <= 60 
-                ? 'bg-orange-100 text-orange-600 animate-pulse' 
-                : 'bg-blue-100 text-blue-600'
-          }`}>
-            {isExpired ? 'Expired' : `Expires in: ${formatTime(timer)}`}
+          {/* Content */}
+          <div className="p-5 md:p-8">
+            {/* Step 1: OTP Input */}
+            {step === 'otp' && (
+              <>
+                
+
+                {/* OTP Inputs - Responsive grid for mobile */}
+                <div className="flex justify-center gap-2 sm:gap-3 mb-6">
+                  {otp.map((digit, i) => (
+                    <input
+                      key={i}
+                      ref={(el) => { if (el) inputsRef.current[i] = el; }}
+                      value={digit}
+                      onChange={(e) => handleOtpChange(e.target.value, i)}
+                      onKeyDown={(e) => handleKeyDown(e, i)}
+                      onPaste={handlePaste}
+                      inputMode="numeric"
+                      maxLength={1}
+                      disabled={isExpired}
+                      className="w-10 h-10 sm:w-12 sm:h-12 md:w-14 md:h-14 rounded-xl border-2 border-gray-200 bg-white text-center text-lg md:text-xl font-bold focus:outline-none focus:border-[var(--acc-clr)] focus:ring-2 focus:ring-[var(--acc-clr)] transition-all disabled:opacity-50 disabled:cursor-not-allowed hover:border-gray-300"
+                    />
+                  ))}
+                </div>
+
+                {/* Resend Section - Mobile friendly */}
+                <div className="text-center mb-6">
+                  {isExpired ? (
+                    <button
+                      onClick={handleResend}
+                      disabled={loading}
+                      className="inline-flex items-center gap-2 text-[var(--pry-clr)] font-semibold hover:underline disabled:opacity-50 text-sm md:text-base"
+                    >
+                      <RefreshCw size={14} className="md:w-4 md:h-4" />
+                      {loading ? <PulseLoader /> : 'Request New OTP'}
+                    </button>
+                  ) : (
+                    <p className="text-gray-500 text-xs md:text-sm">
+                      Didn&apos;t receive code?{' '}
+                      <button
+                        onClick={handleResend}
+                        disabled={loading}
+                        className="text-[var(--pry-clr)] font-semibold hover:underline disabled:opacity-50"
+                      >
+                        Resend
+                      </button>
+                    </p>
+                  )}
+                </div>
+
+                {/* Timer Display - Responsive */}
+                <div className="flex justify-center mb-6">
+                  <div className={`flex items-center gap-2 px-3 py-1.5 md:px-4 md:py-2 rounded-full text-xs md:text-sm font-semibold ${
+                    isExpired 
+                      ? 'text-red-600' 
+                      : timer <= 60 
+                        ? 'text-orange-600 animate-pulse' 
+                        : 'text-gray-500'
+                  }`}>
+                    {isExpired ? (
+                      <span>Session Expired</span>
+                    ) : (
+                      <span>Expires in: {formatTime(timer)}</span>
+                    )}
+                  </div>
+                </div>
+
+                {/* Next Button - Touch friendly */}
+                <button
+                  onClick={handleNext}
+                  disabled={isExpired || loading}
+                  className="w-full px-6 py-3 md:py-3.5 bg-[var(--acc-clr)] text-white rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm md:text-base shadow-md active:scale-98"
+                >
+                  {loading ? <PulseLoader /> : (
+                    <>
+                      Next <ArrowRight size={16} className="md:w-5 md:h-5" />
+                    </>
+                  )}
+                </button>
+              </>
+            )}
+
+            {/* Step 2: Password Input */}
+            {step === 'password' && (
+              <>
+                {/* Password Fields - Mobile optimized */}
+                <div className="space-y-4 mb-6">
+                  {/* New Password Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      New Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showPassword ? "text" : "password"}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Enter new password (min. 6 characters)"
+                        className="w-full px-4 py-3 md:py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--acc-clr)] focus:ring-2 focus:ring-[var(--acc-clr)] transition text-sm md:text-base pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowPassword(!showPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1.5">
+                      Password must be at least 6 characters
+                    </p>
+                  </div>
+
+                  {/* Confirm Password Field */}
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Confirm Password
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={showConfirmPassword ? "text" : "password"}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Confirm your new password"
+                        className="w-full px-4 py-3 md:py-3.5 border border-gray-200 rounded-xl focus:outline-none focus:border-[var(--acc-clr)] focus:ring-2 focus:ring-[var(--acc-clr)] transition text-sm md:text-base pr-11"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600"
+                      >
+                        {showConfirmPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Navigation Buttons - Stack on mobile, side by side on tablet+ */}
+                <div className="flex flex-col sm:flex-row gap-3">
+                  <button
+                    onClick={handleBack}
+                    disabled={loading}
+                    className="order-2 sm:order-1 px-6 py-3 bg-gray-100 text-gray-700 rounded-xl font-semibold hover:bg-gray-200 transition-all disabled:opacity-50 cursor-pointer text-sm md:text-base active:scale-98 flex items-center justify-center gap-2"
+                  >
+                    <ArrowLeft size={16} className="md:w-5 md:h-5" />
+                    Back
+                  </button>
+                  
+                  <button
+                    onClick={handleSubmit}
+                    disabled={loading}
+                    className="order-1 sm:order-2 px-6 py-3 bg-[var(--acc-clr)] text-white rounded-xl font-semibold hover:opacity-90 transition-all disabled:opacity-50 flex items-center justify-center gap-2 text-sm md:text-base shadow-md active:scale-98"
+                  >
+                    {loading ? <PulseLoader /> : (
+                      <>
+                        Reset Password <ArrowRight size={16} className="md:w-5 md:h-5" />
+                      </>
+                    )}
+                  </button>
+                </div>
+              </>
+            )}
           </div>
         </div>
 
-        {/* Step 1: OTP Input */}
-        {step === 'otp' && (
-          <>
-            <div className="flex justify-center gap-2 md:gap-3">
-              {otp.map((digit, i) => (
-                <input
-                  key={i}
-                  ref={(el) => { if (el) inputsRef.current[i] = el; }}
-                  value={digit}
-                  onChange={(e) => handleOtpChange(e.target.value, i)}
-                  onKeyDown={(e) => handleKeyDown(e, i)}
-                  onPaste={handlePaste}
-                  inputMode="numeric"
-                  maxLength={1}
-                  disabled={isExpired}
-                  className="w-12 h-12 md:w-14 md:h-14 rounded-full border-2 border-[var(--sec-clr)] bg-white text-center text-xl font-bold focus:outline-none focus:border-[var(--acc-clr)] focus:ring-2 focus:ring-[var(--acc-clr)] transition disabled:opacity-50 disabled:cursor-not-allowed"
-                />
-              ))}
-            </div>
-
-            {/* Resend Button */}
-            <div className="text-center">
-              {isExpired ? (
-                <button
-                  onClick={handleResend}
-                  disabled={loading}
-                  className="text-[var(--pry-clr)] font-semibold hover:underline disabled:opacity-50"
-                >
-                  {loading ? <PulseLoader /> : 'Request New OTP'}
-                </button>
-              ) : (
-                <p className="text-gray-500 text-sm">
-                  Didn&apos;t receive code?{' '}
-                  <button
-                    onClick={handleResend}
-                    disabled={loading}
-                    className="text-[var(--pry-clr)] font-semibold hover:underline disabled:opacity-50"
-                  >
-                    Resend
-                  </button>
-                </p>
-              )}
-            </div>
-
-            {/* Next Button */}
-            <button
-              onClick={handleNext}
-              disabled={isExpired || loading}
-              className="w-full px-6 py-3 bg-[var(--acc-clr)] text-white rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center gap-2"
-            >
-              Next →
-            </button>
-          </>
-        )}
-
-        {/* Step 2: Password Input */}
-        {step === 'password' && (
-          <>
-            <div className="space-y-4">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  New Password
-                </label>
-                <input
-                  type="password"
-                  value={newPassword}
-                  onChange={(e) => setNewPassword(e.target.value)}
-                  placeholder="Enter new password (min. 6 characters)"
-                  className="w-full px-4 py-2 border border-[var(--sec-clr)] rounded-lg focus:outline-none focus:border-[var(--acc-clr)] focus:ring-2 focus:ring-[var(--acc-clr)] transition"
-                />
-              </div>
-
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Confirm Password
-                </label>
-                <input
-                  type="password"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  placeholder="Confirm your new password"
-                  className="w-full px-4 py-2 border border-[var(--sec-clr)] rounded-lg focus:outline-none focus:border-[var(--acc-clr)] focus:ring-2 focus:ring-[var(--acc-clr)] transition"
-                />
-              </div>
-            </div>
-
-            {/* Navigation Buttons */}
-            <div className="flex gap-3">
-              <button
-                onClick={handleBack}
-                disabled={loading}
-                className="flex-1 px-6 py-3 bg-gray-200 text-gray-700 rounded-lg font-semibold hover:bg-gray-300 transition disabled:opacity-50 cursor-pointer"
-              >
-                ← Back
-              </button>
-              
-              <button
-                onClick={handleSubmit}
-                disabled={loading}
-                className="flex-1 px-6 py-3 bg-[var(--acc-clr)] text-(--txt-clr) rounded-lg font-semibold hover:opacity-90 transition disabled:opacity-50 flex items-center justify-center cursor-pointer"
-              >
-                {loading ? <PulseLoader /> : 'Reset Password'}
-              </button>
-            </div>
-          </>
-        )}
+        {/* Helper Text - Only visible on mobile */}
+        <p className="text-center text-xs text-gray-400 mt-4 md:hidden">
+          Secure password reset
+        </p>
       </div>
     </div>
   );
