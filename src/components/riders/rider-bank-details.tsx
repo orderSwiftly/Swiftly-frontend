@@ -1,12 +1,12 @@
 "use client";
-import { fetchRiderBankDetails } from "@/lib/rider";
+
 import { useEffect, useState } from "react";
+import { fetchRiderDetails } from "@/lib/rider";
 import { Banknote, Building2, CircleCheck, Eye, EyeOff, Hash, User } from "lucide-react";
 import Spinner from "../pulse-loader";
 
 interface BankDetails {
   accountNumber: string;
-  bankCode: string;
   bankName: string;
   accountName: string;
 }
@@ -20,8 +20,18 @@ export default function RiderBankDetails() {
   useEffect(() => {
     const load = async () => {
       try {
-        const data = await fetchRiderBankDetails();
-        setBankDetails(data);
+        const data = await fetchRiderDetails();
+        // Extract bank_details from user_data
+        if (data?.user_data?.bank_details) {
+          const bank = data.user_data.bank_details;
+          setBankDetails({
+            accountNumber: bank.account_number,
+            bankName: bank.bank_name,
+            accountName: bank.account_name,
+          });
+        } else {
+          setBankDetails(null);
+        }
       } catch (err) {
         setError((err as Error).message);
       } finally {
@@ -31,21 +41,34 @@ export default function RiderBankDetails() {
     load();
   }, []);
 
-  const maskAccount = (num: string) =>
-    `${"•".repeat(num.length - 4)}${num.slice(-4)}`;
+  const maskAccount = (num: string) => {
+    if (!num || num.length < 4) return "••••";
+    return `${"•".repeat(num.length - 4)}${num.slice(-4)}`;
+  };
 
   if (loading)
-    return <div className="flex items-center sec-ff w-full justify-center py-10">
-      <Spinner />
-    </div>;
+    return (
+      <div className="flex items-center sec-ff w-full justify-center py-10">
+        <Spinner />
+      </div>
+    );
+    
   if (error)
-    return <div className="flex items-center sec-ff w-full justify-center text-base text-red-400 sec-ff">{error}</div>;
+    return (
+      <div className="flex items-center sec-ff w-full justify-center text-base text-red-400">
+        {error}
+      </div>
+    );
+    
   if (!bankDetails)
-    return <div className="flex items-center sec-ff w-full justify-center text-base text-(--sec-clr) sec-ff">No bank details found.</div>;
+    return (
+      <div className="flex items-center sec-ff w-full justify-center text-base text-(--sec-clr)">
+        No bank details found.
+      </div>
+    );
 
   return (
     <div className="rounded-2xl p-6 space-y-5 bg-(--txt-clr)">
-
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
