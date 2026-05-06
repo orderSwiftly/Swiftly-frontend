@@ -6,7 +6,7 @@ import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
 import { useParams, useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert } from 'lucide-react';
+import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert, Key } from 'lucide-react';
 // import ConfirmDelivery from './confirm-delivery';
 import VerifyRider from '../../components/verify-rider';
 // import OrderProgress from '../../components/order-progress';
@@ -136,6 +136,15 @@ export default function GetOrderById() {
     });
   }
 
+  // Add delivery code to meta items if it exists
+  if (order.deliveryCode) {
+    metaItems.push({
+      icon: Key,
+      label: 'Delivery Code',
+      value: order.deliveryCode.toString()
+    });
+  }
+
   return (
     <div className="min-h-screen bg-[var(--txt-clr)] pb-24">
       <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 space-y-5">
@@ -164,7 +173,7 @@ export default function GetOrderById() {
         </div>
 
         {/* Meta strip */}
-        <div className={`grid gap-2 sm:gap-3 ${metaItems.length === 2 ? 'grid-cols-2' : metaItems.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : 'grid-cols-1'}`}>
+        <div className={`grid gap-2 sm:gap-3 ${metaItems.length === 2 ? 'grid-cols-2' : metaItems.length === 3 ? 'grid-cols-1 sm:grid-cols-3' : metaItems.length === 4 ? 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4' : 'grid-cols-1'}`}>
           {metaItems.map(({ icon: Icon, label, value }) => (
             <div
               key={label}

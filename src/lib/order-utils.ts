@@ -51,6 +51,8 @@ export const filterOrdersByTab = (
       case "active":
         return (
           status === "prepared" ||
+          status === "awaiting_verification" ||
+          status === "verified" ||
           status === "collected"
         );
       case "delivered":
