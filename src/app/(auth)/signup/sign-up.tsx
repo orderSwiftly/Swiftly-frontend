@@ -92,158 +92,165 @@ export default function SignupComp() {
   if (step !== 'form') return null;
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] py-4 relative overflow-hidden">
+    <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] py-4">
+      <div className="w-full max-w-md mx-4 relative">
+        {/* Form Card with built-in wave top */}
+        <div className="bg-[var(--txt-clr)] rounded-2xl shadow-2xl overflow-hidden relative w-full">
+          {/* Wave SVG as part of the card - TRULY INCREASED HEIGHT */}
+          <div className="w-full relative">
+            <svg
+              className="w-full h-auto"
+              height="200"
+              viewBox="0 0 1440 270"
+              preserveAspectRatio="none"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              {/* Back layer - much taller */}
+              <path
+                d="M0 0 L1440 0 L1440 200 C1200 95, 960 160, 720 120 C480 80, 240 140, 0 70 Z"
+                fill="var(--wave-clr)"
+              />
+              {/* Front layer - much taller */}
+              <path
+                d="M0 0 L1440 0 L1440 140 C1200 65, 960 110, 720 80 C480 50, 240 95, 0 45 Z"
+                fill="var(--prof-clr)"
+              />
+            </svg>
+          </div>
+          
+          {/* Content */}
+          <div className="p-6 sm:p-8 space-y-5 -mt-10">
+            <div className='flex flex-col items-center'>
+              <h1 className="text-xl font-bold text-center mb-2 pry-ff text-[var(--pry-clr)]">
+                Register with Swiftly
+              </h1>
+            </div>
 
-      {/* Wavy decoration - full top, two layers */}
-      <svg
-        className="absolute top-0 left-0 w-full pointer-events-none"
-        height="90"
-        viewBox="0 0 1440 90"
-        preserveAspectRatio="none"
-        fill="none"
-        xmlns="http://www.w3.org/2000/svg"
-      >
-        {/* Back layer - prof-clr */}
-        <path
-          d="M0 0 L1440 0 L1440 90 C1200 40, 960 70, 720 50 C480 30, 240 60, 0 30 Z"
-          fill="var(--wave-clr)"
-        />
-        {/* Front layer - acc-clr */}
-        <path
-          d="M0 0 L1440 0 L1440 60 C1200 25, 960 50, 720 32 C480 14, 240 40, 0 18 Z"
-          fill="var(--prof-clr)"
-        />
-      </svg>
+            <form onSubmit={handleSubmit} className="flex flex-col gap-4 sec-ff">
+              <div className="flex gap-3">
+                <div className="flex-1">
+                  <label className="text-sm mb-1 block text-[var(--pry-clr)]">Full name</label>
+                  <input
+                    type="text"
+                    placeholder="John Doe"
+                    value={fullname}
+                    onChange={(e) => setFullname(e.target.value)}
+                    className={inputBase}
+                    required
+                  />
+                </div>
 
-      <div className="w-full max-w-2xl bg-[var(--txt-clr)] p-8 rounded-2xl shadow-lg text-[var(--pry-clr)]">
-        <div className='flex flex-col pt-4'>
-          <h1 className="text-xl font-bold text-left mb-4 pry-ff">
-            Register with Swiftly
-          </h1>
+                <div className="flex-1">
+                  <label className="text-sm mb-1 block text-[var(--pry-clr)]">Email</label>
+                  <input
+                    type="email"
+                    placeholder="you@example.com"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    className={inputBase}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm mb-1 block text-[var(--pry-clr)]">Phone number</label>
+                <input
+                  type="tel"
+                  placeholder="08012345678"
+                  value={phone}
+                  onChange={(e) => setPhone(e.target.value)}
+                  className={inputBase}
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="text-sm mb-1 block text-[var(--pry-clr)]">Password</label>
+                <div className="relative">
+                  <input
+                    type={showPass ? 'text' : 'password'}
+                    placeholder="Create a password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    className={`${inputBase} pr-10`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPass(!showPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pry-clr)] cursor-pointer"
+                  >
+                    {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+              </div>
+
+              <div>
+                <label className="text-sm mb-1 block text-[var(--pry-clr)]">Confirm Password</label>
+                <div className="relative">
+                  <input
+                    type={showConfirmPass ? 'text' : 'password'}
+                    placeholder="Re-enter your password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    className={`${inputBase} pr-10 ${
+                      confirmPassword && password !== confirmPassword
+                        ? 'border-red-500 focus:ring-red-500'
+                        : ''
+                    }`}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPass(!showConfirmPass)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pry-clr)] cursor-pointer"
+                  >
+                    {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
+                  </button>
+                </div>
+                {confirmPassword && password !== confirmPassword && (
+                  <p className="text-red-500 text-xs mt-1">Passwords do not match</p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-2">
+                <input
+                  type="checkbox"
+                  id="terms"
+                  checked={agreedToTerms}
+                  onChange={(e) => setAgreedToTerms(e.target.checked)}
+                  className="cursor-pointer accent-[var(--acc-clr)]"
+                />
+                <label htmlFor="terms" className="text-sm sec-ff text-[var(--pry-clr)]">
+                  I agree to the{' '}
+                  <Link href="/terms" className="text-[var(--acc-clr)] underline font-medium">
+                    Terms & Privacy Policy
+                  </Link>
+                </label>
+              </div>
+
+              <button
+                type="submit"
+                disabled={loading || !agreedToTerms}
+                className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--pry-clr)] py-3 rounded-lg font-semibold h-[44px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {loading ? <PulseLoader /> : 'Sign Up'}
+              </button>
+            </form>
+
+            <p className="text-sm text-center text-[var(--pry-clr)] sec-ff">
+              Already have an account?{' '}
+              <button
+                onClick={() => router.push('/login')}
+                className="text-[var(--acc-clr)] underline font-medium cursor-pointer"
+              >
+                Login here
+              </button>
+            </p>
+          </div>
         </div>
-
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5 sec-ff">
-          <div className="flex gap-4">
-            <div className="flex-1">
-              <label className="text-sm mb-1 block">Full name</label>
-              <input
-                type="text"
-                placeholder="John Doe"
-                value={fullname}
-                onChange={(e) => setFullname(e.target.value)}
-                className={inputBase}
-                required
-              />
-            </div>
-
-            <div className="flex-1">
-              <label className="text-sm mb-1 block">Email</label>
-              <input
-                type="email"
-                placeholder="you@example.com"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className={inputBase}
-                required
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="text-sm mb-1 block">Phone number</label>
-            <input
-              type="tel"
-              placeholder="08012345678"
-              value={phone}
-              onChange={(e) => setPhone(e.target.value)}
-              className={inputBase}
-              required
-            />
-          </div>
-
-          <div>
-            <label className="text-sm mb-1 block">Password</label>
-            <div className="relative">
-              <input
-                type={showPass ? 'text' : 'password'}
-                placeholder="Create a password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                className={`${inputBase} pr-10`}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowPass(!showPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pry-clr)] cursor-pointer"
-              >
-                {showPass ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-          </div>
-
-          <div>
-            <label className="text-sm mb-1 block">Confirm Password</label>
-            <div className="relative">
-              <input
-                type={showConfirmPass ? 'text' : 'password'}
-                placeholder="Re-enter your password"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                className={`${inputBase} pr-10 ${
-                  confirmPassword && password !== confirmPassword
-                    ? 'border-red-500 focus:ring-red-500'
-                    : ''
-                }`}
-                required
-              />
-              <button
-                type="button"
-                onClick={() => setShowConfirmPass(!showConfirmPass)}
-                className="absolute right-3 top-1/2 -translate-y-1/2 text-[var(--pry-clr)] cursor-pointer"
-              >
-                {showConfirmPass ? <EyeOff size={18} /> : <Eye size={18} />}
-              </button>
-            </div>
-            {confirmPassword && password !== confirmPassword && (
-              <p className="text-red-500 text-xs mt-1">Passwords do not match</p>
-            )}
-          </div>
-
-          <div className="flex items-center gap-2">
-            <input
-              type="checkbox"
-              id="terms"
-              checked={agreedToTerms}
-              onChange={(e) => setAgreedToTerms(e.target.checked)}
-              className="cursor-pointer accent-[var(--acc-clr)]"
-            />
-            <label htmlFor="terms" className="text-sm sec-ff">
-              I agree to the{' '}
-              <Link href="/terms" className="text-[var(--acc-clr)] underline font-medium">
-                Terms & Privacy Policy
-              </Link>
-            </label>
-          </div>
-
-          <button
-            type="submit"
-            disabled={loading || !agreedToTerms}
-            className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--pry-clr)] py-3 rounded-lg font-semibold h-[44px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-          >
-            {loading ? <PulseLoader /> : 'Sign Up'}
-          </button>
-        </form>
-
-        <p className="text-sm text-center m-3 text-[var(--pry-clr)] sec-ff">
-          Already have an account?{' '}
-          <button
-            onClick={() => router.push('/login')}
-            className="text-[var(--acc-clr)] underline font-medium cursor-pointer"
-          >
-            Login here
-          </button>
-        </p>
       </div>
     </main>
   );

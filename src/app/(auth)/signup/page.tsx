@@ -9,7 +9,7 @@ export const metadata: Metadata = {
 
 export default function SignUpPage() {
     return (
-        <main className="p-2">
+        <main className="p-1">
             <SignupComp />
         </main>
     )
