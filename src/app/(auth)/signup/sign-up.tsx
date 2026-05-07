@@ -8,7 +8,6 @@ import { Eye, EyeOff } from 'lucide-react';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import Image from 'next/image';
 import { signupUser } from '@/lib/auth';
 import WelcomeScreen from '@/components/welcome-screen';
 import Onboarding from '@/components/onboarding';
@@ -93,11 +92,32 @@ export default function SignupComp() {
   if (step !== 'form') return null;
 
   return (
-    <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] py-4">
+    <main className="min-h-screen flex items-center justify-center bg-[var(--sec-clr)] py-4 relative overflow-hidden">
+
+      {/* Wavy decoration - full top, two layers */}
+      <svg
+        className="absolute top-0 left-0 w-full pointer-events-none"
+        height="90"
+        viewBox="0 0 1440 90"
+        preserveAspectRatio="none"
+        fill="none"
+        xmlns="http://www.w3.org/2000/svg"
+      >
+        {/* Back layer - prof-clr */}
+        <path
+          d="M0 0 L1440 0 L1440 90 C1200 40, 960 70, 720 50 C480 30, 240 60, 0 30 Z"
+          fill="var(--wave-clr)"
+        />
+        {/* Front layer - acc-clr */}
+        <path
+          d="M0 0 L1440 0 L1440 60 C1200 25, 960 50, 720 32 C480 14, 240 40, 0 18 Z"
+          fill="var(--prof-clr)"
+        />
+      </svg>
+
       <div className="w-full max-w-2xl bg-[var(--txt-clr)] p-8 rounded-2xl shadow-lg text-[var(--pry-clr)]">
-        <div className='flex flex-col items-center'>
-          <Image src="/brand-logo.png" alt="Swiftly Logo" width={40} height={40} />
-          <h1 className="text-xl font-bold text-center mb-4 pry-ff">
+        <div className='flex flex-col pt-4'>
+          <h1 className="text-xl font-bold text-left mb-4 pry-ff">
             Register with Swiftly
           </h1>
         </div>
