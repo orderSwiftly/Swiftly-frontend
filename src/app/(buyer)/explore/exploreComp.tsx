@@ -152,69 +152,74 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Expl
         {products.map((product) => (
           <li
             key={product._id}
-            className="bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 flex flex-col group"
+            className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 flex flex-col group hover:shadow-xl transition-shadow"
           >
-            <div className="relative w-full h-44 overflow-hidden">
+            <div className="relative w-full h-48 overflow-hidden">
               <Image
                 src={product.productImg?.[0] || '/fallback.jpg'}
                 alt={product.title}
                 fill
-                className="object-cover"
+                className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
+              {/* Stock badge */}
+              <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
+                {product.stock} left
+              </div>
             </div>
 
-            <div className="p-4 flex flex-col gap-2">
-              <div className="flex justify-between items-center">
-                <h4 className="text-xl font-bold text-gray-900 tracking-tight leading-tight truncate">
+            <div className="p-4 flex flex-col gap-3">
+              {/* Title and Price row */}
+              <div className="flex justify-between items-start">
+                <h4 className="text-xl font-bold text-gray-900 tracking-tight leading-tight">
                   {product.title}
                 </h4>
+                <p className="text-lg font-bold text-green-600">
+                  ₦{product.price.toLocaleString()}
+                </p>
+              </div>
+
+              <div className='flex items-start justify-between'>
+                {/* Rating and Time row */}
+              <div className="flex justify-between items-center">
                 <div className="flex items-center gap-1">
-                  <Star size={18} className="fill-yellow-400 text-yellow-400" />
-                  <span className="text-base font-medium text-gray-700">
-                    {product.averageRating ? product.averageRating.toFixed(1) : '0.0'}
+                  <Star size={16} className="fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-medium text-gray-700">
+                    {product.averageRating ? product.averageRating.toFixed(1) : '4.5'}
                   </span>
                 </div>
               </div>
 
-              <div className="flex justify-between items-center">
-                <p className="text-lg font-bold text-gray-900">
-                  ₦{product.price.toLocaleString()}
-                </p>
-                <p className="text-lg text-gray-900">
-                  ({product.stock})
-                </p>
-              </div>
-
-              <div className="flex flex-col gap-2 max-w-full">
-                {product.category?.name && (
-                  <span className="inline-flex max-w-fit text-xs font-medium bg-blue-100 text-blue-700 px-2 py-1 rounded-md sec-ff truncate">
+              {/* Category tag */}
+              {product.category?.name && (
+                <div className="flex flex-wrap gap-2">
+                  <span className="inline-flex text-xs font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
                     {product.category.name}
                   </span>
-                )}
-
-                {product.seller?.businessName && (
-                  <Link href={`/explore/seller/${product.seller._id}`} className="flex items-center">
-                    <Store size={16} className="text-gray-500" />
-                    <span
-                      className="inline-flex max-w-[140px] text-xs font-medium text-[var(--bg-clr)] px-2 py-1 rounded-md sec-ff truncate"
-                      title={product.seller.businessName}
-                    >
-                      {product.seller.businessName}
-                    </span>
-                  </Link>
-                )}
+                </div>
+              )}
               </div>
 
-              <div className="flex items-center justify-between border-t border-gray-50">
+              {/* Seller info */}
+              {product.seller?.businessName && (
+                <Link href={`/explore/seller/${product.seller._id}`} className="flex items-center gap-1 hover:text-green-600 transition-colors">
+                  <Store size={14} className="text-gray-400" />
+                  <span className="text-xs text-gray-500 truncate">
+                    {product.seller.businessName}
+                  </span>
+                </Link>
+              )}
+
+              {/* Action buttons */}
+              <div className="flex items-center justify-between gap-3 pt-2 border-t border-gray-100 mt-1">
                 <Link
                   href={`/explore/product/${product._id}`}
-                  className="text-sm font-medium text-green-600 flex items-center gap-1"
+                  className="flex-1 text-center text-sm font-medium text-green-600 hover:text-green-700 flex items-center justify-center gap-1 transition-colors"
                 >
-                  Details <ArrowRight size={14} />
+                  View Details <ArrowRight size={14} />
                 </Link>
                 <button
                   onClick={() => handleAddToCart(product)}
-                  className="p-2 bg-green-50 text-green-600 rounded-full hover:bg-green-600 hover:text-white transition-colors cursor-pointer"
+                  className="p-2 bg-green-600 text-white rounded-full hover:bg-green-700 transition-colors cursor-pointer"
                 >
                   <ShoppingCart size={18} />
                 </button>

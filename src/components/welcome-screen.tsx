@@ -17,8 +17,35 @@ const WelcomeScreen: React.FC<Props> = ({ onFinish }) => {
 
   return (
     <main className="w-screen h-screen flex items-center justify-center bg-(--txt-clr) overflow-hidden fixed inset-0 z-[999] pry-ff">
-      <div className="absolute bottom-0 left-0 w-full h-[40%] bg-[#5f7f1a] rounded-t-[100%] opacity-80" />
-      <div className="absolute bottom-0 left-0 w-full h-[30%] bg-[#7fae2a] rounded-t-[100%]" />
+      {/* Wavy line layers instead of rounded tops */}
+      <div className="absolute bottom-0 left-0 w-full pointer-events-none">
+        <svg
+          className="w-full"
+          viewBox="0 0 1440 400"
+          preserveAspectRatio="none"
+          fill="none"
+          xmlns="http://www.w3.org/2000/svg"
+        >
+          {/* Back layer - darkest wave */}
+          <path
+            d="M0 400 L1440 400 L1440 300 C1300 240, 1100 280, 900 250 C700 220, 500 180, 300 210 C100 240, 50 270, 0 300 Z"
+            fill="#5f7f1a"
+            opacity="0.8"
+          />
+          {/* Mid layer */}
+          <path
+            d="M0 400 L1440 400 L1440 250 C1300 200, 1100 240, 900 210 C700 180, 500 140, 300 170 C100 200, 50 230, 0 250 Z"
+            fill="#7fae2a"
+            opacity="0.9"
+          />
+          {/* Front layer - brightest wave */}
+          <path
+            d="M0 400 L1440 400 L1440 200 C1300 160, 1100 190, 900 170 C700 150, 500 120, 300 140 C100 160, 50 180, 0 200 Z"
+            fill="#9bc93a"
+          />
+        </svg>
+      </div>
+
       <motion.div
         initial={{ opacity: 0, scale: 0.9 }}
         animate={{ opacity: 1, scale: 1 }}
