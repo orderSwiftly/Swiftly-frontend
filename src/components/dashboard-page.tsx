@@ -222,43 +222,7 @@ export default function DashboardPage() {
                 </div>
             </section>
 
-            {/* Categories Section */}
-            <section className="mt-8 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl">
-                <div className="flex items-center justify-between mb-6">
-                    <h2 className="text-xl md:text-2xl font-semibold text-gray-800 pry-ff">
-                        Categories
-                    </h2>
-                </div>
-
-                <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-6 lg:grid-cols-9 gap-4">
-                    {Categories.map((cat) => (
-                        <button
-                            key={cat.name}
-                            onClick={() => handleCategoryClick(cat.name)}
-                            className="flex flex-col items-center gap-2 group cursor-pointer"
-                        >
-                            <div
-                                className={`w-14 h-14 md:w-16 md:h-16 rounded-2xl flex items-center justify-center shadow-sm transition-transform group-hover:scale-105 ${cat.bg} ${
-                                    (cat.name === 'All' && !activeCategory) || activeCategory === cat.name
-                                        ? 'ring-2 ring-green-500'
-                                        : ''
-                                }`}
-                            >
-                                <cat.icon className={`w-6 h-6 ${cat.color}`} />
-                            </div>
-                            <span className={`text-xs md:text-sm font-medium transition-colors text-center ${
-                                (cat.name === 'All' && !activeCategory) || activeCategory === cat.name
-                                    ? 'text-green-600 font-semibold'
-                                    : 'text-gray-600 group-hover:text-gray-900'
-                            }`}>
-                                {cat.name}
-                            </span>
-                        </button>
-                    ))}
-                </div>
-            </section>
-
-            {/* Explore Section */}
+            {/* Explore Section - Categories Section Removed */}
             <section className="mt-10 w-full px-4 sm:px-6 md:px-8 lg:px-12 max-w-6xl mb-5">
                 <ExplorePage searchTerm={activeSearch} categoryName={activeCategory} />
             </section>

@@ -7,7 +7,7 @@ import Image from 'next/image';
 import PulseLoader from '@/components/pulse-loader';
 import toast from 'react-hot-toast';
 import Link from 'next/link';
-import { ArrowRight, ShoppingCart, Star, Store } from 'lucide-react';
+import { ArrowRight, ShoppingCart, Star, Store, ChevronRight } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 
 type Category = {
@@ -179,33 +179,42 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Expl
               </div>
 
               <div className='flex items-start justify-between'>
-                {/* Rating and Time row */}
-              <div className="flex justify-between items-center">
+                {/* Rating row */}
                 <div className="flex items-center gap-1">
                   <Star size={16} className="fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-medium text-gray-700">
-                    {product.averageRating ? product.averageRating.toFixed(1) : '4.5'}
+                    {product.averageRating ? product.averageRating.toFixed(1) : '0.0'}
                   </span>
                 </div>
+
+                {/* Category tag */}
+                {product.category?.name && (
+                  <div className="flex flex-wrap gap-2">
+                    <span className="inline-flex text-xs font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
+                      {product.category.name}
+                    </span>
+                  </div>
+                )}
               </div>
 
-              {/* Category tag */}
-              {product.category?.name && (
-                <div className="flex flex-wrap gap-2">
-                  <span className="inline-flex text-xs font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
-                    {product.category.name}
-                  </span>
-                </div>
-              )}
-              </div>
-
-              {/* Seller info */}
+              {/* Seller info - Made clearly clickable */}
               {product.seller?.businessName && (
-                <Link href={`/explore/seller/${product.seller._id}`} className="flex items-center gap-1 hover:text-green-600 transition-colors">
-                  <Store size={14} className="text-gray-400" />
-                  <span className="text-xs text-gray-500 truncate">
-                    {product.seller.businessName}
-                  </span>
+                <Link 
+                  href={`/explore/seller/${product.seller._id}`} 
+                  className="group/seller flex items-center justify-between p-2 -mx-2 rounded-lg hover:bg-gray-50 transition-all duration-200 cursor-pointer"
+                >
+                  <div className="flex items-center gap-2">
+                    <div className="w-6 h-6 bg-green-100 rounded-full flex items-center justify-center">
+                      <Store size={12} className="text-green-600" />
+                    </div>
+                    <div className="flex flex-col">
+                      <span className="text-xs text-gray-400">Seller</span>
+                      <span className="text-sm font-medium text-gray-700 group-hover/seller:text-green-600 transition-colors">
+                        {product.seller.businessName}
+                      </span>
+                    </div>
+                  </div>
+                  <ChevronRight size={14} className="text-gray-300 group-hover/seller:text-green-500 transition-colors" />
                 </Link>
               )}
 
