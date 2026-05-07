@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import PulseLoader from '@/components/pulse-loader';
 import ExploreReview from '@/app/(buyer)/explore/product/[id]/review/explore-rev';
-import { ShoppingCart, Star, ChevronLeft, Minus, Plus } from 'lucide-react';
+import { ShoppingCart, Star, ChevronLeft, Minus, Plus, Store, ChevronRight } from 'lucide-react';
 
 type Product = {
   _id: string;
@@ -182,21 +182,32 @@ export default function ProductDetails() {
           {/* Product Info Section */}
           <div className="mt-6 lg:mt-0">
             <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-              {/* Seller Name */}
-              {product.seller?.businessName && (
-                <div className="flex items-center gap-2 mb-4">
-                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
-                    <span className="text-green-600 font-bold text-sm">
-                      {product.seller.businessName.charAt(0)}
-                    </span>
+              {/* Seller Name - Made Clickable */}
+              {product.seller?.businessName && product.seller._id && (
+                <Link 
+                  href={`/explore/seller/${product.seller._id}`}
+                  className="group/seller block mb-6"
+                >
+                  <div className="flex items-center justify-between p-3 -mx-3 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer">
+                    <div className="flex items-center gap-3">
+                      <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-50 rounded-full flex items-center justify-center">
+                        <Store size={20} className="text-green-600" />
+                      </div>
+                      <div>
+                        <p className="text-xs text-gray-400 font-medium">Sold by</p>
+                        <div className="flex items-center gap-1">
+                          <span className="text-base font-bold text-gray-800 group-hover/seller:text-green-600 transition-colors">
+                            {product.seller.businessName}
+                          </span>
+                          <ChevronRight size={14} className="text-gray-300 group-hover/seller:text-green-500 transition-colors" />
+                        </div>
+                      </div>
+                    </div>
+                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover/seller:bg-green-100 transition-colors">
+                      <Store size={14} className="text-gray-400 group-hover/seller:text-green-600" />
+                    </div>
                   </div>
-                  <div>
-                    <span className="text-sm font-medium text-gray-700">
-                      {product.seller.businessName}
-                    </span>
-                    <p className="text-xs text-gray-500">Seller</p>
-                  </div>
-                </div>
+                </Link>
               )}
 
               {/* Product Title */}
