@@ -56,7 +56,7 @@ export default function MyOrdersPage() {
   }, [currentUserId]);
 
   return (
-    <div className="min-h-screen w-full bg-[var(--light-bg)]">
+    <div className="min-h-screen w-full">
       <main className="w-full pt-[10px] pb-20 flex justify-center px-2">
         <div className="w-full max-w-4xl">
           <GetOrders

@@ -12,7 +12,7 @@ export default function DeliveryPage() {
     const [activeTab, setActiveTab] = useState<TopTab>("pending");
 
     return (
-        <main className="px-4 py-5 sec-ff">
+        <main className="px-4 py-5 sec-ff mb-20">
             {/* Top-level tab bar */}
             <div className="flex gap-1 bg-[#f5f5f5] p-1 rounded-xl mb-6">
                 {(["pending", "active", "delivered"] as TopTab[]).map((tab) => (
