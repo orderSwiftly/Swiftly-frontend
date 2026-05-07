@@ -4,8 +4,7 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { Eye, EyeOff } from 'lucide-react';
-import PulseLoader from '@/components/pulse-loader';
+import { Eye, EyeOff, Loader2 } from 'lucide-react';
 import toast from 'react-hot-toast';
 import { useUserStore } from '@/stores/userStore';
 import Link from 'next/link';
@@ -122,10 +121,10 @@ const handleLogin = async (e: React.FormEvent) => {
 
               <button
                 type="submit"
-                className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--pry-clr)] py-3.5 rounded-lg hover:bg-opacity-90 transition font-semibold cursor-pointer h-[48px] text-base"
+                className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--wave-clr)] py-3.5 rounded-lg hover:bg-opacity-90 transition font-semibold cursor-pointer h-[48px] text-base"
                 disabled={loading}
               >
-                {loading ? <PulseLoader /> : 'Log In'}
+                {loading ? <Loader2 className="animate-spin" /> : 'Log In'}
               </button>
             </form>
 
