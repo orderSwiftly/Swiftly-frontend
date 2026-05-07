@@ -35,7 +35,7 @@ const Onboarding: React.FC<Props> = ({ onFinish }) => {
 
   return (
     <main className="fixed inset-0 z-[998] bg-white flex flex-col items-center justify-between px-6 py-10">
-      <Image src="/swiftly-txt.png" alt="Swifly Logo" width={120} height={120} className="mx-auto" />
+      <Image src="/swiftly-txt.png" alt="Swifly Logo" width={100} height={100} className="mx-auto" />
       <div className="w-[320px] h-[360px] relative">
         <Image src={slides[step].img} alt={slides[step].title} fill className="object-contain" priority />
       </div>
@@ -56,7 +56,7 @@ const Onboarding: React.FC<Props> = ({ onFinish }) => {
         ))}
       </div>
       <div className="w-full max-w-xs flex flex-col gap-3 sec-ff">
-        <button onClick={handleNext} className="w-full bg-[#7bd140] text-white py-3 rounded-lg font-semibold cursor-pointer">
+        <button onClick={handleNext} className="w-full bg-[#7bd140] text-(--txt-clr) py-3 rounded-lg font-semibold cursor-pointer">
           {slides[step].btn}
         </button>
         <button onClick={onFinish} className="w-full py-2 text-sm text-gray-500 cursor-pointer">

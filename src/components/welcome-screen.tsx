@@ -26,14 +26,14 @@ const WelcomeScreen: React.FC<Props> = ({ onFinish }) => {
           fill="none"
           xmlns="http://www.w3.org/2000/svg"
         >
-          {/* Back hill - darker, taller, offset to the right */}
+          {/* Back hill - darker, peaks on the right */}
           <path
-            d="M0 260 L1440 260 L1440 160 C1300 140, 1100 100, 900 120 C700 140, 500 180, 300 160 C150 145, 60 155, 0 180 Z"
+            d="M0 260 L1440 260 L1440 60 C1300 40, 1100 60, 900 100 C700 140, 400 200, 200 230 C100 245, 40 255, 0 260 Z"
             fill="var(--wave-clr)"
           />
-          {/* Front hill - lighter, shorter, offset to the left */}
+          {/* Front hill - lighter, smaller, peaks on the left */}
           <path
-            d="M0 260 L1440 260 L1440 200 C1200 200, 1000 220, 800 200 C600 180, 350 140, 150 170 C80 182, 30 200, 0 210 Z"
+            d="M0 260 L1440 260 L1440 240 C1300 250, 1100 255, 900 250 C700 245, 500 240, 300 220 C150 190, 60 160, 0 180 Z"
             fill="var(--acc-clr)"
           />
         </svg>
