@@ -12,7 +12,7 @@ const Onboarding: React.FC<Props> = ({ onFinish }) => {
   const slides = [
     {
       title: 'Your Campus Marketplace',
-      desc: 'Order anything from campus such as food, shops, services, all in one app.',
+      desc: 'Order anything on campus such as food, essentials, and more all in one app',
       btn: 'Next',
       img: '/marketplace_vector.png',
     },
@@ -35,7 +35,7 @@ const Onboarding: React.FC<Props> = ({ onFinish }) => {
 
   return (
     <main className="fixed inset-0 z-[998] bg-white flex flex-col items-center justify-between px-6 py-10">
-      <h1 className="text-sm font-bold text-[#7bd140] tracking-widest pry-ff mb-4">SWIFTLY</h1>
+      <Image src="/swiftly-txt.png" alt="Swifly Logo" width={120} height={120} className="mx-auto" />
       <div className="w-[320px] h-[360px] relative">
         <Image src={slides[step].img} alt={slides[step].title} fill className="object-contain" priority />
       </div>
