@@ -55,7 +55,7 @@ const handleLogin = async (e: React.FormEvent) => {
             <svg
               className="w-full h-auto"
               height="400"
-              viewBox="0 0 1440 400"
+              viewBox="0 0 1440 500"
               preserveAspectRatio="none"
               fill="none"
               xmlns="http://www.w3.org/2000/svg"
