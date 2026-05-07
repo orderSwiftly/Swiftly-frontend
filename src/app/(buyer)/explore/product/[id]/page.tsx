@@ -9,7 +9,7 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import PulseLoader from '@/components/pulse-loader';
 import ExploreReview from '@/app/(buyer)/explore/product/[id]/review/explore-rev';
-import { ShoppingCart } from 'lucide-react';
+import { ShoppingCart, Star, ChevronLeft, Minus, Plus } from 'lucide-react';
 
 type Product = {
   _id: string;
@@ -19,6 +19,15 @@ type Product = {
   productImg: string[];
   stock: number;
   location: string;
+  averageRating?: number;
+  avgRating?: number;
+  rating?: number;
+  reviewCount?: number;
+  seller?: {
+    _id: string;
+    businessName: string;
+    logo: string;
+  };
 };
 
 export default function ProductDetails() {
@@ -27,6 +36,7 @@ export default function ProductDetails() {
   const [mainImage, setMainImage] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
   const [addingToCart, setAddingToCart] = useState(false);
+  const [quantity, setQuantity] = useState(1);
   const router = useRouter();
 
   const token = typeof window !== 'undefined' ? localStorage.getItem('token') : null;
@@ -45,13 +55,19 @@ export default function ProductDetails() {
         );
 
         const data = await res.json();
+        console.log('Full API Response:', data); // Debug log
+        
         if (!res.ok || data.status !== 'success') {
           toast.error(data.message ?? 'Failed to fetch product');
           return;
         }
 
-        setProduct(data.data.product);
-        setMainImage(data.data.product.productImg?.[0] ?? '/fallback.jpg');
+        const productData = data.data.product;
+        console.log('Product Data:', productData); // Debug log
+        console.log('Average Rating value:', productData.averageRating, productData.avgRating, productData.rating); // Debug log
+        
+        setProduct(productData);
+        setMainImage(productData.productImg?.[0] ?? '/fallback.jpg');
       } catch (error) {
         toast.error('Error fetching product');
         console.error(error);
@@ -82,13 +98,13 @@ export default function ProductDetails() {
           'Content-Type': 'application/json',
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ quantity: 1 }),
+        body: JSON.stringify({ quantity }),
       });
 
       const data = await res.json();
 
       if (res.ok && data.status === 'success') {
-        toast.success(`${product.title} added to cart`);
+        toast.success(`${quantity} × ${product.title} added to cart`);
       } else {
         toast.error(data?.message || 'Failed to add to cart');
       }
@@ -102,7 +118,7 @@ export default function ProductDetails() {
 
   if (loading)
     return (
-      <div className="flex items-center justify-center min-h-screen bg-[var(--light-bg)] text-[var(--txt-clr)]">
+      <div className="flex items-center justify-center min-h-screen bg-gray-50">
         <PulseLoader />
       </div>
     );
@@ -111,67 +127,157 @@ export default function ProductDetails() {
     return (
       <div className="text-center py-12 text-red-500">
         Product not found. <br />
-        <Link href="/explore" className="text-[var(--acc-clr)] underline block mt-2">← Back to Explore</Link>
+        <Link href="/" className="text-green-600 underline block mt-2">← Back to Explore</Link>
       </div>
     );
 
+  // Get rating from different possible field names
+  const rating = product.averageRating ?? product.avgRating ?? product.rating ?? 0;
+  const reviewCount = product.reviewCount || 0;
+
   return (
-    <div className="mx-auto p-4 sm:p-6 bg-[var(--light-bg)] text-[var(--txt-clr)] min-h-screen">
-      <h1 className="text-2xl sm:text-3xl font-bold mb-4 pry-ff">{product.title}</h1>
+    <div className="min-h-screen bg-gray-50 pry-ff">
+      <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
+        {/* Back Button */}
+        <button
+          onClick={() => router.back()}
+          className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 sm:mb-6 transition-colors cursor-pointer"
+        >
+          <ChevronLeft size={20} />
+          <span className="text-sm font-medium">Back</span>
+        </button>
 
-      {/* Main Image */}
-      <div className="relative w-full h-[300px] sm:h-[400px] rounded-xl overflow-hidden border border-gray-200 dark:border-gray-700 shadow-md mb-4">
-        <Image
-          src={mainImage ?? '/fallback.jpg'}
-          alt="Main product image"
-          fill
-          className="object-cover transition duration-300 ease-in-out"
-        />
-      </div>
-
-      {/* Thumbnails */}
-      {product.productImg.length > 1 && (
-        <div className="flex gap-3 overflow-x-auto mb-6 scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-transparent">
-          {product.productImg.map((img, idx) => (
-            <div
-              key={idx}
-              onClick={() => setMainImage(img)}
-              className={`relative min-w-[80px] h-20 rounded-md overflow-hidden cursor-pointer border transition duration-200 ${mainImage === img ? 'border-[var(--acc-clr)]' : 'border-gray-300'
-                }`}
-            >
-              <Image src={img} alt={`Thumbnail ${idx}`} fill className="object-cover" />
+        {/* Desktop: Two Column Layout */}
+        <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
+          {/* Image Section */}
+          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+            {/* Main Image */}
+            <div className="relative w-full h-80 sm:h-96 lg:h-[450px] bg-gray-100">
+              <Image
+                src={mainImage ?? '/fallback.jpg'}
+                alt={product.title}
+                fill
+                className="object-cover"
+              />
             </div>
-          ))}
+
+            {/* Thumbnails */}
+            {product.productImg.length > 1 && (
+              <div className="flex gap-2 p-4 overflow-x-auto scrollbar-thin">
+                {product.productImg.map((img, idx) => (
+                  <button
+                    key={idx}
+                    onClick={() => setMainImage(img)}
+                    className={`relative min-w-[70px] h-[70px] rounded-lg overflow-hidden cursor-pointer border-2 transition-all flex-shrink-0 ${
+                      mainImage === img ? 'border-green-500' : 'border-gray-200 hover:border-gray-400'
+                    }`}
+                  >
+                    <Image src={img} alt={`Thumbnail ${idx}`} fill className="object-cover" />
+                  </button>
+                ))}
+              </div>
+            )}
+          </div>
+
+          {/* Product Info Section */}
+          <div className="mt-6 lg:mt-0">
+            <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
+              {/* Seller Name */}
+              {product.seller?.businessName && (
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-10 h-10 bg-green-100 rounded-full flex items-center justify-center">
+                    <span className="text-green-600 font-bold text-sm">
+                      {product.seller.businessName.charAt(0)}
+                    </span>
+                  </div>
+                  <div>
+                    <span className="text-sm font-medium text-gray-700">
+                      {product.seller.businessName}
+                    </span>
+                    <p className="text-xs text-gray-500">Seller</p>
+                  </div>
+                </div>
+              )}
+
+              {/* Product Title */}
+              <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
+                {product.title}
+              </h1>
+
+              {/* Rating and Review Count */}
+              <div className="flex items-center gap-4 mb-4">
+                <div className="flex items-center gap-1">
+                  <Star size={18} className="fill-yellow-400 text-yellow-400" />
+                  <span className="text-sm font-semibold text-gray-700">
+                    {rating > 0 ? rating.toFixed(1) : '0.0'}
+                  </span>
+                  <span className="text-xs text-gray-500">
+                    ({reviewCount} {reviewCount === 1 ? 'review' : 'reviews'})
+                  </span>
+                </div>
+              </div>
+
+              {/* Description */}
+              <p className="text-gray-600 leading-relaxed mb-6 sec-ff text-sm sm:text-base">
+                {product.description}
+              </p>
+
+              {/* Price */}
+              <div className="mb-6">
+                <span className="text-3xl sm:text-4xl font-bold text-gray-900">
+                  ₦{product.price.toLocaleString()}
+                </span>
+              </div>
+
+              {/* Quantity Selector */}
+              <div className="mb-6">
+                <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
+                <div className="flex items-center gap-3">
+                  <button
+                    onClick={() => setQuantity(Math.max(1, quantity - 1))}
+                    className="w-10 h-10 rounded-md border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <Minus size={16} />
+                  </button>
+                  <span className="text-lg font-semibold text-gray-900 min-w-[40px] text-center">
+                    {quantity}
+                  </span>
+                  <button
+                    onClick={() => setQuantity(Math.min(product.stock, quantity + 1))}
+                    className="w-10 h-10 rounded-md border border-gray-300 flex items-center justify-center hover:bg-gray-50 transition-colors cursor-pointer"
+                  >
+                    <Plus size={16} />
+                  </button>
+                  <span className="text-sm text-gray-500 ml-2">
+                    {product.stock} available
+                  </span>
+                </div>
+              </div>
+
+              {/* Add to Cart Button */}
+              <button
+                onClick={handleAddToCart}
+                disabled={addingToCart || product.stock === 0}
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-base sm:text-lg"
+              >
+                <ShoppingCart size={20} />
+                {addingToCart ? 'Adding...' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
+              </button>
+
+              {/* Stock Status */}
+              {product.stock > 0 && product.stock < 10 && (
+                <p className="text-xs text-orange-600 mt-4 text-center">
+                  Only {product.stock} left in stock - order soon
+                </p>
+              )}
+            </div>
+          </div>
         </div>
-      )}
 
-      {/* Product Details */}
-      <div className="bg-white dark:bg-[var(--bg-clr)] p-6 rounded-xl mb-4 shadow border border-gray-200 dark:border-gray-700">
-        <p className="text-gray-700 dark:text-gray-300 mb-4 sec-ff leading-relaxed">
-          {product.description}
-        </p>
-
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 text-sm text-gray-700 dark:text-gray-300 sec-ff">
-          <p><span className="font-medium">Price:</span> ₦{product.price.toLocaleString()}</p>
-          <p><span className="font-medium">Stock:</span> {product.stock}</p>
-          <p><span className="font-medium">Location:</span> {product.location}</p>
+        {/* Reviews Section */}
+        <div className="mt-8">
+          <ExploreReview productId={product._id} />
         </div>
-
-        {/* Add to Cart Button */}
-        <div className="mt-6">
-          <button
-            onClick={handleAddToCart}
-            disabled={addingToCart || product.stock === 0}
-            className="flex items-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer pry-ff"
-          >
-            <ShoppingCart size={20} />
-            {addingToCart ? 'Adding...' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
-          </button>
-        </div>
-      </div>
-
-      <div>
-        <ExploreReview productId={product._id} />
       </div>
     </div>
   );
