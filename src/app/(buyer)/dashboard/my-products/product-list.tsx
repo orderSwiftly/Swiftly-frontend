@@ -73,7 +73,7 @@ export default function ProductList() {
     content = (
       <div className="flex flex-col justify-center items-center py-12">
         <Image
-          src="/no-product.jpg"
+          src="/no_addresses.png"
           alt="No products found"
           width={200}
           height={200}

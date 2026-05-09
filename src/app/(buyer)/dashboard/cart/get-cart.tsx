@@ -108,14 +108,14 @@ export default function GetCartComp() {
     <p className="text-red-500 text-center mt-8 pry-ff">{error}</p>
   );
 
-  if (empty) {
-    return (
-      <div className="text-center mt-8 pry-ff flex flex-col items-center text-[var(--sec-clr)]">
-        <Image src="/cart.png" alt="Empty Cart" width={150} height={150} className="mx-auto mb-4" />
-        Your cart is empty
-      </div>
-    );
-  }
+if (empty) {
+  return (
+    <div className="flex flex-col items-center justify-center min-h-[60vh] pry-ff text-[var(--sec-clr)]">
+      <Image src="/cart.png" alt="Empty Cart" width={150} height={150} className="mb-4" />
+      Your cart is empty
+    </div>
+  );
+}
 
   return (
     <div className="px-4 sm:px-6 md:px-8 bg-gray-50 min-h-screen pry-ff mb-20">

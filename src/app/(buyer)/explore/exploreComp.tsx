@@ -38,7 +38,7 @@ type ExplorePageProps = {
   categoryName?: string;
 };
 
-export default function ExplorePage({ searchTerm = '', categoryName = '' }: ExplorePageProps) {
+export default function ExplorePage({ searchTerm = '', categoryName = '' }: Readonly<ExplorePageProps>) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState('');
@@ -140,10 +140,11 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Expl
   } else if (error || products.length === 0) {
     content = (
       <div className="text-center py-12">
-        <Image src="/no-product.jpg" alt="No products" width={200} height={200} className="mx-auto mb-4" />
-        <h3 className="text-lg font-semibold text-[var(--txt-clr)]">
+        <Image src="/no_addresses.png" alt="No products" width={200} height={200} className="mx-auto mb-4" />
+        <span className='text-(--sec-clr)'> We don&apos;t have any products available at the moment.</span>
+        {/* <h3 className="text-lg font-semibold text-[var(--sec-clr)]">
           {error || 'No Products Available'}
-        </h3>
+        </h3> */}
       </div>
     );
   } else {
