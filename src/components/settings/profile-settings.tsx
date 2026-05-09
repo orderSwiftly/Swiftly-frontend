@@ -11,7 +11,7 @@ type SettingsFormData = {
   name: string;
   email: string;
   bio: string;
-  phoneNumber: string;  // ✅ Use phoneNumber
+  phoneNumber: string;
   gender: string;
   photo?: File;
 };
@@ -24,7 +24,7 @@ export default function ProfileSettings() {
     name: "",
     email: "",
     bio: "",
-    phoneNumber: "",  // ✅ Use phoneNumber
+    phoneNumber: "",
     gender: "",
   });
 
@@ -42,7 +42,7 @@ export default function ProfileSettings() {
           name: user.fullname || "",
           email: user.email || "",
           bio: "",
-          phoneNumber: user.phoneNumber || "",  // ✅ Direct mapping
+          phoneNumber: user.phone || "",  // ✅ API returns "phone", not "phoneNumber"
           gender: user.gender || "",
         });
         if (user.photo) setPreview(optimizeCloudinaryUrl(user.photo));
@@ -73,7 +73,7 @@ export default function ProfileSettings() {
       if (formData.photo) setPhotoLoading(true);
 
       const updateData = {
-        phoneNumber: formData.phoneNumber,  // ✅ Send phoneNumber
+        phoneNumber: formData.phoneNumber,  // ✅ Update endpoint expects "phoneNumber"
         gender: formData.gender,
         photo: formData.photo,
       };
@@ -186,7 +186,7 @@ export default function ProfileSettings() {
           </label>
           <input
             type="tel"
-            name="phoneNumber"  // ✅ Use phoneNumber
+            name="phoneNumber"
             value={formData.phoneNumber}
             onChange={handleChange}
             placeholder="Enter your phone number"

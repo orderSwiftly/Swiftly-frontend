@@ -4,12 +4,11 @@ import { useUserStore } from "@/stores/userStore";
 import { GraduationCap } from "lucide-react";
 import Link from "next/link";
 import { fetchCurrentInstitution, Institution } from '@/lib/campus';
-import { useUIStore } from "@/stores/campusStore";
 import { useEffect, useState } from "react";
 
 export default function SellersInfoCard() {
   const { user } = useUserStore();
-  const { openCampus } = useUIStore();
+
 
   const [institution, setInstitution] = useState<Institution | null>(null);
 
@@ -42,7 +41,7 @@ export default function SellersInfoCard() {
         <h2 className="text-xl font-medium text-[#0A0A0A]">
           {user?.fullname || "User"}
         </h2>
-        <p className="text-xs text-[#7A7A7A]">{maskPhone(user?.phoneNumber)}</p>
+        <p className="text-xs text-[#7A7A7A]">{maskPhone(user?.phone)}</p>
       </div>
 
       <div className="flex items-center justify-between bg-[#E1E1E1] rounded-xl px-3 py-2.5">
