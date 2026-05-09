@@ -8,6 +8,7 @@ import { useState } from "react";
 import { Order } from "@/types/order";
 import { getEmptyMessageByTab } from "@/lib/order-utils";
 import { ORDER_PROGRESS_MAP } from "@/lib/order-progress";
+import Image from "next/image";
 
 type Tab = "pending orders" | "active" | "passive";
 
@@ -70,9 +71,18 @@ export default function GetOrders({
       <OrdersHeader activeTab={activeTab} onTabChange={setActiveTab} />
 
       {filteredOrders.length === 0 ? (
-        <p className="text-center text-gray-400 sec-ff mt-8">
-          {getEmptyMessageByTab(activeTab)}
-        </p>
+        <div className="flex flex-col items-center justify-center min-h-[60vh] pry-ff text-[var(--sec-clr)]">
+          <Image
+            src="/no_orders.png"
+            alt="No orders found"
+            width={200}
+            height={200}
+            className="mb-4"
+          />
+          <p className="text-center text-gray-400 sec-ff mt-8">
+            {getEmptyMessageByTab(activeTab)}
+          </p>
+        </div>
       ) : (
         filteredOrders.map((order, index) => (
           <OrderCard
