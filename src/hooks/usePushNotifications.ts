@@ -46,7 +46,7 @@ export function usePushNotifications() {
         setEnabled(subscribed)
         if (subscribed) {
           setPermissionState('granted')
-          toast.success('Notifications turned on')
+          toast.success('s')
         } else {
           toast.error('Permission denied — enable notifications in your browser settings')
         }
