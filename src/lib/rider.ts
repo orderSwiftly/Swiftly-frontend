@@ -5,7 +5,7 @@ import axios, { AxiosError } from "axios";
 export interface RecentPayout {
   reference: string;
   amount: number;
-  date: string;
+  paidAt: string;
 }
  
 export interface EarningsData {
