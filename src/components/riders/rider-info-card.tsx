@@ -46,7 +46,7 @@ export default function SellersInfoCard() {
 
       <div className="flex items-center justify-between bg-[#E1E1E1] rounded-xl px-3 py-2.5">
         <div className="text-sm text-gray-700">
-          {institution?.name || "No campus selected"}
+          {institution?.name || "Babcock University"}
         </div>
         <Link href="/dashboard/profile/edit">
           <GraduationCap className="w-4 h-4 text-gray-600 cursor-pointer hover:text-gray-800" />

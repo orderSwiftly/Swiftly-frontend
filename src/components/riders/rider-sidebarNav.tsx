@@ -82,7 +82,6 @@ export default function SidebarNav() {
             <div
                 className="flex items-center cursor-pointer"
                 onClick={openCampus}
-                title="Change campus"
             >
                 {institution?.logo ? (
                     <div className="w-8 h-8 rounded-full overflow-hidden">
@@ -96,9 +95,15 @@ export default function SidebarNav() {
                         />
                     </div>
                 ) : (
-                    <div className="w-8 h-8 rounded-full bg-gray-200 flex items-center justify-center text-xs text-gray-500">
-                        C
-                    </div>
+                    <div className="w-8 h-8 rounded-full overflow-hidden">
+        <Image
+            src="/babcock.png"
+            alt="Babcock University"
+            width={32}
+            height={32}
+            className="w-full h-full object-cover"
+        />
+    </div>
                 )}
             </div>
 

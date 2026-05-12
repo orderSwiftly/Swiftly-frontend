@@ -74,7 +74,7 @@ export default function RiderAccount() {
   const isAvailable = rider.rider_data.status === "available";
 
   return (
-    <main className="p-4 space-y-5">
+    <main className="p-4 space-y-5 mb-20">
 
       {/* Avatar + name */}
       <div className="flex flex-col items-center gap-3 py-6 rounded-2xl bg-(--bg-clr)">
