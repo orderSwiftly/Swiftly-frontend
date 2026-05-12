@@ -1,14 +1,25 @@
 "use client";
 
-import { Headphones, Phone, Mail, Clock, User, PhoneCall } from "lucide-react";
+import { Headphones, Phone, Mail, Clock, User, PhoneCall, MessageCircle } from "lucide-react";
 
 export default function SupportPage() {
     const supportPhone = "08128488623";
     const formattedPhone = supportPhone.replace(/(\d{3})(\d{3})(\d{4})/, '$1 $2 $3');
+    
+    const secondSupportPhone = "0915 077 8422";
+    const rawSecondPhone = "09150778422";
+    const formattedSecondPhone = secondSupportPhone;
 
     const handleCall = () => {
-        // Directly open dialer - this works on mobile devices
         window.location.href = `tel:${supportPhone}`;
+    };
+
+    const handleSecondCall = () => {
+        window.location.href = `tel:${rawSecondPhone}`;
+    };
+
+    const handleWhatsApp = () => {
+        window.open('https://api.whatsapp.com/qr/3DABWGFZZTCMF1?autoload=1&app_absent=0', '_blank');
     };
 
     return (
@@ -47,14 +58,43 @@ export default function SupportPage() {
                                 <Phone size={18} className="text-green-600" />
                             </div>
                             <div>
-                                <p className="text-xs text-gray-500">Phone Number</p>
-                                {/* Direct tel: link - this will open dialer directly */}
+                                <p className="text-xs text-gray-500">Phone Number (Primary)</p>
                                 <a 
                                     href={`tel:${supportPhone}`}
                                     className="text-lg font-semibold text-gray-800 hover:text-[var(--acc-clr)] transition-colors"
                                 >
                                     {formattedPhone}
                                 </a>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-[var(--txt-clr)] rounded-xl">
+                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <Phone size={18} className="text-green-600" />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500">Phone Number (Secondary)</p>
+                                <a 
+                                    href={`tel:${rawSecondPhone}`}
+                                    className="text-lg font-semibold text-gray-800 hover:text-[var(--acc-clr)] transition-colors"
+                                >
+                                    {formattedSecondPhone}
+                                </a>
+                            </div>
+                        </div>
+
+                        <div className="flex items-center gap-3 p-3 bg-[var(--txt-clr)] rounded-xl">
+                            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                                <MessageCircle size={18} className="text-green-600" />
+                            </div>
+                            <div>
+                                <p className="text-xs text-gray-500">WhatsApp</p>
+                                <button 
+                                    onClick={handleWhatsApp}
+                                    className="text-sm font-medium text-gray-800 hover:text-[var(--acc-clr)] transition-colors text-left cursor-pointer"
+                                >
+                                    Chat with us on WhatsApp
+                                </button>
                             </div>
                         </div>
 
@@ -87,13 +127,27 @@ export default function SupportPage() {
                     </div>
 
                     {/* Quick Actions */}
-                    <div className="mt-6 pt-4 border-t border-blue-200">
+                    <div className="mt-6 pt-4 border-t border-blue-200 grid grid-cols-2 gap-3">
                         <button
                             onClick={handleCall}
-                            className="w-full py-3 bg-[var(--acc-clr)] hover:bg-[#7ab825] text-[var(--txt-clr)] rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                            className="py-3 bg-[var(--acc-clr)] hover:bg-[#7ab825] text-[var(--txt-clr)] rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
                         >
                             <Phone size={18} />
-                            Call Now
+                            Call Primary
+                        </button>
+                        <button
+                            onClick={handleSecondCall}
+                            className="py-3 bg-gray-700 hover:bg-gray-800 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer"
+                        >
+                            <Phone size={18} />
+                            Call Secondary
+                        </button>
+                        <button
+                            onClick={handleWhatsApp}
+                            className="py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl font-semibold transition-colors flex items-center justify-center gap-2 cursor-pointer col-span-2"
+                        >
+                            <MessageCircle size={18} />
+                            Message us on WhatsApp
                         </button>
                     </div>
                 </div>
@@ -107,7 +161,7 @@ export default function SupportPage() {
                     <div className="space-y-1 text-sm text-gray-600">
                         <p>Monday - Friday: 8:00 AM - 8:00 PM</p>
                         <p>Saturday: 9:00 AM - 6:00 PM</p>
-                        <p>Sunday: 10:00 AM - 4:00 PM</p>
+                        <p>Sunday: 1:00 PM - 6:00 PM</p>
                         <p className="text-xs text-gray-400 mt-2">24/7 emergency support available via phone</p>
                     </div>
                 </div>
