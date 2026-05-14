@@ -2,7 +2,6 @@
 
 import { useUserStore } from "@/stores/userStore";
 import { GraduationCap } from "lucide-react";
-import Link from "next/link";
 import { fetchCurrentInstitution, Institution } from '@/lib/campus';
 import { useEffect, useState } from "react";
 
@@ -46,11 +45,11 @@ export default function SellersInfoCard() {
 
       <div className="flex items-center justify-between bg-[#E1E1E1] rounded-xl px-3 py-2.5">
         <div className="text-sm text-gray-700">
-          {institution?.name || "Babcock University"}
+          {institution?.name || "No campus selected"}
         </div>
-        <Link href="/dashboard/profile/edit">
+        <span>
           <GraduationCap className="w-4 h-4 text-gray-600 cursor-pointer hover:text-gray-800" />
-        </Link>
+        </span>
       </div>
     </div>
   );

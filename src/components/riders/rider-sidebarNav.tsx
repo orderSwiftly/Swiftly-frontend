@@ -95,15 +95,9 @@ export default function SidebarNav() {
                         />
                     </div>
                 ) : (
-                    <div className="w-8 h-8 rounded-full overflow-hidden">
-        <Image
-            src="/babcock.png"
-            alt="Babcock University"
-            width={32}
-            height={32}
-            className="w-full h-full object-cover"
-        />
-    </div>
+                    <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-200 flex items-center justify-center font-semibold text-gray-500">
+                        C
+                    </div>
                 )}
             </div>
 
