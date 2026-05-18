@@ -1,50 +1,4 @@
 // lib/payment.ts
-export async function initPayment(orderId: string) {
-    try {
-        const apiUrl = process.env.NEXT_PUBLIC_API_URL;
-        const token = localStorage.getItem('token');
-
-        if (!token) {
-            throw new Error('No authentication token found');
-        }
-
-        const res = await fetch(`${apiUrl}/api/v1/flutterwave/initialize/${orderId}`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${token}`
-            },
-        });
-
-        const data = await res.json();
-        
-        if (!res.ok) {
-            // Check for subaccount-related errors
-            if (res.status === 502 || data.message?.includes('subaccount')) {
-                throw new Error('This store has not configured their payment settings yet. Please contact the store owner.');
-            }
-            if (data.message?.includes('expired')) {
-                throw new Error('Your reservation has expired. Please go back to cart and try again.');
-            }
-            throw new Error(data.message || 'Payment initialization failed');
-        }
-
-        if (!data.data?.authorization_url) {
-            throw new Error('Invalid payment response from server');
-        }
-
-        return data.data;
-    }
-    catch (error: unknown) {
-        console.error('Payment initialization error:', error);
-        if (error instanceof Error) {
-            throw new Error(error.message || 'Something went wrong while initializing payment');
-        }
-        throw new Error('Something went wrong while initializing payment');
-    }
-}
-
-// verify Payment
 export interface Pricing {
   subtotal: number;
   serviceFee: number;
@@ -93,20 +47,20 @@ export async function verifyPayment(reference: string): Promise<{
   try {
     const api_url = process.env.NEXT_PUBLIC_API_URL;
     const token = localStorage.getItem('token');
-    
+
     console.log('Verifying payment with reference:', reference);
-    
+
     const res = await fetch(`${api_url}/api/v1/flutterwave/verify?reference=${reference}`, {
       method: 'GET',
-      headers: { 
+      headers: {
         'Content-Type': 'application/json',
-        'Authorization': token ? `Bearer ${token}` : '',
+        Authorization: token ? `Bearer ${token}` : '',
       },
     });
 
     const data: VerifyPaymentResponse = await res.json();
     console.log('Verification response:', { status: res.status, data });
-    
+
     if (res.ok && data.status === 'success') {
       return {
         success: true,
@@ -119,10 +73,12 @@ export async function verifyPayment(reference: string): Promise<{
           store_name: data.data?.order?.store_name || 'Swiftly Store',
           paymentMethod: 'Card Payment',
           transactionReference: reference,
-          delivery_window: data.data?.order?.delivery_window ? {
-            start: data.data.order.delivery_window.start,
-            end: data.data.order.delivery_window.end,
-          } : undefined,
+          delivery_window: data.data?.order?.delivery_window
+            ? {
+                start: data.data.order.delivery_window.start,
+                end: data.data.order.delivery_window.end,
+              }
+            : undefined,
         },
         statusCode: res.status,
       };

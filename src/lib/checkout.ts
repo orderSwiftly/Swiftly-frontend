@@ -8,48 +8,6 @@ export interface CheckoutAddress {
   room?: string;
 }
 
-export interface CheckoutOrderItem {
-  productId: string;
-  title: string;
-  price: string;
-  quantity: number;
-  lineTotal: number;
-  productOwnerId: string;
-  productImg: string[];
-}
-
-export interface CheckoutOrder {
-  _id: string;
-  userId: string;
-  store_id: string;
-  reservation_group_id: string;
-  reservation_expires_at: string;
-  items: CheckoutOrderItem[];
-  pricing: {
-    subtotal: number;
-    serviceFee: number;
-    deliveryFee: number;
-    total: number;
-  };
-  shippingAddress: {
-    building: string;
-    room: string;
-    institutionId: string;
-  };
-  orderStatus: string;
-  paymentStatus: string;
-  createdAt: string;
-}
-
-export interface CheckoutResponse {
-  status: string;
-  message: string;
-  data: {
-    order: CheckoutOrder;
-    orderId: string;
-  };
-}
-
 export interface SavedAddress {
   _id: string;
   building: string;
@@ -64,11 +22,10 @@ export interface SaveAddressResponse {
   };
 }
 
-// Checkout a specific store
 export async function checkoutStore(
   storeId: string,
   address: CheckoutAddress
-): Promise<CheckoutResponse> {
+): Promise<{ authorization_url: string }> {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
 
@@ -81,16 +38,19 @@ export async function checkoutStore(
     body: JSON.stringify(address),
   });
 
-  const data: CheckoutResponse = await res.json();
+  const data = await res.json();
 
   if (!res.ok || data.status !== 'success') {
     throw new Error(data.message || 'Checkout failed');
   }
 
-  return data;
+  if (!data.data?.authorization_url) {
+    throw new Error('Invalid response from server');
+  }
+
+  return data.data;
 }
 
-// Fetch saved addresses
 export async function fetchSavedAddresses(): Promise<SavedAddress[]> {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
@@ -108,7 +68,6 @@ export async function fetchSavedAddresses(): Promise<SavedAddress[]> {
   return data.data.address ?? [];
 }
 
-// Save a new address
 export async function saveNewAddress(building: string, room: string): Promise<SaveAddressResponse> {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
@@ -131,9 +90,7 @@ export async function saveNewAddress(building: string, room: string): Promise<Sa
   return data;
 }
 
-// Calculate totals for a specific store (including fees)
 export async function calculateStoreTotals(subtotal: number) {
-  // Import dynamically to avoid circular dependency
   const { default: calculateTotals } = await import('@/lib/cartTotals');
   return calculateTotals(subtotal);
 }

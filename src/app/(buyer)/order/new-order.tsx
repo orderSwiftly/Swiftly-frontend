@@ -1,3 +1,5 @@
+// src/app/(buyer)/order/new-order.tsx
+
 'use client';
 
 import { useEffect, useState } from 'react';
@@ -5,7 +7,6 @@ import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { initPayment } from '@/lib/payment';
 import { checkoutStore, fetchSavedAddresses, saveNewAddress, calculateStoreTotals, type SavedAddress } from '@/lib/checkout';
 import { fetchCart, type CartItem } from '@/lib/cart';
 
@@ -34,36 +35,31 @@ export default function NewOrder() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Load cart and addresses for the specific store
   useEffect(() => {
     const loadData = async () => {
       try {
         setLoading(true);
-        
-        // Get the store ID from sessionStorage
+
         const storeId = sessionStorage.getItem('checkoutStoreId');
         if (!storeId) {
           toast.error('No store selected for checkout');
           router.push('/dashboard/cart');
           return;
         }
-        
-        // Fetch cart (already grouped by seller)
+
         const cart = await fetchCart();
-        
-        // Find the specific store
         const storeEntry = Object.entries(cart).find(([sellerId]) => sellerId === storeId);
-        
+
         if (!storeEntry) {
           toast.error('Store not found in cart');
           router.push('/dashboard/cart');
           return;
         }
-        
+
         const [sellerId, group] = storeEntry;
         const subtotal = group.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
         const totals = await calculateStoreTotals(subtotal);
-        
+
         setStoreData({
           storeId: sellerId,
           storeName: group.seller.name,
@@ -71,11 +67,9 @@ export default function NewOrder() {
           subtotal,
           totals,
         });
-        
-        // Fetch saved addresses
+
         const addresses = await fetchSavedAddresses();
         setSavedAddresses(addresses);
-        
       } catch (err) {
         console.error(err);
         toast.error(err instanceof Error ? err.message : 'Failed to load data');
@@ -84,7 +78,7 @@ export default function NewOrder() {
         setLoading(false);
       }
     };
-    
+
     loadData();
   }, [router]);
 
@@ -99,11 +93,9 @@ export default function NewOrder() {
       await saveNewAddress(building, room);
       toast.success('Address saved!');
 
-      // Refresh addresses
       const updatedAddresses = await fetchSavedAddresses();
       setSavedAddresses(updatedAddresses);
-      
-      // Auto-select the newly added address (last one)
+
       const newAddr = updatedAddresses[updatedAddresses.length - 1];
       if (newAddr) setSelectedAddressId(newAddr._id);
 
@@ -138,14 +130,8 @@ export default function NewOrder() {
         return;
       }
 
-      // Checkout the selected store
-      const result = await checkoutStore(storeData.storeId, addressPayload);
-      
-      // Clear the selected store from sessionStorage
+      const { authorization_url } = await checkoutStore(storeData.storeId, addressPayload);
       sessionStorage.removeItem('checkoutStoreId');
-      
-      const orderId = result.data.orderId;
-      const { authorization_url } = await initPayment(orderId);
       window.location.href = authorization_url;
     } catch (err: unknown) {
       console.error(err);
@@ -187,9 +173,7 @@ export default function NewOrder() {
       <div className="grid md:grid-cols-2 gap-6">
         {/* CART SUMMARY */}
         <div className="bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
-          <h3 className="text-lg font-semibold pry-ff text-[var(--pry-clr)]">
-            Cart Items
-          </h3>
+          <h3 className="text-lg font-semibold pry-ff text-[var(--pry-clr)]">Cart Items</h3>
 
           {storeData.items.map((item) => (
             <div
@@ -240,7 +224,6 @@ export default function NewOrder() {
         <div className="bg-white/5 p-6 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
           <h3 className="text-lg font-semibold pry-ff text-[var(--pry-clr)]">Delivery Address</h3>
 
-          {/* Saved addresses */}
           {savedAddresses.length > 0 && !useManual && (
             <div className="space-y-2">
               <p className="text-sm text-gray-400 sec-ff">Select a saved address</p>
@@ -270,7 +253,6 @@ export default function NewOrder() {
             </div>
           )}
 
-          {/* New address form */}
           {(useManual || savedAddresses.length === 0) && (
             <div className="space-y-3">
               {savedAddresses.length > 0 && (
@@ -297,7 +279,6 @@ export default function NewOrder() {
                 placeholder="Room / Office"
                 className="w-full p-3 rounded-md border border-[var(--prof-clr)] bg-transparent focus:outline-none focus:border-[var(--acc-clr)] sec-ff"
               />
-
               <button
                 onClick={handleSaveNewAddress}
                 disabled={savingAddress}
@@ -308,7 +289,6 @@ export default function NewOrder() {
             </div>
           )}
 
-          {/* Place Order Button */}
           <button
             onClick={handleSubmit}
             disabled={submitting}
