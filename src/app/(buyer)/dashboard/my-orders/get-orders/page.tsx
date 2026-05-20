@@ -1,5 +1,3 @@
-// src/app/(buyer)/dashboard/my-orders/get-orders/page.tsx
-
 "use client";
 
 import OrdersHeader from "../components/orders-header";
@@ -10,7 +8,7 @@ import { getEmptyMessageByTab } from "@/lib/order-utils";
 import { ORDER_PROGRESS_MAP } from "@/lib/order-progress";
 import Image from "next/image";
 
-type Tab = "pending orders" | "active" | "passive";
+type Tab = "active" | "passive";
 
 interface Props {
   orders: Order[];
@@ -24,7 +22,6 @@ function resolveId(id: string | { $oid: string } | undefined): string {
   return typeof id === "string" ? id : id.$oid;
 }
 
-// Sort by progress step ascending so earlier stages appear first
 function sortByProgress(orders: Order[]): Order[] {
   return [...orders].sort(
     (a, b) =>
@@ -39,14 +36,10 @@ export default function GetOrders({
   shippingLoading,
   handleShipOrder,
 }: Props) {
-  const [activeTab, setActiveTab] = useState<Tab>("pending orders");
+  const [activeTab, setActiveTab] = useState<Tab>("active");
 
   const getFilteredOrders = (): Order[] => {
     switch (activeTab) {
-      case "pending orders":
-        return sortByProgress(
-          orders.filter((o) => o.orderStatus === "pending")
-        );
       case "active":
         return sortByProgress(
           orders.filter((o) =>

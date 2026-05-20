@@ -1,6 +1,6 @@
 "use client";
 
-type Tab = "pending orders" | "active" | "passive";
+type Tab = "active" | "passive";
 
 interface OrdersHeaderProps {
   activeTab: Tab;
@@ -17,20 +17,17 @@ export default function OrdersHeader({ activeTab, onTabChange }: OrdersHeaderPro
       </div>
 
       <div className="flex items-center px-4">
-        {(["pending orders", "active", "passive"] as Tab[]).map((tab) => (
+        {(["active", "passive"] as Tab[]).map((tab) => (
           <button
             key={tab}
             onClick={() => onTabChange(tab)}
-            className={`flex-1 py-3 border-b-2 transition-colors ${activeTab === tab
+            className={`flex-1 py-3 border-b-2 transition-colors ${
+              activeTab === tab
                 ? "border-[var(--acc-clr)] text-[var(--prof-clr)]"
                 : "border-transparent text-[var(--bg-clr)]"
-              }`}
+            }`}
           >
-            {tab === "pending orders"
-              ? "Orders"
-              : tab === "active"
-                ? "Active Orders"
-                : "Delivered Orders"}
+            {tab === "active" ? "Active Orders" : "Delivered Orders"}
           </button>
         ))}
       </div>

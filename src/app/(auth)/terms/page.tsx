@@ -65,7 +65,7 @@ const termsSections = [
         icon: CreditCard,
         title: 'Orders & Payments',
         content: [
-            '6.1 All payments are processed via third-party payment gateways, including Paystack, supporting cards, transfers, USSD, and wallets.',
+            '6.1 All payments are processed via third-party payment gateways, including Flutterwave, supporting cards, transfers, USSD, and wallets.',
             '6.2 Swiftly does not store or retain customer funds beyond what is required for payment processing.',
             '6.3 Swiftly may collect platform service fees and logistics charges.',
             '6.4 Swiftly shall not be responsible for failures, delays, or errors caused by third-party payment service providers.',
@@ -225,7 +225,7 @@ const privacySections = [
         content: [
             '3.1 Personal Data Provided by Users. We collect personal information when you register or use our services, including name, email address, phone number, gender, and payment information.',
             '3.2 Usage Data. We collect information about your interactions with the platform, including pages viewed, app features used, and purchase and transaction history.',
-            '3.3 Payment Data. Payment information is processed via third-party providers such as Paystack. This includes the number of transactions per day, vendor payment information, and customer payment details.',
+            '3.3 Payment Data. Payment information is processed via third-party providers such as Flutterwave. This includes the number of transactions per day, vendor payment information, and customer payment details.',
             '3.4 Sensitive Data. We do not collect sensitive personal data such as health information or biometric data.',
             '3.5 Cookies and Tracking. We may use cookies, SDKs, and other tracking technologies for encryption, analytics, and improving platform functionality.',
         ],
@@ -245,7 +245,7 @@ const privacySections = [
         title: 'Sharing and Disclosure of Information',
         content: [
             '5.1 Vendors. Swiftly shares necessary user information with vendors to process orders and payments.',
-            '5.2 Payment Providers. Payment information is shared with third-party providers such as Paystack to facilitate transactions.',
+            '5.2 Payment Providers. Payment information is shared with third-party providers such as Flutterwave to facilitate transactions.',
             '5.3 Legal and Compliance. Swiftly may disclose information to comply with applicable laws, government requests, or legal proceedings.',
             '5.4 Third-Party Links. The platform may contain links to external websites or services that are not under Swiftly\'s control. Users are encouraged to review the privacy policies of these third parties.',
             '5.5 No Sale of Data. Swiftly does not sell user data to third parties.',
