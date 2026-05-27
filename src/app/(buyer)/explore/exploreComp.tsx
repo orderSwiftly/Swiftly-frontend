@@ -38,6 +38,18 @@ type ExplorePageProps = {
   categoryName?: string;
 };
 
+function getInstitutionEnum(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    const raw = localStorage.getItem('selected-campus');
+    if (!raw) return '';
+    const parsed = JSON.parse(raw);
+    return parsed?.institutionEnum ?? '';
+  } catch {
+    return '';
+  }
+}
+
 export default function ExplorePage({ searchTerm = '', categoryName = '' }: Readonly<ExplorePageProps>) {
   const [products, setProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -51,13 +63,14 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
     if (searchTerm.trim() || categoryName.trim()) return;
     const fetchProducts = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const institutionEnum = getInstitutionEnum();
       setLoading(true);
       setError('');
       try {
         const headers: HeadersInit = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        const res = await fetch(`${api_url}/api/v1/product/explore`, { method: "GET", headers });
+        const res = await fetch(`${api_url}/api/v1/product/explore/${institutionEnum}`, { method: "GET", headers });
         const data = await res.json();
 
         if (!res.ok || data.status !== "success" || !Array.isArray(data.products)) {
@@ -80,6 +93,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
     if (!searchTerm.trim() && !categoryName.trim()) return;
     const fetchSearch = async () => {
       const api_url = process.env.NEXT_PUBLIC_API_URL;
+      const institutionEnum = getInstitutionEnum();
       setLoading(true);
       setError('');
       try {
@@ -87,7 +101,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
         if (searchTerm.trim()) params.set('query', searchTerm);
         if (categoryName.trim()) params.set('categoryName', categoryName);
 
-        const res = await fetch(`${api_url}/api/v1/product/search?${params.toString()}`);
+        const res = await fetch(`${api_url}/api/v1/products/search/${institutionEnum}?${params.toString()}`);
         const data = await res.json();
         if (res.ok && data.status === "success") setProducts((data.products ?? []).filter((p: Product) => p.stock > 0));
         else setError(data?.message ?? "No matching products found.");
@@ -142,9 +156,6 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
       <div className="text-center py-12">
         <Image src="/no_addresses.png" alt="No products" width={200} height={200} className="mx-auto mb-4" />
         <span className='text-(--sec-clr)'> We don&apos;t have any products available at the moment.</span>
-        {/* <h3 className="text-lg font-semibold text-[var(--sec-clr)]">
-          {error || 'No Products Available'}
-        </h3> */}
       </div>
     );
   } else {
@@ -162,14 +173,12 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                 fill
                 className="object-cover group-hover:scale-105 transition-transform duration-300"
               />
-              {/* Stock badge */}
               <div className="absolute top-3 right-3 bg-black/70 backdrop-blur-sm text-white text-xs px-2 py-1 rounded-full">
                 {product.stock} left
               </div>
             </div>
 
             <div className="p-4 flex flex-col gap-3">
-              {/* Title and Price row */}
               <div className="flex justify-between items-start">
                 <h4 className="text-xl font-bold text-gray-900 tracking-tight leading-tight">
                   {product.title}
@@ -180,7 +189,6 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
               </div>
 
               <div className='flex items-start justify-between'>
-                {/* Rating row */}
                 <div className="flex items-center gap-1">
                   <Star size={16} className="fill-yellow-400 text-yellow-400" />
                   <span className="text-sm font-medium text-gray-700">
@@ -188,7 +196,6 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                   </span>
                 </div>
 
-                {/* Category tag */}
                 {product.category?.name && (
                   <div className="flex flex-wrap gap-2">
                     <span className="inline-flex text-xs font-medium bg-gray-100 text-gray-700 px-2 py-1 rounded-md">
@@ -198,7 +205,6 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                 )}
               </div>
 
-              {/* Seller info - Made clearly clickable */}
               {product.seller?.businessName && (
                 <Link 
                   href={`/explore/seller/${product.seller._id}`} 
@@ -219,7 +225,6 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                 </Link>
               )}
 
-              {/* Action buttons */}
               <div className="flex items-center justify-between gap-3 pt-2 border-t border-gray-100 mt-1">
                 <Link
                   href={`/explore/product/${product._id}`}

@@ -16,9 +16,21 @@ type SuggestedProduct = {
 };
 
 type Props = {
-  onSearch?: (term: string) => void; // called when user submits
+  onSearch?: (term: string) => void;
   placeholder?: string;
 };
+
+function getInstitutionEnum(): string {
+  if (typeof window === 'undefined') return '';
+  try {
+    const raw = localStorage.getItem('selected-campus');
+    if (!raw) return '';
+    const parsed = JSON.parse(raw);
+    return parsed?.institutionEnum ?? '';
+  } catch {
+    return '';
+  }
+}
 
 export default function SearchBar({ onSearch, placeholder = 'Search products...' }: Props) {
   const [query, setQuery] = useState('');
@@ -51,7 +63,8 @@ export default function SearchBar({ onSearch, placeholder = 'Search products...'
       setLoading(true);
       try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;
-        const res = await fetch(`${api_url}/api/v1/product/search?query=${encodeURIComponent(query)}`);
+        const institutionEnum = getInstitutionEnum();
+        const res = await fetch(`${api_url}/api/v1/product/search/${institutionEnum}?query=${encodeURIComponent(query)}`);
         const data = await res.json();
         if (res.ok && data.status === 'success' && Array.isArray(data.products)) {
           setSuggestions(data.products.filter((p: SuggestedProduct & { stock?: number }) => (p.stock ?? 1) > 0).slice(0, 6));

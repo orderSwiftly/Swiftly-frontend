@@ -48,14 +48,14 @@ export default function ProductDetails() {
       try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;
         const res = await fetch(
-          `${api_url}/api/v1/product/explore/${id}`,
+          `${api_url}/api/v1/product/explore/product/${id}`,
           {
             method: 'GET',
           }
         );
 
         const data = await res.json();
-        console.log('Full API Response:', data); // Debug log
+        // console.log('Full API Response:', data);
         
         if (!res.ok || data.status !== 'success') {
           toast.error(data.message ?? 'Failed to fetch product');
@@ -63,8 +63,8 @@ export default function ProductDetails() {
         }
 
         const productData = data.data.product;
-        console.log('Product Data:', productData); // Debug log
-        console.log('Average Rating value:', productData.averageRating, productData.avgRating, productData.rating); // Debug log
+        // console.log('Product Data:', productData);
+        // console.log('Average Rating value:', productData.averageRating, productData.avgRating, productData.rating);
         
         setProduct(productData);
         setMainImage(productData.productImg?.[0] ?? '/fallback.jpg');
@@ -131,14 +131,12 @@ export default function ProductDetails() {
       </div>
     );
 
-  // Get rating from different possible field names
   const rating = product.averageRating ?? product.avgRating ?? product.rating ?? 0;
   const reviewCount = product.reviewCount || 0;
 
   return (
     <div className="min-h-screen bg-gray-50 pry-ff">
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
-        {/* Back Button */}
         <button
           onClick={() => router.back()}
           className="flex items-center gap-2 text-gray-600 hover:text-gray-900 mb-4 sm:mb-6 transition-colors cursor-pointer"
@@ -147,11 +145,8 @@ export default function ProductDetails() {
           <span className="text-sm font-medium">Back</span>
         </button>
 
-        {/* Desktop: Two Column Layout */}
         <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
-          {/* Image Section */}
           <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
-            {/* Main Image */}
             <div className="relative w-full h-80 sm:h-96 lg:h-[450px] bg-gray-100">
               <Image
                 src={mainImage ?? '/fallback.jpg'}
@@ -161,7 +156,6 @@ export default function ProductDetails() {
               />
             </div>
 
-            {/* Thumbnails */}
             {product.productImg.length > 1 && (
               <div className="flex gap-2 p-4 overflow-x-auto scrollbar-thin">
                 {product.productImg.map((img, idx) => (
@@ -179,10 +173,8 @@ export default function ProductDetails() {
             )}
           </div>
 
-          {/* Product Info Section */}
           <div className="mt-6 lg:mt-0">
             <div className="bg-white rounded-2xl shadow-lg p-6 sm:p-8">
-              {/* Seller Name - Made Clickable */}
               {product.seller?.businessName && product.seller._id && (
                 <Link 
                   href={`/explore/seller/${product.seller._id}`}
@@ -210,12 +202,10 @@ export default function ProductDetails() {
                 </Link>
               )}
 
-              {/* Product Title */}
               <h1 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-gray-900 mb-3">
                 {product.title}
               </h1>
 
-              {/* Rating and Review Count */}
               <div className="flex items-center gap-4 mb-4">
                 <div className="flex items-center gap-1">
                   <Star size={18} className="fill-yellow-400 text-yellow-400" />
@@ -228,19 +218,16 @@ export default function ProductDetails() {
                 </div>
               </div>
 
-              {/* Description */}
               <p className="text-gray-600 leading-relaxed mb-6 sec-ff text-sm sm:text-base">
                 {product.description}
               </p>
 
-              {/* Price */}
               <div className="mb-6">
                 <span className="text-3xl sm:text-4xl font-bold text-gray-900">
                   ₦{product.price.toLocaleString()}
                 </span>
               </div>
 
-              {/* Quantity Selector */}
               <div className="mb-6">
                 <label className="block text-sm font-medium text-gray-700 mb-2">Quantity</label>
                 <div className="flex items-center gap-3">
@@ -265,7 +252,6 @@ export default function ProductDetails() {
                 </div>
               </div>
 
-              {/* Add to Cart Button */}
               <button
                 onClick={handleAddToCart}
                 disabled={addingToCart || product.stock === 0}
@@ -275,7 +261,6 @@ export default function ProductDetails() {
                 {addingToCart ? 'Adding...' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}
               </button>
 
-              {/* Stock Status */}
               {product.stock > 0 && product.stock < 10 && (
                 <p className="text-xs text-orange-600 mt-4 text-center">
                   Only {product.stock} left in stock - order soon
@@ -285,7 +270,6 @@ export default function ProductDetails() {
           </div>
         </div>
 
-        {/* Reviews Section */}
         <div className="mt-8">
           <ExploreReview productId={product._id} />
         </div>

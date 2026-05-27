@@ -34,7 +34,6 @@ export default function AddressPage() {
         }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
-        // console.error("Error fetching addresses:", err);
         toast.error("Something went wrong");
       } finally {
         setLoading(false);
@@ -61,11 +60,23 @@ export default function AddressPage() {
     }
   };
 
-  const confirmDelete = () => {
-    if (selectedAddressToDelete) {
-      setAddresses((prev) =>
-        prev.filter((addr) => addr._id !== selectedAddressToDelete._id)
-      );
+  const confirmDelete = async () => {
+    if (!selectedAddressToDelete) return;
+    try {
+      const res = await fetch(`${api_url}/api/v1/user/address/${selectedAddressToDelete._id}`, {
+        method: "DELETE",
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      const data = await res.json();
+      if (res.ok && data.status === "success") {
+        setAddresses(data.data.address ?? []);
+        toast.success("Address deleted");
+      } else {
+        toast.error(data?.message ?? "Failed to delete address");
+      }
+    } catch {
+      toast.error("Something went wrong");
+    } finally {
       setShowDeleteModal(false);
       setSelectedAddressToDelete(null);
     }
@@ -94,7 +105,7 @@ export default function AddressPage() {
             <PulseLoader />
           </div>
         ) : addresses.length === 0 ? (
-          <EmptyAddressState />
+          <EmptyAddressState onAdd={() => setShowAddModal(true)} />
         ) : (
           <div className="max-w-4xl">
             {addresses.map((address) => (
