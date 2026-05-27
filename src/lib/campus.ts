@@ -59,21 +59,14 @@ export async function selectCampus(institutionId: string) {
     }
 }
 
-// Fetch currently selected campus
-export async function fetchCurrentInstitution() {
+// Fetch currently selected campus from localStorage
+export async function fetchCurrentInstitution(): Promise<Institution | null> {
     try {
-        const token = localStorage.getItem('token');
-        if (!token) return;
-
-        const res = await axios.get(`${api_url}/api/v1/institution/current`, {
-            headers: {
-                Authorization: `Bearer ${token}`,
-                'Content-Type': 'application/json',
-            },
-        });
-
-        return res.data.data.institution;
+        const raw = localStorage.getItem('selected-campus');
+        if (!raw) return null;
+        return JSON.parse(raw) as Institution;
     } catch (error) {
-        console.error('Error fetching current institution:', error);
+        console.error('Error reading current institution:', error);
+        return null;
     }
 }

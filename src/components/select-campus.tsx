@@ -41,6 +41,7 @@ const SelectCampus: React.FC<Props> = ({ onFinish }) => {
     try {
       await selectCampus(campus._id);
       localStorage.setItem('selected-campus', JSON.stringify(campus));
+      window.dispatchEvent(new Event('campus-changed'));
       onFinish();
     } catch {
       toast.error('Failed to select campus. Please try again.');

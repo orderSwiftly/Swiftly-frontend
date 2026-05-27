@@ -28,25 +28,27 @@ export default function SidebarNav() {
     const userInitial =
         user?.fullname?.charAt(0)?.toUpperCase() || 'U';
 
-    // Ensure user is loaded
     useEffect(() => {
         if (!user) {
             fetchUser();
         }
     }, [user, fetchUser]);
 
-    // Fetch current campus/institution
-    useEffect(() => {
-        const loadInstitution = async () => {
-            try {
-                const inst = await fetchCurrentInstitution();
-                if (inst) setInstitution(inst);
-            } catch (err) {
-                console.error('Failed to load institution', err);
-            }
-        };
+    const loadInstitution = async () => {
+        try {
+            const inst = await fetchCurrentInstitution();
+            if (inst) setInstitution(inst);
+        } catch (err) {
+            console.error('Failed to load institution', err);
+        }
+    };
 
+    // Load on mount and re-load whenever campus changes
+    useEffect(() => {
         loadInstitution();
+
+        window.addEventListener('campus-changed', loadInstitution);
+        return () => window.removeEventListener('campus-changed', loadInstitution);
     }, []);
 
     return (
@@ -77,7 +79,6 @@ export default function SidebarNav() {
 
             {/* RIGHT — Notifications + User */}
             <div className="flex items-center gap-3">
-
                 <Link href="/dashboard/profile">
                     <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-400 flex items-center justify-center font-semibold text-white">
                         {user?.photo ? (
