@@ -121,7 +121,7 @@ const handleLogin = async (e: React.FormEvent) => {
 
               <button
                 type="submit"
-                className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--wave-clr)] py-3.5 rounded-lg hover:bg-opacity-90 transition font-semibold cursor-pointer h-[48px] text-base"
+                className="flex items-center justify-center bg-[var(--prof-clr)] text-[var(--txt-clr)] py-3.5 rounded-lg hover:bg-[var(--wave-clr)] transition font-semibold cursor-pointer h-[48px] text-base"
                 disabled={loading}
               >
                 {loading ? <Loader2 className="animate-spin" /> : 'Log In'}

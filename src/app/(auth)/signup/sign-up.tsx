@@ -233,7 +233,7 @@ export default function SignupComp() {
               <button
                 type="submit"
                 disabled={loading || !agreedToTerms}
-                className="flex items-center justify-center bg-[var(--acc-clr)] text-[var(--wave-clr)] py-3 rounded-lg font-semibold h-[44px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
+                className="flex items-center justify-center bg-[var(--prof-clr)] text-[var(--txt-clr)] py-3 rounded-lg font-semibold h-[44px] cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed hover:bg-[var(--wave-clr)] transition"
               >
                 {loading ? <Loader2 className="animate-spin" /> : 'Sign Up'}
               </button>
