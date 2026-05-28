@@ -146,7 +146,7 @@ export default function ProductDetails() {
         </button>
 
         <div className="lg:grid lg:grid-cols-2 lg:gap-8 lg:items-start">
-          <div className="bg-white rounded-2xl shadow-lg overflow-hidden">
+          <div className="bg-(--txt-clr) rounded-2xl shadow-lg overflow-hidden">
             <div className="relative w-full h-80 sm:h-96 lg:h-[450px] bg-gray-100">
               <Image
                 src={mainImage ?? '/fallback.jpg'}
@@ -163,7 +163,7 @@ export default function ProductDetails() {
                     key={idx}
                     onClick={() => setMainImage(img)}
                     className={`relative min-w-[70px] h-[70px] rounded-lg overflow-hidden cursor-pointer border-2 transition-all flex-shrink-0 ${
-                      mainImage === img ? 'border-green-500' : 'border-gray-200 hover:border-gray-400'
+                      mainImage === img ? 'border-(--prof-clr)' : 'border-gray-200 hover:border-gray-400'
                     }`}
                   >
                     <Image src={img} alt={`Thumbnail ${idx}`} fill className="object-cover" />
@@ -183,21 +183,19 @@ export default function ProductDetails() {
                   <div className="flex items-center justify-between p-3 -mx-3 rounded-xl hover:bg-gray-50 transition-all duration-200 cursor-pointer">
                     <div className="flex items-center gap-3">
                       <div className="w-12 h-12 bg-gradient-to-br from-green-100 to-green-50 rounded-full flex items-center justify-center">
-                        <Store size={20} className="text-green-600" />
+                        <Store size={20} className="text-(--prof-clr)" />
                       </div>
                       <div>
                         <p className="text-xs text-gray-400 font-medium">Sold by</p>
                         <div className="flex items-center gap-1">
-                          <span className="text-base font-bold text-gray-800 group-hover/seller:text-green-600 transition-colors">
+                          <span className="text-base font-bold text-gray-800 group-hover/seller:text-(--prof-clr) transition-colors">
                             {product.seller.businessName}
                           </span>
-                          <ChevronRight size={14} className="text-gray-300 group-hover/seller:text-green-500 transition-colors" />
+                          <ChevronRight size={14} className="text-gray-300 group-hover/seller:text-(--prof-clr) transition-colors" />
                         </div>
                       </div>
                     </div>
-                    <div className="w-8 h-8 rounded-full bg-gray-100 flex items-center justify-center group-hover/seller:bg-green-100 transition-colors">
-                      <Store size={14} className="text-gray-400 group-hover/seller:text-green-600" />
-                    </div>
+                    
                   </div>
                 </Link>
               )}
@@ -255,7 +253,7 @@ export default function ProductDetails() {
               <button
                 onClick={handleAddToCart}
                 disabled={addingToCart || product.stock === 0}
-                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-base sm:text-lg"
+                className="w-full flex items-center justify-center gap-2 px-6 py-3 bg-(--prof-clr) text-(--txt-clr) font-semibold rounded-xl hover:bg-(--wave-clr) transition-colors disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer text-base sm:text-lg"
               >
                 <ShoppingCart size={20} />
                 {addingToCart ? 'Adding...' : product.stock === 0 ? 'Out of Stock' : 'Add to Cart'}

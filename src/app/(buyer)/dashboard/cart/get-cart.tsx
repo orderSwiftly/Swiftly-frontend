@@ -5,7 +5,7 @@
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
-import { Trash2 } from 'lucide-react';
+import { Trash2, InfoIcon  } from 'lucide-react';
 import AddToCart from './add-to-cart';
 import { useRouter } from 'next/navigation';
 import PulseLoader from '@/components/pulse-loader';
@@ -15,6 +15,7 @@ import { calculateStoreTotals } from '@/lib/checkout';
 interface StoreWithTotals {
   sellerId: string;
   sellerName: string;
+  isOpen: boolean;
   items: CartItem[];
   subtotal: number;
   totals: {
@@ -46,6 +47,7 @@ export default function GetCartComp() {
           return {
             sellerId,
             sellerName: group.seller.name,
+            isOpen: group.seller.is_open ?? true,
             items: group.items,
             subtotal,
             totals,
@@ -138,6 +140,14 @@ if (empty) {
                     <span className="text-base font-bold text-gray-800">
                       {store.sellerName}
                     </span>
+                    {/* Add status badge */}
+      <span className={`ml-2 px-2 py-0.5 text-xs font-medium rounded-full ${
+        store.isOpen 
+          ? 'bg-green-100 text-green-700' 
+          : 'bg-red-100 text-red-700'
+      }`}>
+        {store.isOpen ? 'Open' : 'Closed'}
+      </span>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-500">Store Subtotal</p>
@@ -221,10 +231,27 @@ if (empty) {
                   
                   <button
                     onClick={() => handleCheckoutStore(store.sellerId)}
-                    className="w-full mt-4 py-3 rounded-xl bg-green-600 text-white font-semibold hover:bg-green-700 transition cursor-pointer text-sm"
+                    disabled={!store.isOpen}
+                    className={`w-full mt-4 py-3 rounded-xl font-semibold transition cursor-pointer text-sm ${
+                      store.isOpen
+                        ? 'bg-green-600 text-(--txt-clr) hover:bg-green-700'
+                        : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+                      }`}
                   >
-                    Proceed to Checkout - ₦{store.totals.total.toLocaleString()}
+                    {store.isOpen 
+                      ? `Proceed to Checkout - ₦${store.totals.total.toLocaleString()}`
+                      : 'Store Currently Closed'}
                   </button>
+
+                  {/* If store is closed, show a warning message */}
+                  {!store.isOpen && (
+                    <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
+                      <InfoIcon size={16} className="text-yellow-500 flex-shrink-0" />
+                      <p className="text-yellow-700 text-xs font-normal flex-1">
+                        This store is currently closed and not accepting orders
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

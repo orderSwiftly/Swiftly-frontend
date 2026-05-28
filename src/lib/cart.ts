@@ -19,7 +19,11 @@ export interface CartItem {
 }
 
 export interface SellerGroup {
-  seller: { _id: string; name: string };
+  seller: {
+    _id: string;
+    name: string;
+    is_open: false
+  };
   items: CartItem[];
 }
 
