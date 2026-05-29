@@ -15,14 +15,24 @@ export interface CartItem {
   quantity: number;
   price: number;
   addedAt: string;
-  product: Product;
+  product: {
+    _id: string;
+    title: string;
+    price: string | number;
+    stock: number;
+    productImg: string[];
+    seller: {
+      _id: string;
+      name: string;
+      is_open: boolean;
+    };
+  };
 }
 
 export interface SellerGroup {
   seller: {
     _id: string;
     name: string;
-    is_open: false
   };
   items: CartItem[];
 }
@@ -49,6 +59,7 @@ export async function fetchCart(): Promise<GroupedCart> {
     });
 
     const data: CartResponse = await res.json();
+    //  console.log('Raw API response:', data)
 
     if (!res.ok || data.status !== 'success') {
       throw new Error(data.message || 'Failed to fetch cart');
@@ -60,6 +71,7 @@ export async function fetchCart(): Promise<GroupedCart> {
     if (Array.isArray(cart)) {
       return {};
     }
+
 
     return cart as GroupedCart;
   } catch (error) {

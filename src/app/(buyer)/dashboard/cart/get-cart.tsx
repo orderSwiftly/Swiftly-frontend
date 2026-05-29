@@ -33,38 +33,46 @@ export default function GetCartComp() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const loadCart = async () => {
-    try {
-      setLoading(true);
-      const cart = await fetchCart();
-      setGroupedCart(cart);
-      
-      // Calculate totals for each store
-      const stores = await Promise.all(
-        Object.entries(cart).map(async ([sellerId, group]) => {
-          const subtotal = group.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-          const totals = await calculateStoreTotals(subtotal);
-          return {
-            sellerId,
-            sellerName: group.seller.name,
-            isOpen: group.seller.is_open ?? true,
-            items: group.items,
-            subtotal,
-            totals,
-          };
-        })
-      );
-      
-      setStoresWithTotals(stores);
-      setError('');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to load cart');
-      setError('Failed to load cart.');
-    } finally {
-      setLoading(false);
-    }
-  };
+const loadCart = async () => {
+  try {
+    setLoading(true);
+    const cart = await fetchCart();
+    
+    setGroupedCart(cart);
+    
+    // Calculate totals for each store
+    const stores = await Promise.all(
+      Object.entries(cart).map(async ([sellerId, group]) => {
+        const subtotal = group.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
+        const totals = await calculateStoreTotals(subtotal);
+        
+        // Extract is_open from the first item's product.seller
+        // Since all items in a store should have the same seller status
+        const isOpen = group.items[0]?.product?.seller?.is_open ?? true;
+        
+        
+        return {
+          sellerId,
+          sellerName: group.seller.name,
+          isOpen: isOpen,  // Use the extracted value
+          items: group.items,
+          subtotal,
+          totals,
+        };
+      })
+    );
+    
+    // console.log('Processed stores:', stores);
+    setStoresWithTotals(stores);
+    setError('');
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to load cart');
+    setError('Failed to load cart.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     loadCart();
