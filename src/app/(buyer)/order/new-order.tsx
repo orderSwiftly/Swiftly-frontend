@@ -66,11 +66,15 @@ export default function NewOrder() {
         const [sellerId, group] = storeEntry;
         const subtotal = group.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
         const totals = await calculateStoreTotals(subtotal);
+        
+        // Extract is_open from the first item's product.seller
+        // Since all items in a store should have the same seller status
+        const isOpen = group.items[0]?.product?.seller?.is_open ?? true;
 
         setStoreData({
           storeId: sellerId,
           storeName: group.seller.name,
-          isOpen: group.seller.is_open ?? true,
+          isOpen: isOpen, // Use the extracted value
           items: group.items,
           subtotal,
           totals,
@@ -362,7 +366,7 @@ export default function NewOrder() {
               <button
                 onClick={handleSaveNewAddress}
                 disabled={savingAddress || !storeData.isOpen}
-                className="w-full p-2 rounded-lg border border-[var(--acc-clr)] text-[var(--acc-clr)] sec-ff text-sm font-medium hover:bg-[var(--acc-clr)]/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-2 rounded-lg border border-[var(--prof-clr)] text-[var(--txt-clr)] sec-ff text-sm font-medium hover:bg-[var(--prof-clr)]/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {savingAddress ? 'Saving...' : 'Save address for future use'}
               </button>
@@ -374,7 +378,7 @@ export default function NewOrder() {
             disabled={submitting || !storeData.isOpen}
             className={`w-full mt-4 p-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 sec-ff ${
               storeData.isOpen
-                ? 'bg-[var(--acc-clr)] text-[var(--prof-clr)] hover:opacity-90 cursor-pointer'
+                ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)] hover:opacity-90 cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >

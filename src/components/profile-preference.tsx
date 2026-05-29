@@ -28,11 +28,11 @@ export default function ProfilePreference() {
           Preferences
         </h3>
 
-        <div className="bg-white rounded-xl border border-gray-200 divide-y">
+        <div className="bg-(--txt-clr) rounded-xl border border-gray-200 divide-y">
           <div className="w-full flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                <Bell className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-lg bg-(--prof-clr) flex items-center justify-center">
+                <Bell className="w-5 h-5 text-(--txt-clr)" />
               </div>
               <span className="text-sm font-medium text-gray-800">
                 Push Notifications
@@ -43,7 +43,7 @@ export default function ProfilePreference() {
               onClick={toggleNotifications}
               disabled={loading}
               className={`relative w-12 h-6 rounded-full transition-colors ${
-                enabled ? "bg-green-600" : "bg-gray-300"
+                enabled ? "bg-(--prof-clr)" : "bg-gray-300"
               } disabled:opacity-50`}
             >
               <span
@@ -59,8 +59,8 @@ export default function ProfilePreference() {
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                <HelpCircle className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-lg bg-(--prof-clr) flex items-center justify-center">
+                <HelpCircle className="w-5 h-5 text-(--txt-clr)" />
               </div>
               <span className="text-sm font-medium text-gray-800">
                 Contact support

@@ -123,7 +123,7 @@ export default function AddressPage() {
       <div className="fixed md:bottom-8 right-8">
         <button
           onClick={() => setShowAddModal(true)}
-          className="py-3 px-6 bg-[#669917] text-white font-medium rounded-lg hover:bg-[#4a6d0d] transition flex items-center justify-center gap-2 shadow-lg"
+          className="py-3 px-6 bg-(--prof-clr) text-(--txt-clr) font-medium rounded-lg hover:bg-(--wave-clr) transition flex items-center justify-center gap-2 shadow-lg"
         >
           <Plus className="w-5 h-5" />
           Add Address

@@ -13,7 +13,7 @@ interface AddressCardProps {
   onToggleSelect: (id: string) => void;
 }
 
-export default function AddressCard({ address, onDelete, onToggleSelect }: AddressCardProps) {
+export default function AddressCard({ address, onDelete }: AddressCardProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-200 p-4 mb-3">
       <div className="grid grid-cols-2 gap-y-2 mb-4">
@@ -33,15 +33,6 @@ export default function AddressCard({ address, onDelete, onToggleSelect }: Addre
           className="flex-1 py-2.5 bg-[#D92D20] text-white font-medium rounded-lg hover:bg-red-700 transition"
         >
           Delete
-        </button>
-        <button
-          onClick={() => onToggleSelect(address._id)}
-          className={`flex-1 py-2.5 font-medium rounded-lg transition ${address.isSelected
-              ? "bg-[#669917] text-white hover:bg-[#4a6d0d]"
-              : "bg-gray-300 text-gray-700 hover:bg-gray-400"
-            }`}
-        >
-          {address.isSelected ? "Unselect" : "Select"}
         </button>
       </div>
     </div>

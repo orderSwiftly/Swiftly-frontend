@@ -242,7 +242,7 @@ if (empty) {
                     disabled={!store.isOpen}
                     className={`w-full mt-4 py-3 rounded-xl font-semibold transition cursor-pointer text-sm ${
                       store.isOpen
-                        ? 'bg-green-600 text-(--txt-clr) hover:bg-green-700'
+                        ? 'bg-(--prof-clr) text-(--txt-clr) hover:bg-(--wave-clr)'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
                       }`}
                   >

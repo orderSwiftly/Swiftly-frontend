@@ -54,14 +54,14 @@ export default function ProfilePreference() {
         </h3>
         
 
-        <div className="bg-white rounded-xl border border-gray-200 divide-y">
+        <div className="bg-(--txt-clr) rounded-xl border border-gray-200 divide-y">
           <Link 
             href="/rider/dashboard/profile/support"
             className="w-full flex items-center justify-between px-4 py-3 hover:bg-gray-50 transition"
           >
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                <Headphones className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-lg bg-(--prof-clr) flex items-center justify-center">
+                <Headphones className="w-5 h-5 text-(--txt-clr)" />
               </div>
               <span className="text-sm font-medium text-gray-800">
                 Contact Support
@@ -72,8 +72,8 @@ export default function ProfilePreference() {
           
           <div className="w-full flex items-center justify-between px-4 py-3">
             <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-lg bg-green-600 flex items-center justify-center">
-                <Bell className="w-5 h-5 text-white" />
+              <div className="w-9 h-9 rounded-lg bg-(--prof-clr) flex items-center justify-center">
+                <Bell className="w-5 h-5 text-(--txt-clr)" />
               </div>
               <span className="text-sm font-medium text-gray-800">
                 Push Notifications
@@ -84,11 +84,11 @@ export default function ProfilePreference() {
               onClick={handleNotifToggle}
               disabled={notifLoading}
               className={`relative w-12 h-6 rounded-full transition-colors ${
-                notificationsEnabled ? "bg-green-600" : "bg-gray-300"
+                notificationsEnabled ? "bg-(--prof-clr)" : "bg-gray-300"
               } disabled:opacity-50`}
             >
               <span
-                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-white rounded-full transition-transform ${
+                className={`absolute top-0.5 left-0.5 w-5 h-5 bg-(--txt-clr) rounded-full transition-transform ${
                   notificationsEnabled ? "translate-x-6" : "translate-x-0"
                 }`}
               />

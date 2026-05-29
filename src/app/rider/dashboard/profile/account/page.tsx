@@ -126,8 +126,8 @@ export default function RiderAccount() {
 
         <div className="space-y-3">
           <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "#f5f5f5" }}>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-(--bg-clr)">
-              <User size={16} color="#9BDD37" />
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-(--prof-clr)">
+              <User size={16} className="text-(--txt-clr)" />
             </div>
             <div>
               <p className="text-xs sec-ff text-(--sec-clr)">Full Name</p>
@@ -136,8 +136,8 @@ export default function RiderAccount() {
           </div>
 
           <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "#f5f5f5" }}>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-(--bg-clr)">
-              <Mail size={16} color="#9BDD37" />
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-(--prof-clr)">
+              <Mail size={16} className="text-(--txt-clr)" />
             </div>
             <div>
               <p className="text-xs sec-ff text-(--sec-clr)">Email</p>
@@ -146,8 +146,8 @@ export default function RiderAccount() {
           </div>
 
           <div className="flex items-center gap-3 p-3 rounded-xl" style={{ background: "#f5f5f5" }}>
-            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-(--bg-clr)">
-              <Building2 size={16} color="#9BDD37" />
+            <div className="w-9 h-9 rounded-full flex items-center justify-center bg-(--prof-clr)">
+              <Building2 size={16} className="text-(--txt-clr)" />
             </div>
             <div>
               <p className="text-xs sec-ff text-(--sec-clr)">Institution</p>
@@ -160,7 +160,7 @@ export default function RiderAccount() {
       {/* Active orders */}
       <div className="rounded-2xl bg-(--txt-clr) p-5 space-y-2">
         <p className="text-base font-medium sec-ff text-(--pry-clr)">Active Orders</p>
-        <p className="text-3xl font-bold sec-ff text-(--bg-clr)">
+        <p className="text-3xl font-bold sec-ff text-(--wave-clr)">
           {rider.rider_data.active_order_ids.length}
         </p>
         <p className="text-sm sec-ff text-(--sec-clr)">
