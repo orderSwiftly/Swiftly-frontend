@@ -5,7 +5,7 @@ import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, Info, XCircle, Store, Package, Lock } from 'lucide-react';
+import { AlertTriangle, XCircle, Store, Package, Lock } from 'lucide-react';
 import { checkoutStore, fetchSavedAddresses, saveNewAddress, calculateStoreTotals, type SavedAddress } from '@/lib/checkout';
 import { fetchCart, type CartItem } from '@/lib/cart';
 
@@ -231,7 +231,7 @@ export default function NewOrder() {
 
       {/* Store Closed Warning Banner */}
       {!storeData.isOpen && (
-        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-start gap-3">
+        <div className="p-4 bg-yellow-50 border border-yellow-200 rounded-xl flex items-start gap-3 pry-ff">
           <AlertTriangle size={20} className="text-yellow-500 flex-shrink-0 mt-0.5" />
           <div className="flex-1">
             <p className="text-yellow-700 font-semibold pry-ff text-sm">
@@ -366,7 +366,7 @@ export default function NewOrder() {
               <button
                 onClick={handleSaveNewAddress}
                 disabled={savingAddress || !storeData.isOpen}
-                className="w-full p-2 rounded-lg border border-[var(--prof-clr)] text-[var(--txt-clr)] sec-ff text-sm font-medium hover:bg-[var(--prof-clr)]/10 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full p-2 rounded-lg bg-(--prof-clr) border border-[var(--prof-clr)] text-[var(--txt-clr)] sec-ff text-sm font-medium hover:bg-[var(--wave-clr)] transition disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {savingAddress ? 'Saving...' : 'Save address for future use'}
               </button>
@@ -378,7 +378,7 @@ export default function NewOrder() {
             disabled={submitting || !storeData.isOpen}
             className={`w-full mt-4 p-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 sec-ff ${
               storeData.isOpen
-                ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)] hover:opacity-90 cursor-pointer'
+                ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)] hover:bg-[var(--wave-clr)] cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
           >
@@ -393,16 +393,6 @@ export default function NewOrder() {
               </>
             )}
           </button>
-
-          {/* Info note about store closure */}
-          {!storeData.isOpen && (
-            <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
-              <Info size={16} className="text-yellow-500 mt-0.5 flex-shrink-0" />
-              <p className="text-yellow-700 text-xs flex-1">
-                This store is currently closed. You cannot place orders until the store reopens.
-              </p>
-            </div>
-          )}
         </div>
       </div>
     </div>

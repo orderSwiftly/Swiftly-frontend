@@ -171,7 +171,7 @@ export default function SellerDetailPage() {
                         priority
                     />
                 ) : (
-                    <div className="w-full h-full bg-[var(--bg-clr)]" />
+                    <div className="w-full h-full bg-[var(--wave-clr)]" />
                 )}
 
                 {/* Scrim */}
@@ -180,7 +180,7 @@ export default function SellerDetailPage() {
                 {/* Back button */}
                 <button
                     onClick={() => router.back()}
-                    className="absolute top-4 left-4 p-2 rounded-full backdrop-blur-sm border border-[var(--txt-clr)]/20 bg-[var(--bg-clr)]/50"
+                    className="absolute top-4 left-4 p-2 rounded-full backdrop-blur-sm border border-[var(--txt-clr)]/20 bg-[var(--prof-clr)]/50"
                 >
                     <ChevronLeft className="w-5 h-5 text-[var(--txt-clr)]" />
                 </button>
@@ -211,7 +211,7 @@ export default function SellerDetailPage() {
                             onClick={() => setActiveCategory(null)}
                             className={`flex-shrink-0 text-xs font-bold px-4 py-1.5 rounded-full border transition-all duration-200 ${
                                 activeCategory === null
-                                    ? 'bg-[var(--bg-clr)] text-[var(--txt-clr)] border-[var(--bg-clr)]'
+                                    ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)] border-[var(--prof-clr)]'
                                     : 'bg-[var(--txt-clr)] text-[var(--pry-clr)] border-[var(--sec-clr)]'
                             }`}
                         >
@@ -227,7 +227,7 @@ export default function SellerDetailPage() {
                                     onClick={() => setActiveCategory(activeCategory === cat.name ? null : cat.name)}
                                     className={`flex-shrink-0 flex items-center gap-1.5 text-xs font-bold px-4 py-1.5 rounded-full border transition-all duration-200 ${
                                         activeCategory === cat.name
-                                            ? 'bg-[var(--bg-clr)] text-[var(--txt-clr)] border-[var(--bg-clr)]'
+                                            ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)] border-[var(--prof-clr)]'
                                             : 'bg-[var(--txt-clr)] text-[var(--pry-clr)] border-[var(--sec-clr)]'
                                     }`}
                                 >
@@ -243,7 +243,7 @@ export default function SellerDetailPage() {
                                 onClick={() => setActiveCategory(activeCategory === 'Other' ? null : 'Other')}
                                 className={`flex-shrink-0 flex items-center gap-1.5 text-xs font-bold px-4 py-1.5 rounded-full border transition-all duration-200 ${
                                     activeCategory === 'Other'
-                                        ? 'bg-[var(--bg-clr)] text-[var(--txt-clr)] border-[var(--bg-clr)]'
+                                        ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)] border-[var(--prof-clr)]'
                                         : 'bg-[var(--txt-clr)] text-[var(--pry-clr)] border-[var(--sec-clr)]'
                                 }`}
                             >
@@ -319,8 +319,8 @@ export default function SellerDetailPage() {
                                         {/* Out of stock overlay */}
                                         {product.stock === 0 && (
                                             <div className="absolute inset-0 bg-black/70 flex flex-col items-center justify-center gap-1">
-                                                <PackageX className="w-6 h-6 text-white" />
-                                                <span className="text-[10px] font-bold text-white uppercase tracking-wider">
+                                                <PackageX className="w-6 h-6 text-[var(--pry-clr)]" />
+                                                <span className="text-[10px] font-bold text-[var(--pry-clr)] uppercase tracking-wider">
                                                     Sold out
                                                 </span>
                                             </div>
@@ -333,7 +333,7 @@ export default function SellerDetailPage() {
                                             {product.title}
                                         </p>
 
-                                        <p className="text-sm font-black text-[var(--bg-clr)]">
+                                        <p className="text-sm font-black text-[var(--prof-clr)]">
                                             ₦{product.price.toLocaleString()}
                                         </p>
 
