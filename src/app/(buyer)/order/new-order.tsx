@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
-import PulseLoader from '@/components/pulse-loader';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, XCircle, Store, Package, Lock, Zap, Clock, ChevronDown } from 'lucide-react';
+import { AlertTriangle, XCircle, Store, Package, Lock, Zap, Clock, ChevronDown, Loader2 } from 'lucide-react';
 import {
   checkoutStore,
   fetchSavedAddresses,
@@ -48,7 +47,6 @@ export default function NewOrder() {
   const [loading, setLoading] = useState(true);
   const router = useRouter();
 
-  // Fetch totals whenever deliveryType changes (or storeData is set)
   useEffect(() => {
     if (!storeData) return;
 
@@ -242,7 +240,7 @@ export default function NewOrder() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto p-6 flex justify-center items-center min-h-[400px]">
-        <PulseLoader />
+        <Loader2 className="animate-spin text-[var(--txt-clr)]" />
       </div>
     );
   }
@@ -327,8 +325,7 @@ export default function NewOrder() {
         </button>
 
         {deliveryDropdownOpen && (
-          <div className="absolute z-10 mt-1 w-full bg-(--txt-clr) border border-gray-200 rounded-xl shadow-lg overflow-hidden">
-            {/* Standard option */}
+          <div className="absolute z-10 mt-1 w-full bg-[var(--txt-clr)] border border-gray-200 rounded-xl shadow-lg overflow-hidden">
             <button
               onClick={() => {
                 setDeliveryType('standard');
@@ -352,7 +349,6 @@ export default function NewOrder() {
               )}
             </button>
 
-            {/* Express option */}
             <button
               onClick={() => {
                 setDeliveryType('express');
@@ -429,7 +425,7 @@ export default function NewOrder() {
           <div className="pt-4 border-t border-white/10 space-y-2 sec-ff text-sm">
             {totalsLoading ? (
               <div className="flex justify-center py-3">
-                <PulseLoader />
+                <Loader2 className="animate-spin text-[var(--txt-clr)]" />
               </div>
             ) : totals ? (
               <>
@@ -440,6 +436,10 @@ export default function NewOrder() {
                 <div className="flex justify-between">
                   <span>Service fee</span>
                   <span>₦{totals.serviceFee.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Delivery fee</span>
+                  <span>₦{totals.deliveryFee.toLocaleString()}</span>
                 </div>
                 <div className="flex justify-between font-bold text-[var(--prof-clr)] pt-2 border-t border-white/10">
                   <span>Total</span>
@@ -535,10 +535,10 @@ export default function NewOrder() {
             }`}
           >
             {submitting ? (
-              <PulseLoader />
+              <Loader2 className="animate-spin text-[var(--txt-clr)]" />
             ) : storeData.isOpen ? (
               totals
-                ? `Place Order — ₦${totals.total.toLocaleString()}`
+                ? `Place Order - ₦${totals.total.toLocaleString()}`
                 : 'Loading...'
             ) : (
               <>
