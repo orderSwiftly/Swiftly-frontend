@@ -240,7 +240,7 @@ export default function NewOrder() {
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto p-6 flex justify-center items-center min-h-[400px]">
-        <Loader2 className="animate-spin text-[var(--txt-clr)]" />
+        <Loader2 className="animate-spin text-[var(--prof-clr)]" />
       </div>
     );
   }
@@ -425,7 +425,7 @@ export default function NewOrder() {
           <div className="pt-4 border-t border-white/10 space-y-2 sec-ff text-sm">
             {totalsLoading ? (
               <div className="flex justify-center py-3">
-                <Loader2 className="animate-spin text-[var(--txt-clr)]" />
+                <Loader2 className="animate-spin text-[var(--prof-clr)]" />
               </div>
             ) : totals ? (
               <>
