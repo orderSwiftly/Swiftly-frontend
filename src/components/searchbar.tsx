@@ -104,7 +104,7 @@ export default function SearchBar({ onSearch, placeholder = 'Search products...'
 
   return (
     <div ref={containerRef} className="relative w-full max-w-7xl">
-      <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-(--txt-clr) border border-gray-200 rounded-xl px-3 py-2 shadow-sm focus-within:border-green-400 transition-colors">
+      <form onSubmit={handleSubmit} className="flex items-center gap-2 bg-(--txt-clr) border border-gray-200 rounded-xl px-3 py-2 shadow-sm focus-within:border-[var(--prof-clr)] transition-colors">
         <Search size={18} className="text-gray-400 shrink-0" />
         <input
           type="text"
@@ -150,7 +150,7 @@ export default function SearchBar({ onSearch, placeholder = 'Search products...'
                         <p className="text-xs text-gray-400 sec-ff truncate">{product.seller.businessName}</p>
                       )}
                     </div>
-                    <span className="text-sm font-semibold text-green-600 shrink-0">
+                    <span className="text-sm font-semibold text-[var(--prof-clr)] shrink-0">
                       ₦{product.price.toLocaleString()}
                     </span>
                   </button>
@@ -162,7 +162,7 @@ export default function SearchBar({ onSearch, placeholder = 'Search products...'
                 <button
                   type="button"
                   onClick={handleSubmit as unknown as React.MouseEventHandler}
-                  className="w-full px-4 py-2.5 text-sm text-green-600 font-medium hover:bg-green-50 transition-colors text-center sec-ff"
+                  className="w-full px-4 py-2.5 text-sm text-[var(--prof-clr)] font-medium hover:bg-green-50 transition-colors text-center sec-ff"
                 >
                   See all results for &apos;{query}&apos;
                 </button>

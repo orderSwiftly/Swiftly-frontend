@@ -1,16 +1,22 @@
-// src/app/(buyer)/dashboard/cart/get-cart.tsx
-
 'use client';
 
 import { useEffect, useState } from 'react';
 import Image from 'next/image';
 import { toast } from 'react-hot-toast';
-import { Trash2, InfoIcon  } from 'lucide-react';
+import { Trash2, InfoIcon } from 'lucide-react';
 import AddToCart from './add-to-cart';
 import { useRouter } from 'next/navigation';
 import PulseLoader from '@/components/pulse-loader';
-import { fetchCart, updateCartItemQuantity, removeCartItem, getCartTotals, isCartEmpty, type GroupedCart, type CartItem } from '@/lib/cart';
-import { calculateStoreTotals } from '@/lib/checkout';
+import {
+  fetchCart,
+  updateCartItemQuantity,
+  removeCartItem,
+  getCartTotals,
+  isCartEmpty,
+  type GroupedCart,
+  type CartItem,
+} from '@/lib/cart';
+import { calculateStoreTotals, type StoreTotals } from '@/lib/checkout';
 
 interface StoreWithTotals {
   sellerId: string;
@@ -18,12 +24,7 @@ interface StoreWithTotals {
   isOpen: boolean;
   items: CartItem[];
   subtotal: number;
-  totals: {
-    subtotal: number;
-    serviceFee: number;
-    deliveryFee: number;
-    total: number;
-  };
+  totals: StoreTotals;
 }
 
 export default function GetCartComp() {
@@ -33,52 +34,52 @@ export default function GetCartComp() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-const loadCart = async () => {
-  try {
-    setLoading(true);
-    const cart = await fetchCart();
-    
-    setGroupedCart(cart);
-    
-    // Calculate totals for each store
-    const stores = await Promise.all(
-      Object.entries(cart).map(async ([sellerId, group]) => {
-        const subtotal = group.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-        const totals = await calculateStoreTotals(subtotal);
-        
-        // Extract is_open from the first item's product.seller
-        // Since all items in a store should have the same seller status
-        const isOpen = group.items[0]?.product?.seller?.is_open ?? true;
-        
-        
-        return {
-          sellerId,
-          sellerName: group.seller.name,
-          isOpen: isOpen,  // Use the extracted value
-          items: group.items,
-          subtotal,
-          totals,
-        };
-      })
-    );
-    
-    // console.log('Processed stores:', stores);
-    setStoresWithTotals(stores);
-    setError('');
-  } catch (err) {
-    console.error(err);
-    toast.error('Failed to load cart');
-    setError('Failed to load cart.');
-  } finally {
-    setLoading(false);
-  }
-};
+  const loadCart = async () => {
+    try {
+      setLoading(true);
+      const cart = await fetchCart();
+      setGroupedCart(cart);
+
+      const stores = await Promise.all(
+        Object.entries(cart).map(async ([sellerId, group]) => {
+          const subtotal = group.items.reduce(
+            (acc, item) => acc + item.quantity * item.price,
+            0
+          );
+          // Use API for totals — default to standard (non-express) for cart preview
+          const totals = await calculateStoreTotals(sellerId, false);
+          const isOpen = group.items[0]?.product?.seller?.is_open ?? true;
+
+          return {
+            sellerId,
+            sellerName: group.seller.name,
+            isOpen,
+            items: group.items,
+            subtotal,
+            totals,
+          };
+        })
+      );
+
+      setStoresWithTotals(stores);
+      setError('');
+    } catch (err) {
+      console.error(err);
+      toast.error('Failed to load cart');
+      setError('Failed to load cart.');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
     loadCart();
   }, []);
 
-  const handleQuantityChange = async (productId: string, action: 'increment' | 'decrement') => {
+  const handleQuantityChange = async (
+    productId: string,
+    action: 'increment' | 'decrement'
+  ) => {
     try {
       await updateCartItemQuantity(productId, action);
       toast.success('Cart updated');
@@ -101,8 +102,6 @@ const loadCart = async () => {
   };
 
   const handleCheckoutStore = (storeId: string) => {
-    // Store the selected store ID in localStorage or sessionStorage
-    // const { subtotal: cartSubtotal, itemCount } = getCartTotals(groupedCart);
     sessionStorage.setItem('checkoutStoreId', storeId);
     router.push('/order');
   };
@@ -110,34 +109,46 @@ const loadCart = async () => {
   const { itemCount } = getCartTotals(groupedCart);
   const empty = isCartEmpty(groupedCart);
 
-  if (loading) return (
-    <div className="flex items-center justify-center min-h-[40vh]">
-      <PulseLoader />
-    </div>
-  );
+  if (loading)
+    return (
+      <div className="flex items-center justify-center min-h-[40vh]">
+        <PulseLoader />
+      </div>
+    );
 
-  if (error) return (
-    <p className="text-red-500 text-center mt-8 pry-ff">{error}</p>
-  );
+  if (error)
+    return (
+      <p className="text-red-500 text-center mt-8 pry-ff">{error}</p>
+    );
 
-if (empty) {
-  return (
-    <div className="flex flex-col items-center justify-center min-h-[60vh] pry-ff text-[var(--sec-clr)]">
-      <Image src="/cart.png" alt="Empty Cart" width={150} height={150} className="mb-4" />
-      Your cart is empty
-    </div>
-  );
-}
+  if (empty) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-[60vh] pry-ff text-[var(--sec-clr)]">
+        <Image
+          src="/cart.png"
+          alt="Empty Cart"
+          width={150}
+          height={150}
+          className="mb-4"
+        />
+        Your cart is empty
+      </div>
+    );
+  }
 
   return (
     <div className="px-4 sm:px-6 md:px-8 bg-gray-50 min-h-screen pry-ff mb-20">
-      <h1 className="text-xl sm:text-2xl font-bold mb-6">Your Cart ({itemCount} items)</h1>
+      <h1 className="text-xl sm:text-2xl font-bold mb-6">
+        Your Cart ({itemCount} items)
+      </h1>
 
       <div className="flex flex-col lg:flex-row gap-8 items-start">
-        {/* Cart Groups - Each store has its own section with checkout button */}
         <div className="flex-1 w-full space-y-8">
           {storesWithTotals.map((store) => (
-            <div key={store.sellerId} className="bg-white rounded-xl border border-gray-200 overflow-hidden">
+            <div
+              key={store.sellerId}
+              className="bg-white rounded-xl border border-gray-200 overflow-hidden"
+            >
               {/* Store header */}
               <div className="bg-gray-50 px-6 py-4 border-b border-gray-200">
                 <div className="flex items-center justify-between">
@@ -148,14 +159,15 @@ if (empty) {
                     <span className="text-base font-bold text-gray-800">
                       {store.sellerName}
                     </span>
-                    {/* Add status badge */}
-      <span className={`ml-2 px-2 py-0.5 text-xs font-medium rounded-full ${
-        store.isOpen 
-          ? 'bg-green-100 text-green-700' 
-          : 'bg-red-100 text-red-700'
-      }`}>
-        {store.isOpen ? 'Open' : 'Closed'}
-      </span>
+                    <span
+                      className={`ml-2 px-2 py-0.5 text-xs font-medium rounded-full ${
+                        store.isOpen
+                          ? 'bg-green-100 text-green-700'
+                          : 'bg-red-100 text-red-700'
+                      }`}
+                    >
+                      {store.isOpen ? 'Open' : 'Closed'}
+                    </span>
                   </div>
                   <div className="text-right">
                     <p className="text-sm text-gray-500">Store Subtotal</p>
@@ -173,7 +185,6 @@ if (empty) {
                     key={item.productId}
                     className="flex flex-col sm:flex-row items-center sm:items-start gap-4 p-4 rounded-xl border border-gray-100 hover:shadow-sm transition"
                   >
-                    {/* Image */}
                     <div className="w-24 h-24 sm:w-28 sm:h-28 relative rounded-lg overflow-hidden flex-shrink-0 bg-gray-100">
                       <Image
                         src={item.product?.productImg?.[0] || '/fallback.jpg'}
@@ -183,7 +194,6 @@ if (empty) {
                       />
                     </div>
 
-                    {/* Info */}
                     <div className="flex-1 flex flex-col justify-between w-full">
                       <div>
                         <h4 className="font-semibold text-gray-800 line-clamp-2">
@@ -197,8 +207,12 @@ if (empty) {
                       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mt-3">
                         <AddToCart
                           quantity={item.quantity}
-                          onIncrement={() => handleQuantityChange(item.productId, 'increment')}
-                          onDecrement={() => handleQuantityChange(item.productId, 'decrement')}
+                          onIncrement={() =>
+                            handleQuantityChange(item.productId, 'increment')
+                          }
+                          onDecrement={() =>
+                            handleQuantityChange(item.productId, 'decrement')
+                          }
                         />
                         <div className="flex items-center justify-between sm:justify-end gap-4">
                           <p className="text-sm font-semibold text-gray-700">
@@ -222,21 +236,29 @@ if (empty) {
                 <div className="space-y-3">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-medium text-gray-800">₦{store.totals.subtotal.toLocaleString()}</span>
+                    <span className="font-medium text-gray-800">
+                      ₦{store.totals.subtotal.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Service fee</span>
-                    <span className="font-medium text-gray-800">₦{store.totals.serviceFee.toLocaleString()}</span>
+                    <span className="font-medium text-gray-800">
+                      ₦{store.totals.serviceFee.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Delivery fee</span>
-                    <span className="font-medium text-gray-800">₦{store.totals.deliveryFee.toLocaleString()}</span>
+                    <span className="font-medium text-gray-800">
+                      ₦{store.totals.deliveryFee.toLocaleString()}
+                    </span>
                   </div>
                   <div className="flex justify-between text-base font-bold pt-2 border-t border-gray-200">
                     <span>Total for {store.sellerName}</span>
-                    <span className="text-green-600">₦{store.totals.total.toLocaleString()}</span>
+                    <span className="text-(--wave-clr)">
+                      ₦{store.totals.total.toLocaleString()}
+                    </span>
                   </div>
-                  
+
                   <button
                     onClick={() => handleCheckoutStore(store.sellerId)}
                     disabled={!store.isOpen}
@@ -244,14 +266,13 @@ if (empty) {
                       store.isOpen
                         ? 'bg-(--prof-clr) text-(--txt-clr) hover:bg-(--wave-clr)'
                         : 'bg-gray-300 text-gray-500 cursor-not-allowed'
-                      }`}
+                    }`}
                   >
-                    {store.isOpen 
+                    {store.isOpen
                       ? `Proceed to Checkout - ₦${store.totals.total.toLocaleString()}`
                       : 'Store Currently Closed'}
                   </button>
 
-                  {/* If store is closed, show a warning message */}
                   {!store.isOpen && (
                     <div className="mt-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg flex items-start gap-2">
                       <InfoIcon size={16} className="text-yellow-500 flex-shrink-0" />
@@ -265,39 +286,6 @@ if (empty) {
             </div>
           ))}
         </div>
-
-        {/* 
-          ==========================================
-          OPTIONAL: Overall Cart Summary (Commented Out)
-          Uncomment the section below if you want to show
-          a global cart summary on the right side
-          ==========================================
-        */}
-        
-        {/* <div className="w-full lg:w-80 lg:sticky lg:top-6">
-          <div className="bg-white rounded-xl border border-gray-200 p-6 space-y-4">
-            <h2 className="text-base font-bold text-gray-800">Cart Summary</h2>
-            
-            <div className="space-y-2">
-              {storesWithTotals.map((store) => (
-                <div key={store.sellerId} className="flex justify-between text-sm">
-                  <span className="text-gray-600 truncate max-w-[60%]">{store.sellerName}</span>
-                  <span className="font-medium text-gray-800">₦{store.subtotal.toLocaleString()}</span>
-                </div>
-              ))}
-            </div>
-            
-            <div className="flex justify-between text-base font-bold text-gray-800 pt-3 border-t border-gray-200">
-              <span>Total</span>
-              <span>₦{cartSubtotal.toLocaleString()}</span>
-            </div>
-            
-            <p className="text-xs text-gray-500 text-center mt-2">
-              You&apos;ll checkout each store separately
-            </p>
-          </div>
-        </div> */}
-        
       </div>
     </div>
   );

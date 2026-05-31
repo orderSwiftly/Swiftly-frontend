@@ -1,11 +1,10 @@
-// lib/checkout.ts
-
 const API_URL = process.env.NEXT_PUBLIC_API_URL;
 
 export interface CheckoutAddress {
   addressId?: string;
   building?: string;
   room?: string;
+  isExpressDelivery?: boolean;
 }
 
 export interface SavedAddress {
@@ -20,6 +19,38 @@ export interface SaveAddressResponse {
   data: {
     address: SavedAddress;
   };
+}
+
+export interface StoreTotals {
+  subtotal: number;
+  serviceFee: number;
+  deliveryFee: number;
+  total: number;
+}
+
+export async function calculateStoreTotals(
+  storeId: string,
+  isExpressDelivery: boolean = false
+): Promise<StoreTotals> {
+  const token = localStorage.getItem('token');
+  if (!token) throw new Error('No token found');
+
+  const res = await fetch(`${API_URL}/api/v1/order/calculate-totals/${storeId}`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${token}`,
+    },
+    body: JSON.stringify({ isExpressDelivery }),
+  });
+
+  const data = await res.json();
+
+  if (!res.ok || data.status !== 'success') {
+    throw new Error(data.message || 'Failed to calculate totals');
+  }
+
+  return data.data.pricing as StoreTotals;
 }
 
 export async function checkoutStore(
@@ -41,7 +72,11 @@ export async function checkoutStore(
   const data = await res.json();
 
   if (!res.ok || data.status !== 'success') {
-    throw new Error(data.message || 'Checkout failed');
+    const err = new Error(data.message || 'Checkout failed') as Error & {
+      response?: { data: typeof data };
+    };
+    err.response = { data };
+    throw err;
   }
 
   if (!data.data?.authorization_url) {
@@ -68,7 +103,10 @@ export async function fetchSavedAddresses(): Promise<SavedAddress[]> {
   return data.data.address ?? [];
 }
 
-export async function saveNewAddress(building: string, room: string): Promise<SaveAddressResponse> {
+export async function saveNewAddress(
+  building: string,
+  room: string
+): Promise<SaveAddressResponse> {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
 
@@ -88,9 +126,4 @@ export async function saveNewAddress(building: string, room: string): Promise<Sa
   }
 
   return data;
-}
-
-export async function calculateStoreTotals(subtotal: number) {
-  const { default: calculateTotals } = await import('@/lib/cartTotals');
-  return calculateTotals(subtotal);
 }

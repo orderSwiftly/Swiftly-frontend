@@ -127,7 +127,7 @@ function StoreCard({ store }: Readonly<{ store: Store }>) {
               className="object-contain"
             />
           ) : (
-            <Store size={48} className="text-green-400" />
+            <Store size={48} className="text-[var(--prof-clr)]" />
           )}
         </div>
         

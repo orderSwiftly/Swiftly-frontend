@@ -33,7 +33,7 @@ export default function SubaccountBannerInfo({
 
       <div className="flex items-start gap-4 pr-8">
         <div className="flex-shrink-0 w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-          <Store className="text-green-400" size={24} />
+          <Store className="text-[var(--wave-clr)]" size={24} />
         </div>
         
         <div className="flex-1 space-y-3">
@@ -43,7 +43,7 @@ export default function SubaccountBannerInfo({
           
           <p className="text-gray-300 sec-ff leading-relaxed">
             Great! You are creating your first product. To start receiving payments from buyers,
-            you`ll need to <strong className="text-green-400">create a subaccount</strong> first.
+            you`ll need to <strong className="text-[var(--wave-clr)]">create a subaccount</strong> first.
           </p>
 
           <div className="bg-white/5 border border-white/10 rounded-lg p-4 space-y-2">

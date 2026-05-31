@@ -5,9 +5,18 @@ import toast from 'react-hot-toast';
 import PulseLoader from '@/components/pulse-loader';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, XCircle, Store, Package, Lock } from 'lucide-react';
-import { checkoutStore, fetchSavedAddresses, saveNewAddress, calculateStoreTotals, type SavedAddress } from '@/lib/checkout';
+import { AlertTriangle, XCircle, Store, Package, Lock, Zap, Clock, ChevronDown } from 'lucide-react';
+import {
+  checkoutStore,
+  fetchSavedAddresses,
+  saveNewAddress,
+  calculateStoreTotals,
+  type SavedAddress,
+  type StoreTotals,
+} from '@/lib/checkout';
 import { fetchCart, type CartItem } from '@/lib/cart';
+
+type DeliveryType = 'standard' | 'express';
 
 interface StoreCheckoutData {
   storeId: string;
@@ -15,15 +24,8 @@ interface StoreCheckoutData {
   isOpen: boolean;
   items: CartItem[];
   subtotal: number;
-  totals: {
-    subtotal: number;
-    serviceFee: number;
-    deliveryFee: number;
-    total: number;
-  };
 }
 
-// Error response type from backend
 interface ApiErrorResponse {
   title?: string;
   status?: number;
@@ -32,6 +34,10 @@ interface ApiErrorResponse {
 
 export default function NewOrder() {
   const [storeData, setStoreData] = useState<StoreCheckoutData | null>(null);
+  const [totals, setTotals] = useState<StoreTotals | null>(null);
+  const [totalsLoading, setTotalsLoading] = useState(false);
+  const [deliveryType, setDeliveryType] = useState<DeliveryType>('standard');
+  const [deliveryDropdownOpen, setDeliveryDropdownOpen] = useState(false);
   const [savedAddresses, setSavedAddresses] = useState<SavedAddress[]>([]);
   const [selectedAddressId, setSelectedAddressId] = useState<string>('');
   const [building, setBuilding] = useState('');
@@ -41,6 +47,29 @@ export default function NewOrder() {
   const [submitting, setSubmitting] = useState(false);
   const [loading, setLoading] = useState(true);
   const router = useRouter();
+
+  // Fetch totals whenever deliveryType changes (or storeData is set)
+  useEffect(() => {
+    if (!storeData) return;
+
+    const fetchTotals = async () => {
+      setTotalsLoading(true);
+      try {
+        const result = await calculateStoreTotals(
+          storeData.storeId,
+          deliveryType === 'express'
+        );
+        setTotals(result);
+      } catch (err) {
+        console.error(err);
+        toast.error('Failed to calculate totals');
+      } finally {
+        setTotalsLoading(false);
+      }
+    };
+
+    fetchTotals();
+  }, [storeData, deliveryType]);
 
   useEffect(() => {
     const loadData = async () => {
@@ -55,7 +84,9 @@ export default function NewOrder() {
         }
 
         const cart = await fetchCart();
-        const storeEntry = Object.entries(cart).find(([sellerId]) => sellerId === storeId);
+        const storeEntry = Object.entries(cart).find(
+          ([sellerId]) => sellerId === storeId
+        );
 
         if (!storeEntry) {
           toast.error('Store not found in cart');
@@ -64,20 +95,18 @@ export default function NewOrder() {
         }
 
         const [sellerId, group] = storeEntry;
-        const subtotal = group.items.reduce((acc, item) => acc + item.quantity * item.price, 0);
-        const totals = await calculateStoreTotals(subtotal);
-        
-        // Extract is_open from the first item's product.seller
-        // Since all items in a store should have the same seller status
+        const subtotal = group.items.reduce(
+          (acc, item) => acc + item.quantity * item.price,
+          0
+        );
         const isOpen = group.items[0]?.product?.seller?.is_open ?? true;
 
         setStoreData({
           storeId: sellerId,
           storeName: group.seller.name,
-          isOpen: isOpen, // Use the extracted value
+          isOpen,
           items: group.items,
           subtotal,
-          totals,
         });
 
         const addresses = await fetchSavedAddresses();
@@ -122,7 +151,6 @@ export default function NewOrder() {
     }
   };
 
-  // Parse error from backend response
   const parseCheckoutError = (error: unknown): { title: string; message: string } => {
     if (error && typeof error === 'object' && 'response' in error) {
       const apiError = error as { response?: { data?: ApiErrorResponse } };
@@ -133,7 +161,7 @@ export default function NewOrder() {
         };
       }
     }
-    
+
     return {
       title: 'Checkout Failed',
       message: error instanceof Error ? error.message : 'Something went wrong',
@@ -156,26 +184,36 @@ export default function NewOrder() {
 
     setSubmitting(true);
     try {
-      let addressPayload: { addressId?: string; building?: string; room?: string } = {};
+      let addressPayload: {
+        addressId?: string;
+        building?: string;
+        room?: string;
+        isExpressDelivery?: boolean;
+      } = {
+        isExpressDelivery: deliveryType === 'express',
+      };
 
       if (!useManual && selectedAddressId) {
-        addressPayload = { addressId: selectedAddressId };
+        addressPayload = { ...addressPayload, addressId: selectedAddressId };
       } else if (useManual && building.trim() && room.trim()) {
-        addressPayload = { building, room };
+        addressPayload = { ...addressPayload, building, room };
       } else {
         toast.error('Please select or enter a delivery address');
         setSubmitting(false);
         return;
       }
 
-      const { authorization_url } = await checkoutStore(storeData.storeId, addressPayload);
+      const { authorization_url } = await checkoutStore(
+        storeData.storeId,
+        addressPayload
+      );
       sessionStorage.removeItem('checkoutStoreId');
       window.location.href = authorization_url;
     } catch (err: unknown) {
       console.error('Checkout error:', err);
-      
+
       const { title, message } = parseCheckoutError(err);
-      
+
       if (title === 'Store Closed') {
         toast.error(message, {
           duration: 6000,
@@ -238,22 +276,123 @@ export default function NewOrder() {
               Store Currently Closed
             </p>
             <p className="text-yellow-600 text-xs mt-1">
-              {storeData.storeName} is not accepting orders right now. Please check back later or shop from other stores.
+              {storeData.storeName} is not accepting orders right now. Please
+              check back later or shop from other stores.
             </p>
           </div>
         </div>
       )}
 
+      {/* Delivery Type Selector */}
+      <div className="relative">
+        <p className="text-sm font-semibold text-gray-500 pry-ff mb-2 uppercase tracking-wide">
+          Delivery Type
+        </p>
+        <button
+          onClick={() => setDeliveryDropdownOpen((prev) => !prev)}
+          disabled={!storeData.isOpen}
+          className={`w-full flex items-center justify-between gap-3 px-4 py-3 rounded-xl border transition pry-ff text-sm font-medium ${
+            storeData.isOpen
+              ? 'border-gray-200 bg-white hover:border-[var(--prof-clr)] cursor-pointer'
+              : 'border-gray-200 bg-gray-50 opacity-60 cursor-not-allowed'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            {deliveryType === 'express' ? (
+              <span className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                <Zap size={16} className="text-orange-500" />
+              </span>
+            ) : (
+              <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <Clock size={16} className="text-blue-500" />
+              </span>
+            )}
+            <div className="text-left">
+              <p className="font-semibold text-gray-800">
+                {deliveryType === 'express' ? 'Express Delivery' : 'Standard Delivery'}
+              </p>
+              <p className="text-xs text-gray-400 font-normal">
+                {deliveryType === 'express'
+                  ? 'Instant - arrives as fast as possible'
+                  : 'Scheduled - delivered at the next available slot'}
+              </p>
+            </div>
+          </div>
+          <ChevronDown
+            size={18}
+            className={`text-gray-400 transition-transform flex-shrink-0 ${
+              deliveryDropdownOpen ? 'rotate-180' : ''
+            }`}
+          />
+        </button>
+
+        {deliveryDropdownOpen && (
+          <div className="absolute z-10 mt-1 w-full bg-(--txt-clr) border border-gray-200 rounded-xl shadow-lg overflow-hidden">
+            {/* Standard option */}
+            <button
+              onClick={() => {
+                setDeliveryType('standard');
+                setDeliveryDropdownOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition hover:bg-gray-50 cursor-pointer pry-ff ${
+                deliveryType === 'standard' ? 'bg-blue-50' : ''
+              }`}
+            >
+              <span className="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center flex-shrink-0">
+                <Clock size={16} className="text-blue-500" />
+              </span>
+              <div className="flex-1">
+                <p className="font-semibold text-gray-800">Standard Delivery</p>
+                <p className="text-xs text-gray-400 font-normal">
+                  Scheduled - delivered at the next available slot
+                </p>
+              </div>
+              {deliveryType === 'standard' && (
+                <span className="w-2 h-2 rounded-full bg-blue-500 flex-shrink-0" />
+              )}
+            </button>
+
+            {/* Express option */}
+            <button
+              onClick={() => {
+                setDeliveryType('express');
+                setDeliveryDropdownOpen(false);
+              }}
+              className={`w-full flex items-center gap-3 px-4 py-3 text-sm text-left transition hover:bg-gray-50 cursor-pointer pry-ff border-t border-gray-100 ${
+                deliveryType === 'express' ? 'bg-orange-50' : ''
+              }`}
+            >
+              <span className="w-8 h-8 rounded-full bg-orange-100 flex items-center justify-center flex-shrink-0">
+                <Zap size={16} className="text-orange-500" />
+              </span>
+              <div className="flex-1">
+                <p className="font-semibold text-gray-800">Express Delivery</p>
+                <p className="text-xs text-gray-400 font-normal">
+                  Instant - arrives as fast as possible
+                </p>
+              </div>
+              {deliveryType === 'express' && (
+                <span className="w-2 h-2 rounded-full bg-orange-500 flex-shrink-0" />
+              )}
+            </button>
+          </div>
+        )}
+      </div>
+
       <div className="grid md:grid-cols-2 gap-6 sec-ff">
         {/* CART SUMMARY */}
         <div className="bg-white/5 p-4 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
           <div className="flex items-center justify-between">
-            <h3 className="text-lg font-semibold pry-ff text-[var(--pry-clr)]">Cart Items</h3>
-            <span className={`px-2 py-1 text-xs font-medium rounded-full ${
-              storeData.isOpen 
-                ? 'bg-green-100 text-green-700' 
-                : 'bg-red-100 text-red-700'
-            }`}>
+            <h3 className="text-lg font-semibold pry-ff text-[var(--pry-clr)]">
+              Cart Items
+            </h3>
+            <span
+              className={`px-2 py-1 text-xs font-medium rounded-full ${
+                storeData.isOpen
+                  ? 'bg-green-100 text-green-700'
+                  : 'bg-red-100 text-red-700'
+              }`}
+            >
               {storeData.isOpen ? 'Open' : 'Closed'}
             </span>
           </div>
@@ -273,8 +412,12 @@ export default function NewOrder() {
                 />
               </div>
               <div className="flex-1">
-                <p className="text-sm pry-ff line-clamp-1">{item.product?.title || 'Unknown Product'}</p>
-                <p className="text-xs text-gray-400 sec-ff">Qty: {item.quantity}</p>
+                <p className="text-sm pry-ff line-clamp-1">
+                  {item.product?.title || 'Unknown Product'}
+                </p>
+                <p className="text-xs text-gray-400 sec-ff">
+                  Qty: {item.quantity}
+                </p>
               </div>
               <div className="text-sm font-semibold text-[var(--prof-clr)] sec-ff">
                 ₦{((item.price ?? 0) * (item.quantity ?? 0)).toLocaleString()}
@@ -282,33 +425,42 @@ export default function NewOrder() {
             </div>
           ))}
 
+          {/* Totals */}
           <div className="pt-4 border-t border-white/10 space-y-2 sec-ff text-sm">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span>₦{storeData.totals.subtotal.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Service fee</span>
-              <span>₦{storeData.totals.serviceFee.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Delivery fee</span>
-              <span>₦{storeData.totals.deliveryFee.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between font-bold text-[var(--prof-clr)] pt-2 border-t border-white/10">
-              <span>Total</span>
-              <span>₦{storeData.totals.total.toLocaleString()}</span>
-            </div>
+            {totalsLoading ? (
+              <div className="flex justify-center py-3">
+                <PulseLoader />
+              </div>
+            ) : totals ? (
+              <>
+                <div className="flex justify-between">
+                  <span>Subtotal</span>
+                  <span>₦{totals.subtotal.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Service fee</span>
+                  <span>₦{totals.serviceFee.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between font-bold text-[var(--prof-clr)] pt-2 border-t border-white/10">
+                  <span>Total</span>
+                  <span>₦{totals.total.toLocaleString()}</span>
+                </div>
+              </>
+            ) : null}
           </div>
         </div>
 
         {/* SHIPPING ADDRESS SECTION */}
         <div className="bg-white/5 p-6 rounded-xl border border-gray-200 dark:border-gray-700 space-y-4">
-          <h3 className="text-lg font-semibold pry-ff text-[var(--pry-clr)]">Delivery Address</h3>
+          <h3 className="text-lg font-semibold pry-ff text-[var(--pry-clr)]">
+            Delivery Address
+          </h3>
 
           {savedAddresses.length > 0 && !useManual && (
             <div className="space-y-2">
-              <p className="text-sm text-gray-400 sec-ff">Select a saved address</p>
+              <p className="text-sm text-gray-400 sec-ff">
+                Select a saved address
+              </p>
               {savedAddresses.map((addr) => (
                 <div
                   key={addr._id}
@@ -375,9 +527,9 @@ export default function NewOrder() {
 
           <button
             onClick={handleSubmit}
-            disabled={submitting || !storeData.isOpen}
+            disabled={submitting || !storeData.isOpen || totalsLoading || !totals}
             className={`w-full mt-4 p-3 rounded-lg font-semibold transition flex items-center justify-center gap-2 sec-ff ${
-              storeData.isOpen
+              storeData.isOpen && !totalsLoading && totals
                 ? 'bg-[var(--prof-clr)] text-[var(--txt-clr)] hover:bg-[var(--wave-clr)] cursor-pointer'
                 : 'bg-gray-300 text-gray-500 cursor-not-allowed'
             }`}
@@ -385,7 +537,9 @@ export default function NewOrder() {
             {submitting ? (
               <PulseLoader />
             ) : storeData.isOpen ? (
-              'Place Order'
+              totals
+                ? `Place Order — ₦${totals.total.toLocaleString()}`
+                : 'Loading...'
             ) : (
               <>
                 <XCircle size={18} />
