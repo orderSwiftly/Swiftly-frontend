@@ -35,7 +35,7 @@ export default function GetOrders({
   currentUserId,
   shippingLoading,
   handleShipOrder,
-}: Props) {
+}: Readonly<Props>) {
   const [activeTab, setActiveTab] = useState<Tab>("active");
 
   const getFilteredOrders = (): Order[] => {

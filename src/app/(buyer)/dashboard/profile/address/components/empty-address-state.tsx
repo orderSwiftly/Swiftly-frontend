@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/profile/address/components/empty-address-state.tsx
+
 import Image from "next/image";
 import { Plus } from "lucide-react";
 

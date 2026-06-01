@@ -81,7 +81,11 @@ export default function NewOrder() {
           return;
         }
 
-        const cart = await fetchCart();
+        const raw = localStorage.getItem('selected-campus');
+        if (!raw) throw new Error('No campus selected');
+        const { institutionEnum } = JSON.parse(raw);
+
+        const cart = await fetchCart(institutionEnum);
         const storeEntry = Object.entries(cart).find(
           ([sellerId]) => sellerId === storeId
         );
@@ -107,7 +111,7 @@ export default function NewOrder() {
           subtotal,
         });
 
-        const addresses = await fetchSavedAddresses();
+        const addresses = await fetchSavedAddresses(institutionEnum);
         setSavedAddresses(addresses);
       } catch (err) {
         console.error(err);
@@ -129,10 +133,14 @@ export default function NewOrder() {
 
     setSavingAddress(true);
     try {
-      await saveNewAddress(building, room);
+      const raw = localStorage.getItem('selected-campus');
+      if (!raw) throw new Error('No campus selected');
+      const { institutionEnum } = JSON.parse(raw);
+
+      await saveNewAddress(building, room, institutionEnum);
       toast.success('Address saved!');
 
-      const updatedAddresses = await fetchSavedAddresses();
+      const updatedAddresses = await fetchSavedAddresses(institutionEnum);
       setSavedAddresses(updatedAddresses);
 
       const newAddr = updatedAddresses[updatedAddresses.length - 1];

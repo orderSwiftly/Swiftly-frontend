@@ -48,30 +48,27 @@ export interface CartResponse {
 }
 
 // Fetch cart items (already grouped by seller)
-export async function fetchCart(): Promise<GroupedCart> {
+export async function fetchCart(institutionEnum: string): Promise<GroupedCart> {
   try {
     const token = localStorage.getItem('token');
     if (!token) throw new Error('No token found');
 
-    const res = await fetch(`${API_URL}/api/v1/cart/get`, {
+    const res = await fetch(`${API_URL}/api/v1/cart/institution/${institutionEnum}`, {
       method: 'GET',
       headers: { Authorization: `Bearer ${token}` },
     });
 
     const data: CartResponse = await res.json();
-    //  console.log('Raw API response:', data)
 
     if (!res.ok || data.status !== 'success') {
       throw new Error(data.message || 'Failed to fetch cart');
     }
 
     const cart = data.cart ?? {};
-    
-    // If cart is empty array, return empty object
+
     if (Array.isArray(cart)) {
       return {};
     }
-
 
     return cart as GroupedCart;
   } catch (error) {

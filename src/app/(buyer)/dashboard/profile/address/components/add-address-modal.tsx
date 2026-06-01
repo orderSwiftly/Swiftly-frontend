@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/profile/address/components/add-address-modal.tsx
+
 "use client";
 
 import { useState } from "react";
@@ -20,6 +22,13 @@ export default function AddAddressModal({ onClose, onAdd }: AddAddressModalProps
     const token = localStorage.getItem("token");
     const api_url = process.env.NEXT_PUBLIC_API_URL;
 
+    const raw = localStorage.getItem("selected-campus");
+    if (!raw) {
+      toast.error("No campus selected");
+      return;
+    }
+    const { institutionEnum } = JSON.parse(raw);
+
     setLoading(true);
     try {
       const res = await fetch(`${api_url}/api/v1/user/add-address`, {
@@ -28,7 +37,7 @@ export default function AddAddressModal({ onClose, onAdd }: AddAddressModalProps
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ building, room }),
+        body: JSON.stringify({ building, room, institutionEnum }),
       });
 
       const data = await res.json();
@@ -41,6 +50,7 @@ export default function AddAddressModal({ onClose, onAdd }: AddAddressModalProps
       toast.success("Address added successfully");
       onAdd({ building, room });
     } catch (err) {
+      console.error(err);
       toast.error("Something went wrong");
     } finally {
       setLoading(false);
@@ -64,7 +74,7 @@ export default function AddAddressModal({ onClose, onAdd }: AddAddressModalProps
               value={building}
               onChange={(e) => setBuilding(e.target.value)}
               placeholder="e.g. Winslow Hall/New Horizon"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-[var(--bg-clr)] rounded-lg text-sm text-[#344054] focus:outline-none focus:ring-2 focus:ring-green-600"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-[var(--sec-clr)] rounded-lg text-sm text-[#344054] focus:outline-none focus:ring-2 focus:ring-[var(--prof-clr)]"
             />
           </div>
 
@@ -77,7 +87,7 @@ export default function AddAddressModal({ onClose, onAdd }: AddAddressModalProps
               value={room}
               onChange={(e) => setRoom(e.target.value)}
               placeholder="e.g. C20, Room 1"
-              className="w-full px-3 py-2.5 bg-gray-50 border border-[var(--bg-clr)] rounded-lg text-sm text-[#344054] focus:outline-none focus:ring-2 focus:ring-green-600"
+              className="w-full px-3 py-2.5 bg-gray-50 border border-[var(--sec-clr)] rounded-lg text-sm text-[#344054] focus:outline-none focus:ring-2 focus:ring-[var(--prof-clr)]"
             />
           </div>
         </div>
@@ -93,7 +103,7 @@ export default function AddAddressModal({ onClose, onAdd }: AddAddressModalProps
           <button
             onClick={handleProceed}
             disabled={!building.trim() || !room.trim() || loading}
-            className="flex-1 py-2.5 bg-[var(--prof-clr)] text-[var(--txt-clr)] text-sm font-medium rounded-lg hover:bg-[#4a6d0d] transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
+            className="flex-1 py-2.5 bg-[var(--prof-clr)] text-[var(--txt-clr)] text-sm font-medium rounded-lg hover:bg-[var(--wave-clr)] transition disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer flex items-center justify-center"
           >
             {loading ? <PulseLoader /> : "Proceed"}
           </button>

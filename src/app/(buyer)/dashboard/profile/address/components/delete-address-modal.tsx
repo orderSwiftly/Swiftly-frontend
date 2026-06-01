@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/profile/address/components/delete-address-modal.tsx
+
 "use client";
 
 import { AlertCircle } from "lucide-react";

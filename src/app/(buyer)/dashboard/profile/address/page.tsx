@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/profile/address/page.tsx
+
 "use client";
 
 import { useState, useEffect } from "react";
@@ -34,6 +36,7 @@ export default function AddressPage() {
         }
       // eslint-disable-next-line @typescript-eslint/no-unused-vars
       } catch (err) {
+        console.error(err);
         toast.error("Something went wrong");
       } finally {
         setLoading(false);

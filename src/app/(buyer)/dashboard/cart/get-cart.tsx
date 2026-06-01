@@ -34,43 +34,47 @@ export default function GetCartComp() {
   const [error, setError] = useState('');
   const router = useRouter();
 
-  const loadCart = async () => {
-    try {
-      setLoading(true);
-      const cart = await fetchCart();
-      setGroupedCart(cart);
+const loadCart = async () => {
+  try {
+    setLoading(true);
 
-      const stores = await Promise.all(
-        Object.entries(cart).map(async ([sellerId, group]) => {
-          const subtotal = group.items.reduce(
-            (acc, item) => acc + item.quantity * item.price,
-            0
-          );
-          // Use API for totals — default to standard (non-express) for cart preview
-          const totals = await calculateStoreTotals(sellerId, false);
-          const isOpen = group.items[0]?.product?.seller?.is_open ?? true;
+    const raw = localStorage.getItem('selected-campus');
+    if (!raw) throw new Error('No campus selected');
+    const { institutionEnum } = JSON.parse(raw);
 
-          return {
-            sellerId,
-            sellerName: group.seller.name,
-            isOpen,
-            items: group.items,
-            subtotal,
-            totals,
-          };
-        })
-      );
+    const cart = await fetchCart(institutionEnum);
+    setGroupedCart(cart);
 
-      setStoresWithTotals(stores);
-      setError('');
-    } catch (err) {
-      console.error(err);
-      toast.error('Failed to load cart');
-      setError('Failed to load cart.');
-    } finally {
-      setLoading(false);
-    }
-  };
+    const stores = await Promise.all(
+      Object.entries(cart).map(async ([sellerId, group]) => {
+        const subtotal = group.items.reduce(
+          (acc, item) => acc + item.quantity * item.price,
+          0
+        );
+        const totals = await calculateStoreTotals(sellerId, false);
+        const isOpen = group.items[0]?.product?.seller?.is_open ?? true;
+
+        return {
+          sellerId,
+          sellerName: group.seller.name,
+          isOpen,
+          items: group.items,
+          subtotal,
+          totals,
+        };
+      })
+    );
+
+    setStoresWithTotals(stores);
+    setError('');
+  } catch (err) {
+    console.error(err);
+    toast.error('Failed to load cart');
+    setError('Failed to load cart.');
+  } finally {
+    setLoading(false);
+  }
+};
 
   useEffect(() => {
     loadCart();

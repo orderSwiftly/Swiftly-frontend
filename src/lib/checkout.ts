@@ -86,11 +86,11 @@ export async function checkoutStore(
   return data.data;
 }
 
-export async function fetchSavedAddresses(): Promise<SavedAddress[]> {
+export async function fetchSavedAddresses(institutionEnum: string): Promise<SavedAddress[]> {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
 
-  const res = await fetch(`${API_URL}/api/v1/user/address`, {
+  const res = await fetch(`${API_URL}/api/v1/user/address/${institutionEnum}`, {
     headers: { Authorization: `Bearer ${token}` },
   });
 
@@ -105,7 +105,8 @@ export async function fetchSavedAddresses(): Promise<SavedAddress[]> {
 
 export async function saveNewAddress(
   building: string,
-  room: string
+  room: string,
+  institutionEnum: string
 ): Promise<SaveAddressResponse> {
   const token = localStorage.getItem('token');
   if (!token) throw new Error('No token found');
@@ -116,7 +117,7 @@ export async function saveNewAddress(
       'Content-Type': 'application/json',
       Authorization: `Bearer ${token}`,
     },
-    body: JSON.stringify({ building, room }),
+    body: JSON.stringify({ building, room, institutionEnum }),
   });
 
   const data: SaveAddressResponse = await res.json();

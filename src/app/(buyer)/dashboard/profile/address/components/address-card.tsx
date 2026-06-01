@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/profile/address/components/address-card.tsx
+
 "use client";
 
 export interface Address {

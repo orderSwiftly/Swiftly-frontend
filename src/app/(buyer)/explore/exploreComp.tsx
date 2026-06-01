@@ -72,7 +72,11 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
         const headers: HeadersInit = { "Content-Type": "application/json" };
         if (token) headers["Authorization"] = `Bearer ${token}`;
 
-        const res = await fetch(`${api_url}/api/v1/product/explore/${institutionEnum}`, { method: "GET", headers });
+        const res = await fetch(`${api_url}/api/v1/product/explore/${institutionEnum}`,
+          {
+            method: "GET",
+            headers
+          });
         const data = await res.json();
 
         if (!res.ok || data.status !== "success" || !Array.isArray(data.products)) {
