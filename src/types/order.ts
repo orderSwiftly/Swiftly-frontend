@@ -45,6 +45,7 @@ export interface Order {
   items: OrderItem[];
   pricing?: OrderPricing;
   totalPrice?: number;
+  institution?: string;  
   orderStatus:
     | "pending"
     | "confirmed"

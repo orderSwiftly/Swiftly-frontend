@@ -34,6 +34,7 @@ interface Order {
   orderStatus: string;
   paymentStatus: string;
   createdAt: string;
+  institution?: string;
   shippingAddress: {
     building?: string; room?: string;
     addressLine1?: string; city?: string; state?: string;
@@ -125,6 +126,7 @@ export default function GetOrderById() {
   const metaItems = [
     { icon: Clock, label: 'Placed', value: new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) },
     { icon: CreditCard, label: 'Payment', value: order.paymentStatus },
+    ...(order.institution ? [{ icon: MapPin, label: 'Institution', value: order.institution }] : []),
   ];
 
   // Add delivery window to meta items if it exists

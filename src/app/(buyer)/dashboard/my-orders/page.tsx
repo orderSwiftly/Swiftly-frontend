@@ -41,8 +41,10 @@ export default function MyOrdersPage() {
           }
         );
 
+        console.log('orders response:', res.data);
+
         if (res.data.status === "success") {
-          setOrders(res.data.data.orders);
+          setOrders(res.data.data?.orders ?? []);
         } else {
           setOrders([]);
           console.error("Failed to fetch orders:", res.data);
