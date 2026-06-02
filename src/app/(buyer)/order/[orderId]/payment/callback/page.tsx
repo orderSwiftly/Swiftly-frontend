@@ -6,7 +6,7 @@ import Lottie from 'lottie-react';
 import Link from 'next/link';
 import successAnimation from '@/animations/success.json';
 import failedAnimation from '@/animations/failure.json';
-import { CheckCircle2, Download, Share2, Clock } from 'lucide-react';
+import { CheckCircle2, Download, Share2, Clock, Zap } from 'lucide-react';
 import { verifyPayment, type OrderData } from '@/lib/payment';
 
 type ErrorBlockProps = {
@@ -238,6 +238,20 @@ export default function PaymentCallbackPage() {
                 {orderData?.store_name || 'Swiftly Store'}
               </p>
             </div>
+
+            {/* Delivery Type */}   {/* ← add here */}
+<div className="flex justify-between items-start">
+  <span className="text-sm sec-ff" style={{ color: 'var(--sec-clr)' }}>Delivery Type</span>
+  <div className="flex items-center gap-1">
+    {orderData?.isExpressDelivery
+      ? <Zap size={14} style={{ color: 'var(--acc-clr)' }} />
+      : <Clock size={14} style={{ color: 'var(--txt-clr)' }} />
+    }
+    <p className="text-sm sec-ff text-right font-medium" style={{ color: orderData?.isExpressDelivery ? 'var(--acc-clr)' : 'var(--txt-clr)' }}>
+      {orderData?.isExpressDelivery ? 'Express' : 'Scheduled'}
+    </p>
+  </div>
+</div>
 
             {/* Order ID */}
             <div className="flex justify-between items-start">

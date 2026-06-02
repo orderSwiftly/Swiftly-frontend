@@ -14,6 +14,7 @@ export interface OrderData {
   store_name: string;
   paymentMethod?: string;
   transactionReference?: string;
+  isExpressDelivery?: boolean;  
   delivery_window?: {
     start: string;
     end: string;
@@ -30,6 +31,7 @@ export interface VerifyPaymentResponse {
       deliveryCode?: string;
       createdAt: string;
       store_name?: string;
+      isExpressDelivery?: boolean; 
       delivery_window?: {
         start: string;
         end: string;
@@ -73,6 +75,7 @@ export async function verifyPayment(reference: string): Promise<{
           store_name: data.data?.order?.store_name || 'Swiftly Store',
           paymentMethod: 'Card Payment',
           transactionReference: reference,
+          isExpressDelivery: data.data?.order?.isExpressDelivery,
           delivery_window: data.data?.order?.delivery_window
             ? {
                 start: data.data.order.delivery_window.start,

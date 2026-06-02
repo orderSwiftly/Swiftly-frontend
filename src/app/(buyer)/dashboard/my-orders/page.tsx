@@ -41,7 +41,7 @@ export default function MyOrdersPage() {
           }
         );
 
-        console.log('orders response:', res.data);
+        // console.log('orders response:', res.data);
 
         if (res.data.status === "success") {
           setOrders(res.data.data?.orders ?? []);
