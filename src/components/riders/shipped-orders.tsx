@@ -1,11 +1,11 @@
 // src/components/riders/shipped-orders.tsx
-
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
+import { useEffect, useState } from "react";
 import getShippedOrders, { GetShippedOrder } from "@/lib/rider-order";
 import { Loader2, AlertCircle, BadgeCheck, ShoppingBag } from "lucide-react";
-import RequestOrderButton from "@/components/riders/request-order";
+import ClaimOrderButton from "@/components/riders/claim-orders";
+import UnclaimOrderButton from "@/components/riders/unclaim-order";
 
 function formatPrice(price: number) {
     return new Intl.NumberFormat("en-NG", {
@@ -15,14 +15,9 @@ function formatPrice(price: number) {
     }).format(price);
 }
 
-function OrderCard({
-    order,
-    onRequested,
-}: {
-    order: GetShippedOrder;
-    onRequested: (id: string) => void;
-}) {
+function OrderCard({ order }: Readonly<{ order: GetShippedOrder }>) {
     const [error, setError] = useState<string | null>(null);
+    const [claimed, setClaimed] = useState(false);
 
     const firstItem = order.items[0];
     const extraItems = order.items.length - 1;
@@ -33,9 +28,7 @@ function OrderCard({
             : order.shippingAddress.addressLine1 || order.shippingAddress.city;
 
     return (
-        <div className="bg-white border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm">
-
-            {/* Top: image + order info */}
+        <div className="bg-[var(--txt-clr)] border border-[#e8e8e8] rounded-2xl overflow-hidden sec-ff shadow-sm">
             <div className="flex gap-3 p-4">
                 <div className="w-16 h-16 rounded-xl overflow-hidden shrink-0 bg-[#f5f5f5]">
                     <img
@@ -71,7 +64,6 @@ function OrderCard({
                 </div>
             </div>
 
-            {/* Dotted rows */}
             <div className="px-4 pb-3 flex flex-col gap-2">
                 <div className="flex items-center justify-between gap-2">
                     <span className="text-xs text-[#c0c0c0] shrink-0">Seller</span>
@@ -103,11 +95,25 @@ function OrderCard({
             )}
 
             <div className="px-4 pb-4">
-                <RequestOrderButton
-                    orderId={order._id}
-                    onSuccess={() => onRequested(order._id)}
-                    onError={(msg) => setError(msg)}
-                />
+                {claimed ? (
+                    <UnclaimOrderButton
+                        orderId={order._id}
+                        onSuccess={() => {
+                            setError(null);
+                            setClaimed(false);
+                        }}
+                        onError={(msg: string) => setError(msg)}
+                    />
+                ) : (
+                    <ClaimOrderButton
+                        orderId={order._id}
+                        onSuccess={() => {
+                            setError(null);
+                            setClaimed(true);
+                        }}
+                        onError={(msg: string) => setError(msg)}
+                    />
+                )}
             </div>
         </div>
     );
@@ -121,19 +127,15 @@ export default function ShippedOrders() {
     useEffect(() => {
         getShippedOrders()
             .then(setOrders)
-            .catch((e) => setError(e.message))
+            .catch((e: Error) => setError(e.message))
             .finally(() => setLoading(false));
-    }, []);
-
-    const removeOrder = useCallback((id: string) => {
-        setOrders((prev) => prev.filter((o) => o._id !== id));
     }, []);
 
     if (loading) {
         return (
             <div className="min-h-[400px] flex flex-col items-center justify-center gap-4 text-[#c0c0c0] sec-ff">
-                <Loader2 size={36} className="animate-spin text-[#006B4F]" />
-                <p className="text-sm">Loading prepared orders…</p>
+                <Loader2 size={36} className="animate-spin text-[var(--prof-clr)]" />
+                <p className="text-sm">Loading prepared orders...</p>
             </div>
         );
     }
@@ -167,7 +169,6 @@ export default function ShippedOrders() {
                     <OrderCard
                         key={order._id}
                         order={order}
-                        onRequested={removeOrder}
                     />
                 ))}
             </div>

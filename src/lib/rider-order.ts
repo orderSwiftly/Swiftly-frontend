@@ -94,22 +94,42 @@ export default async function getShippedOrders(): Promise<GetShippedOrder[]> {
   }
 }
 
-// ─── Request pickup (replaces claim) ──────────────────────────────────────
+// ─── Claim order (replaces request) ──────────────────────────────────────
 
-export async function requestOrder(orderId: string): Promise<void> {
+export async function claimOrder(orderId: string): Promise<void> {
   try {
     const token = localStorage.getItem("token");
     if (!token) throw new Error("No token found");
 
     await axios.post(
-      `${apiUrl}/api/v1/rider/request/${orderId}`,
+      `${apiUrl}/api/v1/rider/claim/${orderId}`,
       {},
       { headers: { Authorization: `Bearer ${token}` } }
     );
   } catch (error) {
     const err = error as AxiosError<{ message: string }>;
     throw new Error(
-      err.response?.data?.message || err.message || "Failed to request order"
+      err.response?.data?.message || err.message || "Failed to claim order"
+    );
+  }
+}
+
+// ─── Unclaim order (replaces claim) ──────────────────────────────────────
+
+export async function unclaimOrder(orderId: string): Promise<void> {
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) throw new Error("No token found");
+
+    await axios.post(
+      `${apiUrl}/api/v1/rider/unclaim/${orderId}`,
+      {},
+      { headers: { Authorization: `Bearer ${token}` } }
+    );
+  } catch (error) {
+    const err = error as AxiosError<{ message: string }>;
+    throw new Error(
+      err.response?.data?.message || err.message || "Failed to unclaim order"
     );
   }
 }
