@@ -62,8 +62,7 @@ const STATUS_STYLES: Record<string, { bg: string; color: string; border: string 
   pending: { bg: 'rgba(234,179,8,0.12)', color: '#b45309', border: 'rgba(234,179,8,0.35)' },
   confirmed: { bg: 'rgba(59,130,246,0.10)', color: '#1d4ed8', border: 'rgba(59,130,246,0.3)' },
   prepared: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
-  awaiting_verification: { bg: 'rgba(245,158,11,0.10)', color: '#b45309', border: 'rgba(245,158,11,0.3)' },
-  verified: { bg: 'rgba(34,197,94,0.10)', color: '#166534', border: 'rgba(34,197,94,0.3)' },
+  claimed: { bg: 'rgba(236,72,153,0.10)', color: '#be185d', border: 'rgba(236,72,153,0.3)' },
   delivered: { bg: 'rgba(102,153,23,0.12)', color: '#669917', border: 'rgba(102,153,23,0.3)' },
   collected: { bg: 'rgba(102,153,23,0.12)', color: '#669917', border: 'rgba(102,153,23,0.3)' },
 };
@@ -215,14 +214,6 @@ export default function RiderOrderDetails() {
                 <span className="opacity-60">Address:</span> {order.store_address}
               </span>
             </div>
-            {/* {order.deliveryCode && (
-              <div className="flex items-center gap-2">
-                <CheckCircle size={14} className="text-[var(--bg-clr)] opacity-60" />
-                <span className="text-sm text-[var(--pry-clr)] sec-ff">
-                  <span className="opacity-60">Delivery Code:</span> <span className="font-mono font-bold">{order.deliveryCode}</span>
-                </span>
-              </div>
-            )} */}
           </div>
         </div>
 
@@ -323,22 +314,6 @@ export default function RiderOrderDetails() {
           <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2 mb-3">
             <CreditCard size={15} className="text-[var(--bg-clr)]" /> Order Price
           </h2>
-          {/* <div className="space-y-1.5">
-            <div className="flex justify-between text-sm sec-ff">
-              <span className="text-[var(--pry-clr)] opacity-60">Subtotal</span>
-              <span className="text-[var(--pry-clr)] font-medium">₦{order.pricing.subtotal.toLocaleString()}</span>
-            </div>
-            <div className="flex justify-between text-sm sec-ff">
-              <span className="text-[var(--pry-clr)] opacity-60">Delivery Fee</span>
-              <span className="text-[var(--pry-clr)] font-medium">₦{order.pricing.deliveryFee.toLocaleString()}</span>
-            </div>
-            {order.pricing.serviceFee > 0 && (
-              <div className="flex justify-between text-sm sec-ff">
-                <span className="text-[var(--pry-clr)] opacity-60">Service Fee</span>
-                <span className="text-[var(--pry-clr)] font-medium">₦{order.pricing.serviceFee.toLocaleString()}</span>
-              </div>
-            )}
-          </div> */}
           <div
             className="mt-3 pt-3 flex justify-between items-center"
             style={{ borderTop: '1px solid rgba(0,107,79,0.12)' }}

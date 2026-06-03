@@ -4,13 +4,9 @@
 
 import { useEffect, useState } from 'react';
 import PulseLoader from '@/components/pulse-loader';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import Link from 'next/link';
-import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, ShieldAlert, Key } from 'lucide-react';
-// import ConfirmDelivery from './confirm-delivery';
-import VerifyRider from '../../components/verify-rider';
-// import OrderProgress from '../../components/order-progress';
-// import { ORDER_PROGRESS_MAP, ORDER_STATUS_LABEL } from '@/lib/order-progress';
+import { ArrowLeft, X, MapPin, Package, CreditCard, Clock, Key } from 'lucide-react';
 
 interface OrderItem {
   productId: string;
@@ -30,7 +26,12 @@ interface Buyer {
 interface Order {
   _id: string;
   items: OrderItem[];
-  pricing: { subtotal: number; serviceFee: number; deliveryFee: number; total: number };
+  pricing: {
+    subtotal: number;
+    serviceFee: number;
+    deliveryFee: number;
+    total: number
+  };
   orderStatus: string;
   paymentStatus: string;
   createdAt: string;
@@ -44,17 +45,16 @@ interface Order {
     start: string;
     end: string;
   };
-  buyer: Buyer;  // Buyer is at root level, not inside orderDetails
+  buyer: Buyer;
 }
 
 const STATUS_STYLES: Record<string, { bg: string; color: string; border: string }> = {
   pending: { bg: 'rgba(234,179,8,0.12)', color: '#b45309', border: 'rgba(234,179,8,0.35)' },
   confirmed: { bg: 'rgba(59,130,246,0.10)', color: '#1d4ed8', border: 'rgba(59,130,246,0.3)' },
   prepared: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
-  awaiting_verification: { bg: 'rgba(245,158,11,0.10)', color: '#b45309', border: 'rgba(245,158,11,0.3)' },
-  verified: { bg: 'rgba(34,197,94,0.10)', color: '#166534', border: 'rgba(34,197,94,0.3)' },
-  delivered: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
+  claimed: { bg: 'rgba(168,85,247,0.10)', color: '#7e22ce', border: 'rgba(168,85,247,0.3)' },
   collected: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
+  delivered: { bg: 'rgba(102,153,23,0.12)', color: 'var(--prof-clr)', border: 'rgba(102,153,23,0.3)' },
 };
 
 const imgUrl = (url: string) => url.replace('/upload/', '/upload/q_auto,f_auto,w_300/');
@@ -72,7 +72,6 @@ export default function GetOrderById() {
   const [loading, setLoading] = useState(true);
   const [showPopup, setShowPopup] = useState(false);
   const { id } = useParams();
-  const router = useRouter();
 
   const fetchOrder = async () => {
     try {
@@ -82,7 +81,6 @@ export default function GetOrderById() {
         headers: { Authorization: `Bearer ${token}` },
       });
       const data = await res.json();
-      console.log('Order data:', data); // Debug log
       setOrder(res.ok && data.status === 'success' ? data.data.order : null);
     } catch {
       setOrder(null);
@@ -122,14 +120,12 @@ export default function GetOrderById() {
     ? [addr.building, addr.room].filter(Boolean).join(', ')
     : [addr.addressLine1, addr.city, addr.state].filter(Boolean).join(', ') || 'N/A';
 
-  // Create meta items array
   const metaItems = [
     { icon: Clock, label: 'Placed', value: new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' }) },
     { icon: CreditCard, label: 'Payment', value: order.paymentStatus },
     ...(order.institution ? [{ icon: MapPin, label: 'Institution', value: order.institution }] : []),
   ];
 
-  // Add delivery window to meta items if it exists
   if (order.delivery_window) {
     metaItems.push({
       icon: Clock,
@@ -138,7 +134,6 @@ export default function GetOrderById() {
     });
   }
 
-  // Add delivery code to meta items if it exists
   if (order.deliveryCode) {
     metaItems.push({
       icon: Key,
@@ -191,24 +186,6 @@ export default function GetOrderById() {
           ))}
         </div>
 
-        {/* Verify Rider */}
-        {order.orderStatus === 'awaiting_verification' && (
-          <div
-            style={{ ...card, borderColor: 'rgba(245,158,11,0.25)', backgroundColor: 'rgba(245,158,11,0.04)' }}
-            className="space-y-3"
-          >
-            <div className="flex items-center gap-2">
-              <ShieldAlert size={15} className="text-amber-500 shrink-0" />
-              <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff">Rider Verification Required</h2>
-            </div>
-            <VerifyRider
-              orderId={order._id}
-              onAccepted={() => fetchOrder()}
-              onRejected={() => router.push('/dashboard/my-orders')}
-            />
-          </div>
-        )}
-
         {/* Items */}
         <div className="space-y-3">
           <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2">
@@ -221,7 +198,6 @@ export default function GetOrderById() {
               className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]"
             >
               <div className="flex gap-3">
-                {/* Images */}
                 <div className="flex gap-2 shrink-0">
                   {(item.productImg?.slice(0, 2) ?? []).map((img, idx) => (
                     <div
@@ -246,7 +222,6 @@ export default function GetOrderById() {
                   )}
                 </div>
 
-                {/* Info */}
                 <div className="flex-1 min-w-0 flex flex-col justify-between">
                   <p className="text-sm font-bold text-[var(--pry-clr)] pry-ff line-clamp-2">{item.title}</p>
                   <p className="text-xs text-[var(--bg-clr)] sec-ff mt-0.5 opacity-80">
@@ -262,7 +237,6 @@ export default function GetOrderById() {
                   )}
                 </div>
 
-                {/* Line total */}
                 <p className="text-sm font-bold text-[var(--bg-clr)] sec-ff whitespace-nowrap self-start">
                   ₦{(item.price * item.quantity).toLocaleString()}
                 </p>
@@ -336,7 +310,6 @@ export default function GetOrderById() {
             >
               <X size={20} />
             </button>
-            {/* <ConfirmDelivery /> */}
           </div>
         </div>
       )}

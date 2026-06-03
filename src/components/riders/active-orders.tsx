@@ -4,7 +4,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import { getActiveOrders, GetShippedOrder } from "@/lib/rider-order";
-import { Loader2, AlertCircle, PackageSearch, Clock, ShieldCheck, Bike } from "lucide-react";
+import { Loader2, AlertCircle, PackageSearch, ShieldCheck, Bike } from "lucide-react";
 import CollectOrderButton from "@/components/riders/collect-order";
 import DeliverOrderButton from "@/components/riders/deliver-order";
 
@@ -19,22 +19,16 @@ function formatPrice(price: number) {
 // ─── Status config ─────────────────────────────────────────────────────────
 
 const STATUS_CONFIG = {
-    awaiting_verification: {
-        label: "Awaiting Buyer Verification",
-        color: "text-amber-600 bg-amber-50 border-amber-100",
-        dot: "bg-amber-500",
-        pulse: true,
-    },
-    verified: {
-        label: "Verified — Ready to Collect",
-        color: "text-emerald-600 bg-emerald-50 border-emerald-100",
-        dot: "bg-emerald-500",
+    claimed: {
+        label: "Claimed — Pending Verification",
+        color: "text-blue-600 bg-blue-50 border-blue-100",
+        dot: "bg-blue-500",
         pulse: true,
     },
     collected: {
         label: "Collected",
-        color: "text-blue-600 bg-blue-50 border-blue-100",
-        dot: "bg-blue-500",
+        color: "text-emerald-600 bg-emerald-50 border-emerald-100",
+        dot: "bg-emerald-500",
         pulse: false,
     },
 } as const;
@@ -121,33 +115,14 @@ function ActiveOrderCard({
                         {deliveryAddress}
                     </span>
                 </div>
-                {/* Only show delivery code when collected */}
-                {/* {status === "collected" && (
-                    <div className="flex items-center justify-between gap-2">
-                        <span className="text-xs text-[#c0c0c0] shrink-0">Delivery Code</span>
-                        <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
-                        <span className="text-xs text-[#0A0F1A] font-bold shrink-0 tracking-widest">
-                            {order.deliveryCode}
-                        </span>
-                    </div>
-                )} */}
             </div>
 
             {error && (
                 <p className="px-4 pb-2 text-xs text-red-500 text-center">{error}</p>
             )}
 
-            {/* awaiting_verification — passive, rider just waits */}
-            {status === "awaiting_verification" && (
-                <div className="px-4 pb-4">
-                    <div className="w-full py-3 rounded-xl bg-amber-50 border border-amber-100 text-amber-600 text-xs font-medium text-center">
-                        Waiting for buyer to verify you…
-                    </div>
-                </div>
-            )}
-
-            {/* verified — rider can now collect from seller */}
-            {status === "verified" && (
+            {/* claimed — rider can collect from seller */}
+            {status === "claimed" && (
                 <div className="px-4 pb-4">
                     <CollectOrderButton
                         orderId={order._id}
@@ -174,9 +149,8 @@ function ActiveOrderCard({
 // ─── Section group ─────────────────────────────────────────────────────────
 
 const SECTION_META = {
-    awaiting_verification: { title: "Awaiting Verification", Icon: Clock },
-    verified: { title: "Verified — Ready to Collect", Icon: ShieldCheck },
-    collected: { title: "Collected", Icon: Bike },
+    claimed: { title: "Claimed Orders", Icon: ShieldCheck },
+    collected: { title: "Collected — Ready to Deliver", Icon: Bike },
 } as const;
 
 function OrderGroup({
@@ -279,14 +253,8 @@ export default function ActiveOrders() {
     return (
         <section className="sec-ff">
             <OrderGroup
-                status="awaiting_verification"
-                orders={byStatus("awaiting_verification")}
-                onCollected={handleCollected}
-                onDelivered={handleDelivered}
-            />
-            <OrderGroup
-                status="verified"
-                orders={byStatus("verified")}
+                status="claimed"
+                orders={byStatus("claimed")}
                 onCollected={handleCollected}
                 onDelivered={handleDelivered}
             />

@@ -35,7 +35,7 @@ export interface GetShippedOrder {
     postalCode: string;
     country: string;
   };
-  orderStatus: "prepared" | "awaiting_verification" | "verified" | "collected" | "delivered";
+  orderStatus: "prepared" | "claimed" | "collected" | "delivered";
   paymentStatus: string;
   escrowStatus: "held" | "released" | "refunded";
   createdAt: string;
@@ -49,7 +49,6 @@ export interface GetShippedOrder {
   assigned_rider_id?: string;
   // Lifecycle timestamps
   requested_at?: string;
-  verified_at?: string;
   collected_at?: string;
   delivered_at?: string;
 }
@@ -134,7 +133,7 @@ export async function unclaimOrder(orderId: string): Promise<void> {
   }
 }
 
-// ─── Active orders (awaiting_verification → verified → collected) ──────────
+// ─── Active orders (now claimed → collected) ──────────
 
 export async function getActiveOrders(): Promise<GetShippedOrder[]> {
   try {
@@ -201,44 +200,6 @@ export async function deliverOrder(orderId: string, deliveryCode: string): Promi
     console.error("Delivery error:", err.response?.data);
     throw new Error(
       err.response?.data?.message || err.message || "Failed to deliver order"
-    );
-  }
-}
-
-// ─── Buyer: accept / reject rider (called from buyer side) ───────────────
-
-export async function acceptRider(orderId: string): Promise<void> {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No token found");
-
-    await axios.post(
-      `${apiUrl}/api/v1/order/${orderId}/rider/accept`,
-      {},
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  } catch (error) {
-    const err = error as AxiosError<{ message: string }>;
-    throw new Error(
-      err.response?.data?.message || err.message || "Failed to accept rider"
-    );
-  }
-}
-
-export async function rejectRider(orderId: string): Promise<void> {
-  try {
-    const token = localStorage.getItem("token");
-    if (!token) throw new Error("No token found");
-
-    await axios.post(
-      `${apiUrl}/api/v1/order/${orderId}/rider/reject`,
-      {},
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
-  } catch (error) {
-    const err = error as AxiosError<{ message: string }>;
-    throw new Error(
-      err.response?.data?.message || err.message || "Failed to reject rider"
     );
   }
 }

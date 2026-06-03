@@ -50,8 +50,7 @@ export interface Order {
     | "pending"
     | "confirmed"
     | "prepared"
-    | "awaiting_verification"
-    | "verified"
+    | "claimed"
     | "collected"
     | "delivered"
     | "cancelled"
@@ -64,7 +63,6 @@ export interface Order {
   deliveryCode?: number;
   assigned_rider_id?: string;
   requested_at?: string;
-  verified_at?: string;
   collected_at?: string;
   delivered_at?: string;
 }
