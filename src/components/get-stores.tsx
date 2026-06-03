@@ -117,14 +117,14 @@ function StoreCard({ store }: Readonly<{ store: Store }>) {
   return (
     <Link href={`/explore/seller/${store._id}`} className="block group">
       <div className="bg-white rounded-xl border border-gray-100 overflow-hidden hover:shadow-md transition-shadow">
-        <div className="relative w-full aspect-square bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center">
+        <div className="relative w-full aspect-square bg-gradient-to-br from-green-100 to-green-50 flex items-center justify-center overflow-hidden">
           {store.logo ? (
             <Image
               src={store.logo}
               alt={store.name}
-              width={120}
-              height={120}
-              className="object-contain"
+              fill
+              className="object-cover group-hover:scale-102 transition-transform duration-300"
+              sizes="(max-width: 768px) 50vw, (max-width: 1200px) 33vw, 25vw"
             />
           ) : (
             <Store size={48} className="text-[var(--prof-clr)]" />
