@@ -4,7 +4,7 @@
 
 import Image from 'next/image';
 import Link from 'next/link';
-import { ArrowRight, Package } from 'lucide-react';
+import { ArrowRight, Package, Star } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { Order } from '@/types/order';
 import OrderProgress from './order-progress';
@@ -30,8 +30,9 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
   const orderTotal = order.pricing?.total ?? order.totalPrice ?? 0;
   const shortId = order._id ? `#${order._id.slice(-8).toUpperCase()}` : '—';
 
-  // Resolve progress step; unknown statuses fall back to -1 (all dots unfilled)
   const progressStep = ORDER_PROGRESS_MAP[order.orderStatus] ?? -1;
+
+  const isDelivered = order.orderStatus === 'delivered';
 
   return (
     <div className="bg-white/5 border border-white/10 rounded-xl p-6 space-y-5">
@@ -43,9 +44,7 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
         <p className="text-sm text-gray-400 sec-ff">
           <span className="font-medium text-[var(--sec-clr)]">Placed on:</span> {new Date(order.createdAt).toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' })}
         </p>
-
       </div>
-
 
       {/* Items */}
       <div className="space-y-4">
@@ -87,12 +86,11 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
         </p>
       </div>
 
-            {/* Progress bar */}
+      {/* Progress bar */}
       <OrderProgress filled={progressStep} />
       <p className="text-sm font-semibold text-[var(--pry-clr)] sec-ff text-center">
         {ORDER_STATUS_LABEL[order.orderStatus] ?? `Your order is ${order.orderStatus.replace(/_/g, ' ')}`}
       </p>
-
 
       {/* Footer */}
       <div className="flex items-center pt-2">
@@ -106,6 +104,14 @@ export default function OrderCard({ order, currentUserId, shippingLoading, handl
           </Link>
 
           <div className="flex items-center gap-2">
+            {/* Rated badge */}
+            {isDelivered && order.riderRated && (
+              <span className="flex items-center gap-1.5 text-xs text-[#669917] sec-ff font-medium">
+                <Star size={13} className="fill-[#f5a623] text-[#f5a623]" />
+                Delivery Rated
+              </span>
+            )}
+
             {order.orderStatus === 'confirmed' && isOwner && (
               <button
                 onClick={() => handleShipOrder(order._id)}

@@ -20,16 +20,16 @@ function formatPrice(price: number) {
 
 const STATUS_CONFIG = {
     claimed: {
-        label: "Claimed — Pending Verification",
+        label: "Order claimed — awaiting pickup",
         color: "text-blue-600 bg-blue-50 border-blue-100",
         dot: "bg-blue-500",
         pulse: true,
     },
     collected: {
-        label: "Collected",
+        label: "Order collected — on the way",
         color: "text-emerald-600 bg-emerald-50 border-emerald-100",
         dot: "bg-emerald-500",
-        pulse: false,
+        pulse: true,
     },
 } as const;
 
@@ -210,12 +210,11 @@ export default function ActiveOrders() {
         fetchOrders();
     }, [fetchOrders]);
 
-    // Collect succeeded: order moves to `collected` — refetch so card updates
     const handleCollected = useCallback(() => {
         fetchOrders();
     }, [fetchOrders]);
 
-    // Deliver succeeded: order moves to `delivered` — remove from active list
+    // Delivery succeeded → remove from list (no rate modal)
     const handleDelivered = useCallback((id: string) => {
         setOrders((prev) => prev.filter((o) => o._id !== id));
     }, []);

@@ -8,7 +8,7 @@ import { Order } from "@/types/order";
 import axios from "axios";
 
 export default function MyOrdersPage() {
-  const { user } = useUserStore(); // Get current user from store
+  const { user } = useUserStore();
   const currentUserId = user?._id || null;
 
   const [orders, setOrders] = useState<Order[]>([]);
@@ -16,12 +16,9 @@ export default function MyOrdersPage() {
 
   const handleShipOrder = async (orderId: string) => {
     setShippingLoading(orderId);
-    // Placeholder: buyers don't ship orders, sellers will implement this
-    // console.log("Ship order:", orderId);
-    setTimeout(() => setShippingLoading(null), 2000); // mock async
+    setTimeout(() => setShippingLoading(null), 2000);
   };
 
-  // Fetch orders dynamically for the current user
   useEffect(() => {
     if (!currentUserId) return;
 
@@ -29,19 +26,13 @@ export default function MyOrdersPage() {
 
     const fetchOrders = async () => {
       try {
-        const token = localStorage.getItem("token"); // auth token
+        const token = localStorage.getItem("token");
         if (!token) return;
 
         const res = await axios.get<{ status: string; data: { orders: Order[] } }>(
           `${api_url}/api/v1/order/get-orders`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        // console.log('orders response:', res.data);
 
         if (res.data.status === "success") {
           setOrders(res.data.data?.orders ?? []);

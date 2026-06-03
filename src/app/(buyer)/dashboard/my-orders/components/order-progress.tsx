@@ -5,7 +5,7 @@ interface OrderProgressProps {
 }
 
 export default function OrderProgress({ filled }: Readonly<OrderProgressProps>) {
-    const TOTAL_DOTS = 6;
+    const TOTAL_DOTS = 5;
 
     return (
         <div className="flex w-full gap-2">

@@ -4,11 +4,12 @@
 
 import OrdersHeader from "../components/orders-header";
 import OrderCard from "../components/order-card";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { Order } from "@/types/order";
 import { getEmptyMessageByTab } from "@/lib/order-utils";
 import { ORDER_PROGRESS_MAP } from "@/lib/order-progress";
 import Image from "next/image";
+import RateRiderModal from "@/components/rate-rider-modal";
 
 type Tab = "active" | "passive";
 
@@ -39,6 +40,22 @@ export default function GetOrders({
   handleShipOrder,
 }: Readonly<Props>) {
   const [activeTab, setActiveTab] = useState<Tab>("active");
+  const [ratingOrder, setRatingOrder] = useState<Order | null>(null);
+  const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
+
+  // Auto-pop modal for first delivered + unrated order when orders load
+  useEffect(() => {
+    if (!orders.length) return;
+
+    const pending = orders.find(
+      (o) =>
+        o.orderStatus === "delivered" &&
+        !o.riderRated &&
+        !ratedIds.has(o._id)
+    );
+
+    if (pending) setRatingOrder(pending);
+  }, [orders]);
 
   const getFilteredOrders = (): Order[] => {
     switch (activeTab) {
@@ -88,6 +105,18 @@ export default function GetOrders({
             handleShipOrder={handleShipOrder}
           />
         ))
+      )}
+
+      {/* Auto-pop rate modal for unrated delivered orders */}
+      {ratingOrder && (
+        <RateRiderModal
+          orderId={ratingOrder._id}
+          onClose={() => setRatingOrder(null)}
+          onDone={() => {
+            setRatedIds((prev) => new Set(prev).add(ratingOrder._id));
+            setRatingOrder(null);
+          }}
+        />
       )}
     </div>
   );

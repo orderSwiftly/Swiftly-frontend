@@ -47,7 +47,6 @@ export interface Order {
   totalPrice?: number;
   institution?: string;  
   orderStatus:
-    | "pending"
     | "confirmed"
     | "prepared"
     | "claimed"
@@ -65,4 +64,15 @@ export interface Order {
   requested_at?: string;
   collected_at?: string;
   delivered_at?: string;
+
+    // ── Rider rating fields ────────────────────────────────────────────────
+  riderRated?: boolean;
+  riderRating?: number;
+  riderReview?: string;
+  riderRatedAt?: string;
+ 
+  // ── Rider report fields ────────────────────────────────────────────────
+  riderReported?: boolean;
+  riderReport?: string;
+  riderReportedAt?: string;
 }
