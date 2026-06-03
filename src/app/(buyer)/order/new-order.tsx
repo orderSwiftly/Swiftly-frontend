@@ -4,7 +4,7 @@ import { useEffect, useState } from 'react';
 import toast from 'react-hot-toast';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
-import { AlertTriangle, XCircle, Store, Package, Lock, Zap, Clock, ChevronDown, Loader2 } from 'lucide-react';
+import { AlertTriangle, XCircle, Store, Package, Lock, Zap, Clock, ChevronDown, Loader2, ArrowLeft, ShoppingCart } from 'lucide-react';
 import {
   checkoutStore,
   fetchSavedAddresses,
@@ -245,10 +245,14 @@ export default function NewOrder() {
     }
   };
 
+  const handleGoBack = () => {
+    router.push('/dashboard/cart');
+  };
+
   if (loading) {
     return (
       <div className="max-w-5xl mx-auto p-6 flex justify-center items-center min-h-[400px]">
-        <Loader2 className="animate-spin text-[var(--prof-clr)]" />
+        <Loader2 className="animate-spin text-[var(--prof-clr)]" size={32} />
       </div>
     );
   }
@@ -268,10 +272,34 @@ export default function NewOrder() {
   }
 
   return (
-    <div className="max-w-5xl mx-auto p-6 space-y-8">
-      <h2 className="text-2xl font-bold text-[var(--prof-clr)] pry-ff">
-        Checkout - {storeData.storeName}
-      </h2>
+    <div className="max-w-5xl mx-auto p-6 space-y-6">
+      {/* Back Button */}
+      <button
+        onClick={handleGoBack}
+        className="flex items-center gap-2 text-[var(--sec-clr)] hover:text-[var(--prof-clr)] transition-colors sec-ff text-sm"
+      >
+        <ArrowLeft size={18} />
+        Back to Cart
+      </button>
+
+      {/* Header with Store Name and Cart Icon */}
+      <div className="flex items-center justify-between">
+        <div>
+          <h2 className="text-2xl font-bold text-[var(--prof-clr)] pry-ff">
+            Checkout
+          </h2>
+          <p className="text-sm text-[var(--sec-clr)] sec-ff mt-1">
+            {storeData.storeName}
+          </p>
+        </div>
+        <button
+          onClick={handleGoBack}
+          className="flex items-center gap-2 px-4 py-2 rounded-lg border border-gray-200 hover:bg-gray-50 transition-colors sec-ff text-sm"
+        >
+          <ShoppingCart size={16} />
+          Cart
+        </button>
+      </div>
 
       {/* Store Closed Warning Banner */}
       {!storeData.isOpen && (

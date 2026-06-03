@@ -78,6 +78,14 @@ export default function GetOrders({
 
   const filteredOrders = getFilteredOrders();
 
+  // Handle order card click to open rating modal
+  const handleOrderClick = (order: Order) => {
+    // Only open rating modal if order is delivered and not rated yet
+    if (order.orderStatus === "delivered" && !order.riderRated) {
+      setRatingOrder(order);
+    }
+  };
+
   return (
     <div className="space-y-4">
       <OrdersHeader activeTab={activeTab} onTabChange={setActiveTab} />
@@ -97,17 +105,22 @@ export default function GetOrders({
         </div>
       ) : (
         filteredOrders.map((order, index) => (
-          <OrderCard
+          <div
             key={resolveId(order._id) || index}
-            order={order}
-            currentUserId={currentUserId || ""}
-            shippingLoading={shippingLoading}
-            handleShipOrder={handleShipOrder}
-          />
+            onClick={() => handleOrderClick(order)}
+            className={order.orderStatus === "delivered" && !order.riderRated ? "cursor-pointer" : ""}
+          >
+            <OrderCard
+              order={order}
+              currentUserId={currentUserId || ""}
+              shippingLoading={shippingLoading}
+              handleShipOrder={handleShipOrder}
+            />
+          </div>
         ))
       )}
 
-      {/* Auto-pop rate modal for unrated delivered orders */}
+      {/* Rating modal */}
       {ratingOrder && (
         <RateRiderModal
           orderId={ratingOrder._id}
