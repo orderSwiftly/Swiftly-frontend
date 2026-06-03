@@ -4,7 +4,6 @@
 
 import { useEffect, useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import Link from 'next/link';
 import { 
   ArrowLeft, 
   MapPin, 
@@ -82,7 +81,6 @@ export default function RiderOrderDetails() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const { id } = useParams();
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   const router = useRouter();
 
   const fetchOrder = async () => {
@@ -112,6 +110,10 @@ export default function RiderOrderDetails() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [id]);
 
+  const handleBack = () => {
+    router.push('/rider/dashboard/orders');
+  };
+
   if (loading) return (
     <div className="h-screen flex items-center justify-center bg-[var(--txt-clr)]">
       <PulseLoader />
@@ -123,9 +125,12 @@ export default function RiderOrderDetails() {
       <div className="space-y-3">
         <Package size={48} className="text-[var(--acc-clr)] mx-auto opacity-40" />
         <p className="text-lg text-[var(--pry-clr)] sec-ff">{error || 'Order not found.'}</p>
-        <Link href="/rider/dashboard/orders" className="text-[var(--bg-clr)] sec-ff text-sm underline underline-offset-4">
+        <button 
+          onClick={handleBack}
+          className="text-[var(--bg-clr)] sec-ff text-sm underline underline-offset-4 cursor-pointer"
+        >
           Back to orders
-        </Link>
+        </button>
       </div>
     </div>
   );
@@ -152,14 +157,14 @@ export default function RiderOrderDetails() {
     <div className="min-h-screen bg-[var(--txt-clr)] pb-24">
       <div className="w-full max-w-4xl mx-auto px-4 sm:px-6 pt-6 space-y-5">
 
-        {/* Back button */}
-        <Link
-          href="/dashboard/orders"
-          className="inline-flex items-center gap-2 text-[var(--bg-clr)] hover:text-[var(--acc-clr)] transition-colors sec-ff text-sm group"
+        {/* Back button - fixed link */}
+        <button
+          onClick={handleBack}
+          className="inline-flex items-center gap-2 text-[var(--bg-clr)] hover:text-[var(--acc-clr)] transition-colors sec-ff text-sm group cursor-pointer"
         >
           <ArrowLeft size={15} className="transition-transform duration-150 group-hover:-translate-x-1" />
           Back to Orders
-        </Link>
+        </button>
 
         {/* Title + badge */}
         <div className="flex items-start justify-between gap-3">
