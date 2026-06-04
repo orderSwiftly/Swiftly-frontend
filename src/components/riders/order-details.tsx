@@ -313,22 +313,6 @@ export default function RiderOrderDetails() {
           </h2>
           <p className="text-sm text-[var(--pry-clr)] sec-ff opacity-70">{deliveryAddress}</p>
         </div>
-
-        {/* Pricing Summary */}
-        <div style={card} className="transition-shadow duration-300 hover:shadow-[0_6px_28px_rgba(0,107,79,0.13)]">
-          <h2 className="text-sm font-semibold text-[var(--pry-clr)] pry-ff flex items-center gap-2 mb-3">
-            <CreditCard size={15} className="text-[var(--bg-clr)]" /> Order Price
-          </h2>
-          <div
-            className="mt-3 pt-3 flex justify-between items-center"
-            style={{ borderTop: '1px solid rgba(0,107,79,0.12)' }}
-          >
-            <span className="font-bold text-[var(--pry-clr)] pry-ff">Delivery Fee</span>
-            <span className="text-lg sm:text-xl font-bold text-[var(--bg-clr)] sec-ff">
-              ₦{order.pricing.deliveryFee.toLocaleString()}
-            </span>
-          </div>
-        </div>
       </div>
     </div>
   );

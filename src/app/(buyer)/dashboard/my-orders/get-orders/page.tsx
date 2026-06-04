@@ -1,5 +1,3 @@
-// src/app/(buyer)/dashboard/my-orders/get-orders/page.tsx
-
 "use client";
 
 import OrdersHeader from "../components/orders-header";
@@ -25,11 +23,14 @@ function resolveId(id: string | { $oid: string } | undefined): string {
   return typeof id === "string" ? id : id.$oid;
 }
 
+const normalizeStatus = (status?: string): string =>
+  status?.toLowerCase().trim() ?? "";
+
 function sortByProgress(orders: Order[]): Order[] {
   return [...orders].sort(
     (a, b) =>
-      (ORDER_PROGRESS_MAP[a.orderStatus] ?? -1) -
-      (ORDER_PROGRESS_MAP[b.orderStatus] ?? -1)
+      (ORDER_PROGRESS_MAP[normalizeStatus(a.orderStatus)] ?? -1) -
+      (ORDER_PROGRESS_MAP[normalizeStatus(b.orderStatus)] ?? -1)
   );
 }
 
@@ -43,33 +44,35 @@ export default function GetOrders({
   const [ratingOrder, setRatingOrder] = useState<Order | null>(null);
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
 
-  // Auto-pop modal for first delivered + unrated order when orders load
   useEffect(() => {
     if (!orders.length) return;
 
     const pending = orders.find(
       (o) =>
-        o.orderStatus === "delivered" &&
+        normalizeStatus(o.orderStatus) === "delivered" &&
         !o.riderRated &&
         !ratedIds.has(o._id)
     );
-    console.log("Order statuses:", orders.map(o => o.orderStatus));
 
     if (pending) setRatingOrder(pending);
-  }, [orders]);
+  }, [orders, ratedIds]);
 
   const getFilteredOrders = (): Order[] => {
     switch (activeTab) {
       case "active":
         return sortByProgress(
           orders.filter((o) =>
-            ["confirmed", "prepared", "claimed", "collected"].includes(o.orderStatus)
+            ["confirmed", "prepared", "claimed", "collected"].includes(
+              normalizeStatus(o.orderStatus)
+            )
           )
         );
       case "passive":
         return sortByProgress(
           orders.filter((o) =>
-            ["delivered", "cancelled", "returned"].includes(o.orderStatus)
+            ["delivered", "cancelled", "returned"].includes(
+              normalizeStatus(o.orderStatus)
+            )
           )
         );
       default:
@@ -79,10 +82,8 @@ export default function GetOrders({
 
   const filteredOrders = getFilteredOrders();
 
-  // Handle order card click to open rating modal
   const handleOrderClick = (order: Order) => {
-    // Only open rating modal if order is delivered and not rated yet
-    if (order.orderStatus === "delivered" && !order.riderRated) {
+    if (normalizeStatus(order.orderStatus) === "delivered" && !order.riderRated) {
       setRatingOrder(order);
     }
   };
@@ -109,7 +110,11 @@ export default function GetOrders({
           <div
             key={resolveId(order._id) || index}
             onClick={() => handleOrderClick(order)}
-            className={order.orderStatus === "delivered" && !order.riderRated ? "cursor-pointer" : ""}
+            className={
+              normalizeStatus(order.orderStatus) === "delivered" && !order.riderRated
+                ? "cursor-pointer"
+                : ""
+            }
           >
             <OrderCard
               order={order}
@@ -121,7 +126,6 @@ export default function GetOrders({
         ))
       )}
 
-      {/* Rating modal */}
       {ratingOrder && (
         <RateRiderModal
           orderId={ratingOrder._id}
