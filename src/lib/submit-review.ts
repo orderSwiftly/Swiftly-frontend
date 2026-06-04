@@ -3,7 +3,7 @@ import toast from "react-hot-toast";
 export async function SubmitReview(
   productId: string,
   rating: number,
-  comment: string
+  review: string
 ) {
   try {
     const token = localStorage.getItem("token");
@@ -14,14 +14,14 @@ export async function SubmitReview(
     }
 
     const res = await fetch(
-      `${api_url}/api/v1/review/product/${productId}`,
+      `${api_url}/api/v1/product/${productId}/rate`,
       {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           Authorization: `Bearer ${token}`,
         },
-        body: JSON.stringify({ rating, comment }),
+        body: JSON.stringify({ rating, review }),
       }
     );
 
@@ -29,7 +29,7 @@ export async function SubmitReview(
     if (!res.ok) throw new Error(data.message || "Failed to submit review");
 
     toast.success("Review submitted successfully!");
-    return data.data.review; // return review object
+    return data.data.review;
   } catch (err) {
     console.log((err as Error).message);
     toast.error((err as Error).message);

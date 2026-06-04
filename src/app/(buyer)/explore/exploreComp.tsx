@@ -31,7 +31,7 @@ type Product = {
   productImg: string[];
   stock: number;
   location: string;
-  averageRating?: number;
+  average_rating?: number;
   category?: Category;
 };
 
@@ -200,7 +200,10 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
           </div>
         ) : (
           <ul className="grid gap-x-6 gap-y-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {products.map((product) => (
+            {products.map((product) => {
+              // Log product ID when rendering each product
+              console.log('Product ID:', product._id, 'Product Title:', product.title);
+              return (
               <li
                 key={product._id}
                 className="bg-white rounded-2xl overflow-hidden shadow-lg border border-gray-100 flex flex-col group hover:shadow-xl transition-shadow"
@@ -231,7 +234,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                     <div className="flex items-center gap-1">
                       <Star size={16} className="fill-yellow-400 text-yellow-400" />
                       <span className="text-sm font-medium text-gray-700">
-                        {product.averageRating ? product.averageRating.toFixed(1) : '0.0'}
+                        {product.average_rating ? product.average_rating.toFixed(1) : '0.0'}
                       </span>
                     </div>
 
@@ -266,6 +269,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                     <Link
                       href={`/explore/product/${product._id}`}
                       className="flex-1 text-center text-sm font-medium text-(--prof-clr) hover:text-(--wave-clr) flex items-center justify-center gap-1 transition-colors"
+                      onClick={() => console.log('Navigating to product:', product._id)} // Log when clicked
                     >
                       View Details <ArrowRight size={14} />
                     </Link>
@@ -278,7 +282,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                   </div>
                 </div>
               </li>
-            ))}
+            )})}
           </ul>
         )}
       </div>

@@ -3,9 +3,9 @@
 import { useState, useEffect } from "react";
 import toast from 'react-hot-toast';
 import { GetReviews } from "@/lib/get-reviews";
-import PulseLoader from "@/components/pulse-loader";
 import { SubmitReview } from "@/lib/submit-review";
 import Image from "next/image";
+import { Loader2 } from "lucide-react";
 
 type Props = {
   productId: string;
@@ -19,15 +19,15 @@ interface Review {
   orderId?: string;
   buyerId: string;
   rating: number;
-  comment: string;
+  comment: string;  // Matches DB field name
   createdAt: string;
 }
 
-export default function ExploreReview({ productId }: Props) {
+export default function ExploreReview({ productId }: Readonly<Props>) {
   const [rating, setRating] = useState<number>(0);
-  const [comment, setComment] = useState<string>('');
+  const [reviewText, setReviewText] = useState<string>(''); // Changed to reviewText to avoid confusion
   const [loading, setLoading] = useState<boolean>(false);
-  const [reviews, setReviews] = useState<Review[]>([]); // proper typing
+  const [reviews, setReviews] = useState<Review[]>([]);
 
   // fetch reviews on mount
   useEffect(() => {
@@ -44,16 +44,18 @@ export default function ExploreReview({ productId }: Props) {
   // submit review
   const handleSubmit = async () => {
     if (rating < 1 || rating > 5) return toast.error('Rating must be 1–5');
+    if (!reviewText.trim()) return toast.error('Please write a review');
 
     setLoading(true);
     try {
-      await SubmitReview(productId, rating, comment);
+      await SubmitReview(productId, rating, reviewText);
       setRating(0);
-      setComment('');
+      setReviewText('');
 
       // refresh reviews list
       const updatedReviews = await GetReviews(productId);
       setReviews(updatedReviews);
+      toast.success('Review submitted successfully!');
     } catch (err) {
       console.log((err as Error).message);
     } finally {
@@ -81,8 +83,8 @@ export default function ExploreReview({ productId }: Props) {
 
       {/* Review input */}
       <textarea
-        value={comment}
-        onChange={(e) => setComment(e.target.value)}
+        value={reviewText}
+        onChange={(e) => setReviewText(e.target.value)}
         placeholder="Write your review..."
         className="w-full p-2 border rounded sec-ff border-gray-300 dark:border-gray-600 dark:bg-gray-800 mb-4 text-[var(--pry-clr)]"
         rows={4}
@@ -91,9 +93,9 @@ export default function ExploreReview({ productId }: Props) {
       <button
         onClick={handleSubmit}
         disabled={loading}
-        className="px-4 py-2 bg-[var(--acc-clr)] text-[var(--bg-clr)] rounded sec-ff font-semibold cursor-pointer disabled:opacity-50"
+        className="px-4 py-2 bg-[var(--prof-clr)] text-[var(--txt-clr)] rounded sec-ff font-semibold cursor-pointer disabled:opacity-50"
       >
-        {loading ? <PulseLoader /> : 'Submit Review'}
+        {loading ? <Loader2 className="animate-spin text-[var(--txt-clr)]" /> : 'Submit Review'}
       </button>
 
       {/* Show reviews */}
@@ -106,48 +108,46 @@ export default function ExploreReview({ productId }: Props) {
             reviews.map((review) => (
               <li
                 key={review._id}
-                className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700 text-[var(--bg-clr)]"
+                className="flex gap-4 p-4 bg-gray-50 dark:bg-gray-800 rounded-xl shadow-sm border border-gray-200 dark:border-gray-700"
               >
-              {/* Reviewer photo */}
-              {review.reviewerPhoto ? (
-                <Image
-                  width={50}
-                  height={50}
-                  src={review.reviewerPhoto}
-                  alt={review.reviewerName || 'Anonymous'}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-              ) : (
-                <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-[var(--prof-clr)]">
-                  {review.reviewerName?.[0] || 'A'}
+                {/* Reviewer photo */}
+                {review.reviewerPhoto ? (
+                  <Image
+                    width={50}
+                    height={50}
+                    src={review.reviewerPhoto}
+                    alt={review.reviewerName || 'Anonymous'}
+                    className="w-12 h-12 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="w-12 h-12 rounded-full bg-gray-300 dark:bg-gray-600 flex items-center justify-center text-[var(--prof-clr)]">
+                    {review.reviewerName?.[0] || 'A'}
+                  </div>
+                )}
+
+                <div className="flex-1">
+                  {/* Name + rating */}
+                  <div className="flex items-center justify-between mb-1">
+                    <p className="text-gray-800 dark:text-gray-100 pry-ff font-semibold">
+                      {review.reviewerName || 'Anonymous'}
+                    </p>
+                    <span className="text-yellow-400 font-medium sec-ff">
+                      ★ {review.rating}
+                    </span>
+                  </div>
+                  {/* Review - using comment field from DB */}
+                  <p className="dark:text-gray-300 sec-ff text-[var(--bg-clr)]">
+                    {review.comment}
+                  </p>
+                  {/* Date */}
+                  <p className="text-sm text-gray-400 dark:text-gray-500 mt-1 sec-ff">
+                    {new Date(review.createdAt).toLocaleDateString()}
+                  </p>
                 </div>
-              )}
-
-              <div className="flex-1">
-          {/* Name + rating */}
-          <div className="flex items-center justify-between mb-1">
-            <p className="font-semibold text-gray-800 dark:text-gray-100 pry-ff font-semibold text-[var(--bg-clr)]">
-              {review.reviewerName || 'Anonymous'}
-            </p>
-            <span className="text-yellow-400 font-medium sec-ff">
-              ★ {review.rating}
-            </span>
-          </div>
-          {/* Comment */}
-          <p className="dark:text-gray-300 sec-ff text-[var(--bg-clr)]">
-            {review.comment}
-          </p>
-          {/* Optional date */}
-          <p className="text-sm text-gray-400 dark:text-gray-500 mt-1m sec-ff">
-            {new Date(review.createdAt).toLocaleDateString()}
-          </p>
-        </div>
-      </li>
-    ))
-  )}
-</ul>
-
-
+              </li>
+            ))
+          )}
+        </ul>
       </div>
     </div>
   );

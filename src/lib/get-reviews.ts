@@ -1,4 +1,5 @@
 import axios from 'axios';
+
 export async function GetReviews(productId: string) {
     try {
         const api_url = process.env.NEXT_PUBLIC_API_URL;

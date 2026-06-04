@@ -323,9 +323,9 @@ export default function RiderOrderDetails() {
             className="mt-3 pt-3 flex justify-between items-center"
             style={{ borderTop: '1px solid rgba(0,107,79,0.12)' }}
           >
-            <span className="font-bold text-[var(--pry-clr)] pry-ff">Total</span>
+            <span className="font-bold text-[var(--pry-clr)] pry-ff">Delivery Fee</span>
             <span className="text-lg sm:text-xl font-bold text-[var(--bg-clr)] sec-ff">
-              ₦{order.pricing.total.toLocaleString()}
+              ₦{order.pricing.deliveryFee.toLocaleString()}
             </span>
           </div>
         </div>

@@ -19,7 +19,7 @@ type Product = {
   productImg: string[];
   stock: number;
   location: string;
-  averageRating?: number;
+  average_rating?: number;
   avgRating?: number;
   rating?: number;
   reviewCount?: number;
@@ -131,7 +131,7 @@ export default function ProductDetails() {
       </div>
     );
 
-  const rating = product.averageRating ?? product.avgRating ?? product.rating ?? 0;
+  const rating = product.average_rating ?? product.avgRating ?? product.rating ?? 0;
   const reviewCount = product.reviewCount || 0;
 
   return (
