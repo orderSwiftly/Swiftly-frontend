@@ -23,21 +23,15 @@ export default function GetEarnings() {
 
   const formatDate = (date: string) => {
     const d = new Date(date);
-
     const day = d.getDate();
 
     const getOrdinal = (n: number) => {
       if (n > 3 && n < 21) return "th";
-
       switch (n % 10) {
-        case 1:
-          return "st";
-        case 2:
-          return "nd";
-        case 3:
-          return "rd";
-        default:
-          return "th";
+        case 1: return "st";
+        case 2: return "nd";
+        case 3: return "rd";
+        default: return "th";
       }
     };
 
@@ -63,21 +57,9 @@ export default function GetEarnings() {
             className="absolute top-0 right-0 w-full opacity-100"
             preserveAspectRatio="xMaxYMin slice"
           >
-            <path
-              d="M200,0 Q280,40 400,20 L400,0 Z"
-              fill="#3a7d0a"
-              opacity="0.9"
-            />
-            <path
-              d="M160,0 Q260,60 400,35 L400,0 Z"
-              fill="#4e9c0e"
-              opacity="0.7"
-            />
-            <path
-              d="M220,0 Q320,50 400,55 L400,0 Z"
-              fill="#6abf1a"
-              opacity="0.5"
-            />
+            <path d="M200,0 Q280,40 400,20 L400,0 Z" fill="#3a7d0a" opacity="0.9" />
+            <path d="M160,0 Q260,60 400,35 L400,0 Z" fill="#4e9c0e" opacity="0.7" />
+            <path d="M220,0 Q320,50 400,55 L400,0 Z" fill="#6abf1a" opacity="0.5" />
           </svg>
         </div>
 
@@ -92,22 +74,15 @@ export default function GetEarnings() {
             </p>
           ) : (
             <ul className="divide-y divide-border">
-              {data.recentPayouts.map((payout, i) => (
-                <li
-                  key={i}
-                  className="flex items-center justify-between py-3"
-                >
+              {data.recentPayouts.slice(0, 8).map((payout, i) => (
+                <li key={i} className="flex items-center justify-between py-3">
                   <div>
-                    <p className="text-sm">{payout.reference}</p>
-
+                    <p className="text-sm">#{payout.reference.slice(-8).toUpperCase()}</p>
                     <p className="text-xs text-muted-foreground">
                       {formatDate(payout.paidAt)}
                     </p>
                   </div>
-
-                  <p className="text-sm font-medium">
-                    {fmt(payout.amount)}
-                  </p>
+                  <p className="text-sm font-medium">{fmt(payout.amount)}</p>
                 </li>
               ))}
             </ul>
@@ -116,27 +91,10 @@ export default function GetEarnings() {
       </div>
 
       <div className="grid grid-cols-2 gap-3">
-        <StatCard
-          label="Total earnings"
-          value={fmt(data.totalEarnings)}
-        />
-
-        <StatCard
-          label="Today's orders"
-          value={String(data.todayOrders)}
-          sub="today"
-        />
-
-        <StatCard
-          label="Today's earnings"
-          value={fmt(data.todayEarnings)}
-        />
-
-        <StatCard
-          label="Total orders"
-          value={String(data.totalOrders)}
-          sub="all time"
-        />
+        <StatCard label="Total earnings" value={fmt(data.totalEarnings)} />
+        <StatCard label="Today's orders" value={String(data.todayOrders)} sub="today" />
+        <StatCard label="Today's earnings" value={fmt(data.todayEarnings)} />
+        <StatCard label="Total orders" value={String(data.totalOrders)} sub="all time" />
       </div>
     </div>
   );
@@ -154,14 +112,8 @@ function StatCard({
   return (
     <div className="rounded-lg bg-white shadow-lg p-4">
       <p className="text-xs text-muted-foreground mb-1">{label}</p>
-
       <p className="text-2xl font-medium">{value}</p>
-
-      {sub && (
-        <p className="text-xs text-muted-foreground mt-0.5">
-          {sub}
-        </p>
-      )}
+      {sub && <p className="text-xs text-muted-foreground mt-0.5">{sub}</p>}
     </div>
   );
 }
