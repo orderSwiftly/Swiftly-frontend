@@ -43,7 +43,7 @@ export default function Settings() {
 
   const handleSave = (section: string) => {
     // Handle save logic here
-    console.log(`Saving ${section}:`, formData);
+    console.info(`Saving ${section}:`, formData);
     // Show success toast
   };
 

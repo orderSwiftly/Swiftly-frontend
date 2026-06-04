@@ -14,7 +14,8 @@ export default function PromptsWrapper() {
   useEffect(() => {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.ready.then(() => {
-        console.log('Service Worker ready for notifications')
+        console.info('Service Worker is ready for notifications')
+        // console.log('Service Worker ready for notifications')
       })
     }
   }, [])
@@ -28,7 +29,7 @@ export default function PromptsWrapper() {
   }
 
   const handleDismissNotifications = () => {
-    console.log('User dismissed notification prompt')
+    console.info('User dismissed notification prompt')
   }
 
   return (

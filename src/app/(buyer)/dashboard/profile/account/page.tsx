@@ -45,7 +45,7 @@ export default function AccountPage() {
         setFormData((prev) => ({ ...prev, [field]: value }));
 
     const handleSave = (section: string) => {
-        console.log("Saving section:", section, formData);
+        console.info("Saving section:", section, formData);
     };
 
     return (

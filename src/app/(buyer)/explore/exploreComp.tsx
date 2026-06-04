@@ -269,7 +269,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
                     <Link
                       href={`/explore/product/${product._id}`}
                       className="flex-1 text-center text-sm font-medium text-(--prof-clr) hover:text-(--wave-clr) flex items-center justify-center gap-1 transition-colors"
-                      onClick={() => console.log('Navigating to product:', product._id)} // Log when clicked
+                      onClick={() => console.info('Navigating to product:', product._id)} // Log when clicked
                     >
                       View Details <ArrowRight size={14} />
                     </Link>

@@ -95,7 +95,7 @@ async function saveSubscriptionToBackend(subscription: PushSubscription): Promis
   }
 
   const url = `${apiUrl}/api/v1/webpush/subscribe`
-  console.log('Saving subscription to:', url)
+  console.info('Saving subscription to:', url)
   
   const headers: HeadersInit = {
     'Content-Type': 'application/json',
@@ -131,7 +131,7 @@ async function saveSubscriptionToBackend(subscription: PushSubscription): Promis
     
     // Safely parse the response
     const data = await safeParseJSON(response)
-    console.log('Subscription saved successfully:', data)
+    console.info('Subscription saved successfully:', data)
     return true
   } catch (error) {
     console.error('Could not save subscription to backend:', error)
@@ -186,7 +186,7 @@ async function removeSubscriptionFromBackend(subscription: PushSubscription): Pr
     
     // Safely parse the response
     const data = await safeParseJSON(response)
-    console.log('Subscription removed successfully:', data)
+    console.info('Subscription removed successfully:', data)
     return true
   } catch (error) {
     console.error('Could not remove subscription from backend:', error)
@@ -223,7 +223,7 @@ export async function subscribeToPush(): Promise<PushSubscription | null> {
     
     if (!registration) {
       registration = await navigator.serviceWorker.register('/web-push-service-worker.js')
-      console.log('Service worker registered')
+      console.info('Service worker registered')
     }
     
     await navigator.serviceWorker.ready
@@ -265,7 +265,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     const subscription = await registration.pushManager.getSubscription()
     
     if (!subscription) {
-      console.log('No active subscription found')
+      console.info('No active subscription found')
       return true
     }
 
@@ -278,7 +278,7 @@ export async function unsubscribeFromPush(): Promise<boolean> {
     const unsubscribed = await subscription.unsubscribe()
     
     if (unsubscribed) {
-      console.log('Successfully unsubscribed from push notifications')
+      console.info('Successfully unsubscribed from push notifications')
     } else {
       console.warn('Failed to unsubscribe locally')
     }

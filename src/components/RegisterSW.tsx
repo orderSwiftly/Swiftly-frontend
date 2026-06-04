@@ -9,7 +9,7 @@ export default function RegisterSW() {
     if ('serviceWorker' in navigator) {
       navigator.serviceWorker.register('/web-push-service-worker.js')
         .then(registration => {
-          console.log('Service Worker registered with scope:', registration.scope)
+          console.info('Service Worker registered with scope:', registration.scope)
         })
         .catch(error => {
           console.error('Service Worker registration failed:', error)

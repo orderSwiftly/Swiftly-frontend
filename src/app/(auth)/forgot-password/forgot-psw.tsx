@@ -31,7 +31,7 @@ const handleSubmit = async (e: React.FormEvent) => {
     setEmail("");
     router.push('/reset-password');
   } catch (error) {
-    console.log(error)
+    console.error(error);
     toast.error(error instanceof Error ? error.message : "Failed to send reset email");
   } finally {
     setLoading(false);

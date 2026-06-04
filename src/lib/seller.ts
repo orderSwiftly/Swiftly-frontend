@@ -51,7 +51,7 @@ export async function fetchSellerProfile(): Promise<SellerProfile> {
     const response = await axios.get(`${apiUrl}/api/v1/user/seller-profile`, {
       headers: { Authorization: `Bearer ${token}` },
     });
-    console.log("seller profile response:", response.data.data.seller);
+    // console.log("seller profile response:", response.data.data.seller);
 
     return response.data.data as SellerProfile;
   } catch (error) {
