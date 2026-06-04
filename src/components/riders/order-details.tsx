@@ -11,7 +11,6 @@ import {
   CreditCard, 
   Clock, 
   User, 
-  Phone,
   Store,
   Calendar
 } from 'lucide-react';
@@ -192,12 +191,12 @@ export default function RiderOrderDetails() {
                 <span className="opacity-60">Name:</span> {order.buyer.name}
               </span>
             </div>
-            <div className="flex items-center gap-2">
+            {/* <div className="flex items-center gap-2">
               <Phone size={14} className="text-[var(--bg-clr)] opacity-60" />
               <span className="text-sm text-[var(--pry-clr)] sec-ff">
                 <span className="opacity-60">Phone Number:</span> {order.buyer.phone}
               </span>
-            </div>
+            </div> */}
           </div>
         </div>
 
