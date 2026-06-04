@@ -1,4 +1,4 @@
-// src/app/(buyer)/dashboard/layout.tsx
+// src/app/(buyer)/explore/layout.tsx
 
 'use client';
 
@@ -9,7 +9,7 @@ import SidebarNav from '@/components/sidebar-nav';
 import SelectCampus from '@/components/select-campus';
 import { useUIStore } from '@/stores/campusStore';
 
-function DashboardShell({ children }: Readonly<{ children: ReactNode }>) {
+function ExploreShell({ children }: Readonly<{ children: ReactNode }>) {
     const { collapsed } = useSidebar();
     const { showCampus, closeCampus } = useUIStore();
     const [isDesktop, setIsDesktop] = useState(false);
@@ -24,7 +24,6 @@ function DashboardShell({ children }: Readonly<{ children: ReactNode }>) {
     return (
         <div className="flex min-h-screen">
             <Sidebar />
-
             <main
                 className="flex-1 bg-[var(--light-bg)] transition-all duration-300"
                 style={{
@@ -35,15 +34,17 @@ function DashboardShell({ children }: Readonly<{ children: ReactNode }>) {
                 {children}
             </main>
 
-            {showCampus && <SelectCampus onFinish={closeCampus} />}
+            {showCampus && (
+                <SelectCampus onFinish={closeCampus} />
+            )}
         </div>
     );
 }
 
-export default function DashboardLayout({ children }: { children: ReactNode }) {
+export default function ExploreLayout({ children }: Readonly<{ children: ReactNode }>) {
     return (
         <SidebarProvider>
-            <DashboardShell>{children}</DashboardShell>
+            <ExploreShell>{children}</ExploreShell>
         </SidebarProvider>
     );
 }

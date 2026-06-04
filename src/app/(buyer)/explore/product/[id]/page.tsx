@@ -135,7 +135,7 @@ export default function ProductDetails() {
   const reviewCount = product.reviewCount || 0;
 
   return (
-    <div className="min-h-screen bg-gray-50 pry-ff">
+    <div className="min-h-screen bg-gray-50 pry-ff mb-20">
       <div className="max-w-7xl mx-auto px-4 py-4 sm:py-6 md:py-8">
         <button
           onClick={() => router.back()}

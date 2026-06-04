@@ -53,6 +53,7 @@ export default function GetOrders({
         !o.riderRated &&
         !ratedIds.has(o._id)
     );
+    console.log("Order statuses:", orders.map(o => o.orderStatus));
 
     if (pending) setRatingOrder(pending);
   }, [orders]);
@@ -62,7 +63,7 @@ export default function GetOrders({
       case "active":
         return sortByProgress(
           orders.filter((o) =>
-            ["confirmed", "prepared", "collected"].includes(o.orderStatus)
+            ["confirmed", "prepared", "claimed", "collected"].includes(o.orderStatus)
           )
         );
       case "passive":
