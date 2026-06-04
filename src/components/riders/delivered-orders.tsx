@@ -62,7 +62,7 @@ function DeliveredOrderCard({ order }: Readonly<{ order: GetShippedOrder }>) {
                         )}
                     </p>
                     <p className="text-xs text-[#669917] font-medium mt-0.5">
-                        {formatPrice(order.pricing.deliveryFee)} earned
+                        {formatPrice(order.pricing.riderPayment)} earned
                     </p>
                     <p className="text-xs text-[#c0c0c0] mt-0.5">
                         {order.items.reduce((s, i) => s + i.quantity, 0)} item(s)

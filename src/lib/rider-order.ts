@@ -23,6 +23,7 @@ export interface GetShippedOrder {
     serviceFee: number;
     deliveryFee: number;
     total: number;
+    riderPayment: number;
   };
   shippingAddress: {
     // official (on-campus)
