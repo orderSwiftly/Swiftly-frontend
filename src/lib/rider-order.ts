@@ -188,7 +188,7 @@ export async function deliverOrder(orderId: string, deliveryCode: string): Promi
       delivery_code: parseInt(deliveryCode, 10) // Send as number, not string
     };
 
-    console.log("Sending delivery code:", payload); // Should show { delivery_code: 314773 }
+    // console.log("Sending delivery code:", payload); // Should show { delivery_code: 314773 }
 
     await axios.post(
       `${apiUrl}/api/v1/rider/deliver/${orderId}`,
@@ -227,6 +227,7 @@ export async function getDeliveredOrders(
       page,
       limit,
     };
+    // console.log("Fetched delivered orders:", { orders, meta });
 
     return { data: orders as GetShippedOrder[], meta };
   } catch (error) {

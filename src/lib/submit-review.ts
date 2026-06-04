@@ -31,7 +31,7 @@ export async function SubmitReview(
     toast.success("Review submitted successfully!");
     return data.data.review;
   } catch (err) {
-    console.log((err as Error).message);
+    // console.log((err as Error).message);
     toast.error((err as Error).message);
     throw err;
   }

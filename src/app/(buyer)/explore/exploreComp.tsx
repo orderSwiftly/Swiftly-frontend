@@ -111,7 +111,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
         const res = await fetch(`${api_url}/api/v1/product/search/${institutionEnum}?${params.toString()}`);
         const data = await res.json();
         
-        console.log('Search response:', data); // Debug log
+        // console.log('Search response:', data); // Debug log
         
         if (res.ok && data.status === "success") {
           setProducts((data.products ?? []).filter((p: Product) => p.stock > 0));
@@ -202,7 +202,7 @@ export default function ExplorePage({ searchTerm = '', categoryName = '' }: Read
           <ul className="grid gap-x-6 gap-y-10 grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {products.map((product) => {
               // Log product ID when rendering each product
-              console.log('Product ID:', product._id, 'Product Title:', product.title);
+              // console.log('Product ID:', product._id, 'Product Title:', product.title);
               return (
               <li
                 key={product._id}

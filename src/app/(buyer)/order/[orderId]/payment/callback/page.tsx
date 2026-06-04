@@ -52,7 +52,7 @@ export default function PaymentCallbackPage() {
       return;
     }
 
-    console.log('Payment callback received:', { reference, transactionId, statusParam });
+    // console.log('Payment callback received:', { reference, transactionId, statusParam });
 
     const controller = new AbortController();
     const timeoutId = setTimeout(() => {

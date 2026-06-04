@@ -50,7 +50,7 @@ export async function verifyPayment(reference: string): Promise<{
     const api_url = process.env.NEXT_PUBLIC_API_URL;
     const token = localStorage.getItem('token');
 
-    console.log('Verifying payment with reference:', reference);
+    // console.log('Verifying payment with reference:', reference);
 
     const res = await fetch(`${api_url}/api/v1/flutterwave/verify?reference=${reference}`, {
       method: 'GET',
@@ -61,7 +61,7 @@ export async function verifyPayment(reference: string): Promise<{
     });
 
     const data: VerifyPaymentResponse = await res.json();
-    console.log('Verification response:', { status: res.status, data });
+    // console.log('Verification response:', { status: res.status, data });
 
     if (res.ok && data.status === 'success') {
       return {

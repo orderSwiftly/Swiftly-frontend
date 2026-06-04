@@ -25,9 +25,9 @@ export async function ShipOrders(orderId: string) {
             }
         );
 
-        console.log('Full response:', res);
-        console.log('Response data:', res.data);
-        console.log('Response status:', res.status);
+        // console.log('Full response:', res);
+        // console.log('Response data:', res.data);
+        // console.log('Response status:', res.status);
 
         // Your backend returns: { status: 'success', message: 'Order shipped successfully', data: { result } }
         return res.data;

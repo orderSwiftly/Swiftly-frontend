@@ -11,7 +11,8 @@ export default function EditProfile() {
     if (!phoneNumber && !photo) return;
 
     const result = await AdditionalInfo({ phoneNumber, photo: photo ?? undefined });
-    console.log("Update result:", result);
+    console.error("Update result:", result);
+    // console.log("Update result:", result);
   };
 
   return (
