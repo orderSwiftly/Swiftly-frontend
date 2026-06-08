@@ -109,7 +109,21 @@ function ActiveOrderCard({
                     </span>
                 </div>
                 <div className="flex items-center justify-between gap-2">
-                    <span className="text-xs text-[#c0c0c0] shrink-0">Deliver To</span>
+                    <span className="text-xs text-[#c0c0c0] shrink-0">Buyer Name</span>
+                    <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
+                    <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[140px] truncate text-right">
+                        {order.buyer.fullname}
+                    </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-[#c0c0c0] shrink-0">Buyer Phone</span>
+                    <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
+                    <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[140px] truncate text-right">
+                        {order.buyer.phone}
+                    </span>
+                </div>
+                <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs text-[#c0c0c0] shrink-0">Delivery Address</span>
                     <div className="flex-1 border-t border-dashed border-[#e0e0e0] mx-2" />
                     <span className="text-xs text-[#0A0F1A] font-medium shrink-0 max-w-[140px] truncate text-right">
                         {deliveryAddress}

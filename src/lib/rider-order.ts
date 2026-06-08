@@ -52,6 +52,10 @@ export interface GetShippedOrder {
   requested_at?: string;
   collected_at?: string;
   delivered_at?: string;
+  buyer: {
+    fullname: string;
+    phone: string;
+  }
 }
 
 export interface RiderProfile {
