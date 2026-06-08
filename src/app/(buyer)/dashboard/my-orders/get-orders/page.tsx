@@ -1,3 +1,5 @@
+// src/app/(buyer)/dashboard/my-orders/get-orders/page.tsx
+
 "use client";
 
 import OrdersHeader from "../components/orders-header";
@@ -23,14 +25,11 @@ function resolveId(id: string | { $oid: string } | undefined): string {
   return typeof id === "string" ? id : id.$oid;
 }
 
-const normalizeStatus = (status?: string): string =>
-  status?.toLowerCase().trim() ?? "";
-
 function sortByProgress(orders: Order[]): Order[] {
   return [...orders].sort(
     (a, b) =>
-      (ORDER_PROGRESS_MAP[normalizeStatus(a.orderStatus)] ?? -1) -
-      (ORDER_PROGRESS_MAP[normalizeStatus(b.orderStatus)] ?? -1)
+      (ORDER_PROGRESS_MAP[a.orderStatus] ?? -1) -
+      (ORDER_PROGRESS_MAP[b.orderStatus] ?? -1)
   );
 }
 
@@ -44,35 +43,32 @@ export default function GetOrders({
   const [ratingOrder, setRatingOrder] = useState<Order | null>(null);
   const [ratedIds, setRatedIds] = useState<Set<string>>(new Set());
 
+  // Auto-pop modal when buyer switches to delivered tab and there's an unrated order
   useEffect(() => {
-    if (!orders.length) return;
+    if (activeTab !== "passive" || !orders.length) return;
 
     const pending = orders.find(
       (o) =>
-        normalizeStatus(o.orderStatus) === "delivered" &&
+        o.orderStatus === "delivered" &&
         !o.riderRated &&
         !ratedIds.has(o._id)
     );
 
     if (pending) setRatingOrder(pending);
-  }, [orders, ratedIds]);
+  }, [activeTab, orders]);
 
   const getFilteredOrders = (): Order[] => {
     switch (activeTab) {
       case "active":
         return sortByProgress(
           orders.filter((o) =>
-            ["confirmed", "prepared", "claimed", "collected"].includes(
-              normalizeStatus(o.orderStatus)
-            )
+            ["confirmed", "prepared", "collected"].includes(o.orderStatus)
           )
         );
       case "passive":
         return sortByProgress(
           orders.filter((o) =>
-            ["delivered", "cancelled", "returned"].includes(
-              normalizeStatus(o.orderStatus)
-            )
+            ["delivered", "cancelled", "returned"].includes(o.orderStatus)
           )
         );
       default:
@@ -81,12 +77,6 @@ export default function GetOrders({
   };
 
   const filteredOrders = getFilteredOrders();
-
-  const handleOrderClick = (order: Order) => {
-    if (normalizeStatus(order.orderStatus) === "delivered" && !order.riderRated) {
-      setRatingOrder(order);
-    }
-  };
 
   return (
     <div className="space-y-4">
@@ -107,29 +97,24 @@ export default function GetOrders({
         </div>
       ) : (
         filteredOrders.map((order, index) => (
-          <div
+          <OrderCard
             key={resolveId(order._id) || index}
-            onClick={() => handleOrderClick(order)}
-            className={
-              normalizeStatus(order.orderStatus) === "delivered" && !order.riderRated
-                ? "cursor-pointer"
-                : ""
-            }
-          >
-            <OrderCard
-              order={order}
-              currentUserId={currentUserId || ""}
-              shippingLoading={shippingLoading}
-              handleShipOrder={handleShipOrder}
-            />
-          </div>
+            order={order}
+            currentUserId={currentUserId || ""}
+            shippingLoading={shippingLoading}
+            handleShipOrder={handleShipOrder}
+          />
         ))
       )}
 
+      {/* Auto-pop rate modal for unrated delivered orders */}
       {ratingOrder && (
         <RateRiderModal
           orderId={ratingOrder._id}
-          onClose={() => setRatingOrder(null)}
+          onClose={() => {
+            setRatedIds((prev) => new Set(prev).add(ratingOrder._id));
+            setRatingOrder(null);
+          }}
           onDone={() => {
             setRatedIds((prev) => new Set(prev).add(ratingOrder._id));
             setRatingOrder(null);
